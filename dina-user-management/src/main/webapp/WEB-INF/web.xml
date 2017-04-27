@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	 version="3.1">
+    <!--<display-name>DinaWS</display-name>-->
+
+    <module-name>user-management</module-name>
+
+<!--    <listener>
+        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+
+
+    <servlet>
+        <servlet-name>Resteasy</servlet-name>
+        <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Resteasy</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <context-param>
+        <param-name>resteasy.scan</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+
+    <context-param>
+        <param-name>resteasy.servlet.mapping.prefix</param-name>
+        <param-value>/</param-value>
+    </context-param>-->
+    
+    
+    
+    
+    
+    <!--- to enable keycloak -->
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>PUT</http-method>
+            <http-method>POST</http-method>
+            <http-method>DELETE</http-method>
+        </web-resource-collection>
+
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+ 
+    <login-config>
+        <auth-method>KEYCLOAK</auth-method>
+        <realm-name>dina</realm-name>
+    </login-config>
+ 
+    <security-role>
+        <role-name>admin</role-name>
+    </security-role>
+    
+    <!-- end of keycloak config-->  
+    
+    
+    
+    
+    
+    
+<!--    <security-role>
+        <role-name>user</role-name>
+    </security-role>-->
+
+  
+</web-app>

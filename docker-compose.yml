@@ -1,0 +1,23 @@
+db:
+  image: mysql
+  environment:
+    - TZ=Europe/Stockholm
+    - MYSQL_ROOT_PASSWORD=password12
+    - MYSQL_DATABASE=keycloak
+    - MYSQL_USER=keycloak
+    - MYSQL_PASSWORD=keycloak 
+ 
+sso:
+  build: ./
+  environment:
+    - TZ=Europe/Stockholm
+    - MYSQL_DATABASE=keycloak
+    - MYSQL_USERNAME=keycloak
+    - MYSQL_PASSWORD=keycloak 
+  ports:
+    - "8080:8080"
+  links:
+    - db:mysql  
+ 
+
+ 
