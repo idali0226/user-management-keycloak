@@ -1,3 +1,10 @@
+fs:
+  image: tianon/true
+  volumes:
+    - ./mysql-datadir:/var/lib/mysql
+    - ./mysql-shr:/shr
+    - ./mysql-autoload:/docker-entrypoint-initdb.d:ro
+
 db:
   image: mysql
   environment:
@@ -6,9 +13,11 @@ db:
     - MYSQL_DATABASE=keycloak
     - MYSQL_USER=keycloak
     - MYSQL_PASSWORD=keycloak 
+  volumes_from:
+    - fs
  
 sso:
-  build: ./
+  build: sso
   environment:
     - TZ=Europe/Stockholm
     - MYSQL_DATABASE=keycloak
@@ -18,6 +27,8 @@ sso:
     - "8080:8080"
   links:
     - db:mysql  
+  volumes_from:
+    - fs
  
 
  
