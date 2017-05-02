@@ -1,0 +1,29 @@
+<div class="container">
+    <form class="form-signin panel signin" {{action 'authenticate' on='submit'}}>
+        {{#validation/form-group
+            isValid=(v-get this 'username' 'isValid')
+            message=(v-get this 'username' 'message')
+        }}
+            {{input value=username type="text" class="form-control" placeholder=(t 'definitions.username')}}
+        {{/validation/form-group}}
+        {{#validation/form-group
+            isValid=(v-get this 'password' 'isValid')
+            message=(v-get this 'password' 'message')
+        }}
+            {{input value=password type="password" class="form-control" placeholder=(t 'definitions.password')}}
+        {{/validation/form-group}}
+        {{#validation/form-group
+            isValid=(v-get this 'invalidCredentials' 'isValid')
+            message=(v-get this 'invalidCredentials' 'message')
+        }}
+            <button class="btn btn-md btn-primary" type="submit" disabled={{isValidating}}>
+                {{#if isValidating}} 
+                    {{t 'definitions.signing-in'}}
+                {{else}}
+                    {{t 'definitions.sign-in'}}
+                {{/if}}
+            </button>
+        {{/validation/form-group}}
+    </form>
+</div>
+

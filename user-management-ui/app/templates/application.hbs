@@ -1,5 +1,26 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
-
+<nav class="navbar navbar-default">
+    <div class="container logo">
+        {{#link-to 'index' class='dwcm-application-logo'}}{{/link-to}}
+        {{#link-to "index" class="dwcm-appliciation-brand"}}{{t "main.application_name"}}{{/link-to}}
+ 
+        <div class="pull-right user-menu">
+            {{#if session.isAuthenticated}}
+                <span class="capitalized">{{session.userProfile.fullName}}</span>
+                (<a class="clickable" {{action 'invalidateSession'}}>{{t 'definitions.sign-out'}}</a>)
+            {{else}}
+                {{#link-to 'login'}}
+                    {{t 'definitions.sign-in'}}
+                {{/link-to}}
+            {{/if}}
+        </div>
+    </div>
+    <div class="container dwcm-secondary-navigation">
+        <ul class="nav navbar-nav">
+            {{#link-to "index" tagName="li"}}
+                <a>{{t "navigation.start"}}</a>
+            {{/link-to}}
+    
+      </ul> 
+    </div>
+</nav>
 {{outlet}}

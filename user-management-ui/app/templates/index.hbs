@@ -1,0 +1,28 @@
+<div style="padding-top: 0px; padding-bottom:0px;" class="jumbotron container">
+    <h1 style="font-size: 39px;">{{t 'beta.header'}}</h1>
+    <p><i>{{t 'beta.header'}}</i> {{t 'beta.intro'}}</p>
+</div>
+
+<div class="panel panel-default container">
+    <div class="panel-body">
+        <div class="row">   
+            <div class="col-xs-12">
+                <h2>{{t 'beta.feedback.header'}}</h2>
+                <p>{{t 'beta.feedback.body'}}</p>
+                <p>
+                    {{#if session.isAuthenticated}}
+                        {{#if session.userProfile.isFocusGroupMember}}
+                            <!-- Focus group feedback form -->
+                            <a class="btn btn-warning" href="http://goo.gl/forms/kzsPiFfLmJ" target="blank" role="button">{{t 'beta.feedback.button'}} &raquo;</a>
+                        {{else}}
+                            <!-- Public feedback form -->
+                            <a class="btn btn-success" href="http://goo.gl/forms/qiTUMlGrftc8pnxE3" target="blank" role="button">{{t 'beta.feedback.button'}} &raquo;</a>
+                        {{/if}}
+                    {{else}}
+                        <i>{{t 'beta.feedback.sign-in'}}</i>
+                    {{/if}}
+                </p> 
+            </div> 
+        </div>
+    </div>
+</div>
