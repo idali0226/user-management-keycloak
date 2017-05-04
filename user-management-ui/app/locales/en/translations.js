@@ -30,8 +30,36 @@ export default {
     navigation: {
         start: 'Start', 
         'users': 'Users',
-        'users.list': 'List',
+        'users.list': 'List all users',
+        'users.add': 'Register new',
     },
+    user: { 
+        list: {
+            header: 'List and search for users',
+        },
+        new: {
+            title: 'New user', 
+            toolbar: {
+                save: 'Save',
+                saving: 'Saving',
+                print: 'Print label',
+                close: 'Close',
+                duplicate: 'Duplicate',
+            },
+        },
+    }, 
+    'user-profile': 'User profile',
+    fields: {
+        labels: {
+            user: {
+                first_name: 'First name',
+                last_name: 'Last name',
+                name: 'Name',
+                email: 'email',
+                username: 'Username',
+            }, 
+        },
+    },  
     beta: {
         header: 'User management beta',
         intro: ' is a test site to evaluate the new user management system. The site will be continuously updated with new features and fixes based on the internal priority and feedback from user testing.',

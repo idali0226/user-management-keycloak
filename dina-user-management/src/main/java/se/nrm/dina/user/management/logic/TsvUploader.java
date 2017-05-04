@@ -47,7 +47,7 @@ public class TsvUploader implements Serializable {
     
     private static final String REGEX = ".*/(.*)$";
     private static final String CLIENT_END_POINT = "dina-rest";
-    private static final String CLIENT_COLLECTION = "user-management";
+    private static final String CLIENT_ID = "user-management";
     
     private static final String ADMIN_ROLE = "admin";
 
@@ -95,9 +95,11 @@ public class TsvUploader implements Serializable {
                         resetPassword(userResource);
                         setReamlRole(userResource);
                         setClientRole(CLIENT_END_POINT, userResource);
-                        setClientRole(CLIENT_COLLECTION, userResource);
+                        setClientRole(CLIENT_ID, userResource);
                     }
                 }); 
+        
+        kc.close();
     }
     
     private void setClientRole(String clientId, UserResource userResource) {

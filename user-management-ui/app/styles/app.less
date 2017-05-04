@@ -1,11 +1,23 @@
-@import "../../bower_components/bootstrap/less/bootstrap.less";
+@import "../../bower_components/bootstrap/less/bootstrap.less"; 
+@import "bootswatch/main.less";
+@import "bootswatch/variables.less";
 
 
+@import "util.less";
 @import "header.less";
+@import "footer.less";
 
 body {
     background: @gray-lighter;
 }
+
+.btn-inside-form {
+    position: absolute;
+    top: 29px;
+    right: 20px;
+    border-radius: @border-radius-large;
+}
+
 
 .signin {
     max-width: 500px;
@@ -30,3 +42,6 @@ body {
 .capitalized {
     text-transform: capitalize;
 }
+
+ 
+ 

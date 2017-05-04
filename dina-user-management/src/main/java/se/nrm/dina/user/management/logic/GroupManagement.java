@@ -5,54 +5,64 @@
  */
 package se.nrm.dina.user.management.logic;
 
-import java.io.Serializable;
-import javax.ejb.Stateless;
+import java.io.Serializable; 
+import java.io.StringReader;
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.GroupRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.nrm.dina.user.management.utils.CommonString;
 
 /**
  *
  * @author idali
- */
-@Stateless
+ */ 
 public class GroupManagement implements Serializable {
-     
-    private static final String MASTER_REALM = "master";
-    private static final String DINA_REALM = "dina";
-    private static final String ADMIN_REALM = "admin-cli";
-    private static final String URL = "http://localhost:8080/auth";
-
-    private static final String MASTER_ADMIN_USERNAME = "admin";
-    private static final String MASTER_ADMIN_PASSWORD = "dina";
+  
+    private final Logger logger = LoggerFactory.getLogger(this.getClass()); 
     
-    private static final String REGEX = ".*/(.*)$";
-    private static final String CLIENT_END_POINT = "dina-rest";
-    private static final String CLIENT_COLLECTION = "user-management";
-    
-    private static final String ADMIN_ROLE = "admin";
-    
-    private Keycloak kc;
+    private static final JsonBuilderFactory JSON_FACTORY = Json.createBuilderFactory(null);
+    private Keycloak keycloakClient;
     
     public GroupManagement() {
         
     }
     
-    public void addGroup(String groupName) {
-        buildKeycloak();
+    public void addGroup(String realm, String groupJson) {
+        logger.info("addGroup : {}", groupJson);
+        buildRealm();
+        
         GroupRepresentation gr = new GroupRepresentation();
-        kc.realm(DINA_REALM).groups().add(gr);
+        
+        try (JsonReader jsonReader = Json.createReader(new StringReader(groupJson))) {
+            JsonObject jsonObject = jsonReader.readObject();
+            
+        }
+
+
+        
+        
+        keycloakClient.realm(realm).groups().add(gr);
+        
+        keycloakClient.close();
     }
     
-    private void buildKeycloak() {   
-        kc = KeycloakBuilder.builder()
-                .serverUrl(URL) //
-                .realm(MASTER_REALM)//
-                .username(MASTER_ADMIN_USERNAME) //
-                .password(MASTER_ADMIN_PASSWORD) //
-                .clientId(ADMIN_REALM)
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
-                .build();
+      
+    private void buildRealm() {   
+        keycloakClient = KeycloakBuilder.builder()
+                                        .serverUrl(CommonString.getInstance().getKeyCloakLUrl()) //
+                                        .realm(CommonString.getInstance().getMastRealm())//
+                                        .username(CommonString.getInstance().getMasterAdminUsrname()) //
+                                        .password(CommonString.getInstance().getMasterAdminPassword()) //
+                                        .clientId(CommonString.getInstance().getAdminClientId())
+                                        .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
+                                        .build();
     }
+ 
 }

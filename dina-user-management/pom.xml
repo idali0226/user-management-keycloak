@@ -21,14 +21,7 @@
     </properties>
     
     <dependencies>
-        
-<!--        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>dina-user-management-logic</artifactId>
-            <version>${project.parent.version}</version>   
-        </dependency> -->
  
-         
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>jaxrs</artifactId> 
@@ -48,6 +41,11 @@
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>keycloak</artifactId>
         </dependency>
+         
+        <dependency>
+            <groupId>org.wildfly.swarm</groupId>
+            <artifactId>jaxrs-jsonp</artifactId>
+        </dependency>
  
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -60,6 +58,12 @@
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>  
             <version>3.0.0.Final</version> 
+        </dependency>
+        
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>3.0.0.Final</version>
         </dependency>
         
         <dependency>

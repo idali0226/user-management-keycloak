@@ -1,9 +1,12 @@
 {
   "name": "user-management-ui",
   "version": "0.0.0",
-  "description": "Small description for user-management-ui goes here",
+  "description": "User Management User Inteface",
   "license": "MIT",
-  "author": "",
+  "author": {
+    "name": "Ida Li",
+    "email": "ida.li@nrm.se"
+  },
   "directories": {
     "doc": "doc",
     "test": "tests"
@@ -42,6 +45,8 @@
     "ember-simple-auth": "1.2.2",
     "ember-source": "~2.11.0",
     "ember-welcome-page": "^2.0.2",
+    "eslint": "^3.19.0",
+    "eslint-config-google": "^0.7.1",
     "loader.js": "^4.0.10"
   },
   "engines": {

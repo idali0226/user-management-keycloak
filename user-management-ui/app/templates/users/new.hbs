@@ -1,0 +1,31 @@
+<div class="container dwcm-collectionobject-new__body {{if validationError 'validation-visible' ''}}">
+    <div class="page-header">
+        <h2>
+            {{t 'user.new.title'}}
+        </h2>
+    </div>
+   	<div class='row'>
+	    <div class='col-xs-12 col-sm-6'>
+	        
+	    </div> 
+	</div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="btn-toolbar">
+            <button
+                class="btn btn-success btn-sm"
+                disabled={{isSaving}}
+                {{action 'submitForm'}}
+            >
+                {{#if isSaving}}
+                    {{dwcm-spinner button=true}}
+                    {{t 'user.new.toolbar.saving'}}
+                {{else}}
+                    {{t 'user.new.toolbar.save'}}
+                {{/if}}
+            </button>
+        </div>
+    </div>
+</footer>

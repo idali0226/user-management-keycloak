@@ -15,12 +15,7 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
 
     authorizer: 'authorizer:oauth',
 
-    /**
-     * Override to disable pluralization for object types.
-     */
-    pathForType (type) {
-        return type.classify().toLowerCase();
-    },
+
     
     // defaultSerializer: '-default',
     /**

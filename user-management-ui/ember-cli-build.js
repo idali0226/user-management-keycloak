@@ -20,5 +20,24 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+ 
+    app.import(app.bowerDirectory + '/bootstrap/dist/js/bootstrap.js');
+
+    app.import(app.bowerDirectory + '/bootstrap/fonts/glyphicons-halflings-regular.eot', {
+        destDir: 'fonts'
+    });
+    app.import(app.bowerDirectory + '/bootstrap/fonts/glyphicons-halflings-regular.svg', {
+        destDir: 'fonts'
+    });
+    app.import(app.bowerDirectory + '/bootstrap/fonts/glyphicons-halflings-regular.ttf', {
+        destDir: 'fonts'
+    });
+    app.import(app.bowerDirectory + '/bootstrap/fonts/glyphicons-halflings-regular.woff', {
+        destDir: 'fonts'
+    });
+    app.import(app.bowerDirectory + '/bootstrap/fonts/glyphicons-halflings-regular.woff2', {
+        destDir: 'fonts'
+    });
+    
   return app.toTree();
 };
