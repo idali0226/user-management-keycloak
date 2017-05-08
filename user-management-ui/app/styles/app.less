@@ -2,13 +2,36 @@
 @import "bootswatch/main.less";
 @import "bootswatch/variables.less";
 
+@import "ember-modal-dialog.less";
+
 
 @import "util.less";
 @import "header.less";
 @import "footer.less";
 
+
+@import "components/dwum-language-selector.less";
+
+@import "components/field-group.less";
+@import "components/action-label.less";
+
+@import "components/form-component/users.less";
+
+
+
 body {
     background: @gray-lighter;
+}
+
+.dwcm-user-new__body {
+    h2 {
+        margin: 0;
+    }
+
+    .page-header {
+        border-bottom: 1px solid @gray;
+        margin: 10px 0 0;
+    }
 }
 
 .btn-inside-form {

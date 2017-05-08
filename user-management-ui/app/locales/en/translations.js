@@ -2,6 +2,7 @@ export default {
     blank: '',
     errors: {
         blank: '{{description}} can\'t be blank',
+        email: 'Username must be a valid email address', 
     },
     definitions: {
         abort: 'Abort',
@@ -59,7 +60,7 @@ export default {
                 username: 'Username',
             }, 
         },
-    },  
+    },   
     beta: {
         header: 'User management beta',
         intro: ' is a test site to evaluate the new user management system. The site will be continuously updated with new features and fixes based on the internal priority and feedback from user testing.',

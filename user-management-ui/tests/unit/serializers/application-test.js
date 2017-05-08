@@ -1,15 +1,53 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { moduleFor, test } from 'ember-qunit';
+import Ember from 'ember';
+import DS from 'ember-data';
 
-moduleForModel('application', 'Unit | Serializer | application', {
+
+moduleFor('serializer:application', 'Unit | Serializer | application', {
   // Specify the other units that are required for this test.
-  needs: ['serializer:application']
 });
 
-// Replace this with your real tests.
-test('it serializes records', function(assert) {
-  let record = this.subject();
+test('it serializes records in JSON Api format', function(assert) {
 
-  let serializedRecord = record.serialize();
+  // create a dummy model for application
+  let DummyModel = DS.Model.extend({
+    first_name: DS.attr('string'),
+    last_name: DS.attr('string')
+  });
+  this.registry.register('model:application', DummyModel);
 
-  assert.ok(serializedRecord);
+  let store = Ember.getOwner(this).lookup('service:store');
+
+  let basicModel = {
+    first_name: 'John',
+    last_name: 'Doe'
+  };
+
+  let expectedHash = {
+    data: {
+      attributes: {
+        first_name: basicModel.first_name,
+        last_name: basicModel.last_name
+      },
+      type: 'applications'
+    }
+  };
+
+  Ember.run(function(){
+
+    // Create an instance of DummyModel and serialize
+    let serializedRecord = store.createRecord('application', basicModel).serialize();
+    assert.deepEqual(serializedRecord, expectedHash);
+
+  });
+
 });
+
+
+
+
+
+
+
+
+

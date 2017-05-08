@@ -1,8 +1,9 @@
 <nav class="navbar navbar-default">
     <div class="container logo">
-        {{#link-to 'index' class='dwcm-application-logo'}}{{/link-to}}
-        {{#link-to "index" class="dwcm-appliciation-brand"}}{{t "main.application_name"}}{{/link-to}}
+        {{#link-to 'index' class='dwum-application-logo'}}{{/link-to}}
+        {{#link-to "index" class="dwum-appliciation-brand"}}{{t "main.application_name"}}{{/link-to}}
  
+        {{dwum-language-selector class="pull-right"}}
         <div class="pull-right user-menu">
             {{#if session.isAuthenticated}}
                 <span class="capitalized">{{session.userProfile.fullName}}</span>
@@ -14,7 +15,7 @@
             {{/if}}
         </div>
     </div>
-    <div class="container dwcm-secondary-navigation">
+    <div class="container dwum-secondary-navigation">
         <ul class="nav navbar-nav">
             {{#link-to "index" tagName="li"}}
                 <a>{{t "navigation.start"}}</a>

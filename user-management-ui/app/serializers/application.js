@@ -6,3 +6,4 @@ export default DS.JSONAPISerializer.extend({
 	    return Ember.String.underscore(key);
   	}
 });
+ 

@@ -1,0 +1,26 @@
+.dwum-component-language-selector {
+    margin: 15px 0 0 0;
+    padding: 0 0 0 0;
+
+    li {
+        list-style-type: none;
+        float: right;
+        text-align: center;
+        cursor: pointer;
+        padding: 0 5px;
+        color: @text-color;
+
+        &:hover {
+            color: @brand-success;
+            text-decoration: @link-hover-decoration;
+        }
+
+        &:last-child {
+            border-right: 1px solid @gray-light;
+        }
+
+        &.active {
+            text-decoration: underline;
+        }
+    }
+}

@@ -3,10 +3,15 @@ import Ember from 'ember';
 import { validator, buildValidations } from 'ember-cp-validations';
 
 const Validations = buildValidations({
-    username: validator('presence', {
-        presence: true,
-        descriptionKey: 'definitions.username'
-    }),
+ 
+
+    username: [
+        validator('presence', {
+            presence: true,
+            descriptionKey: 'definitions.username'
+        }),
+        validator('format', { type: 'email'})
+    ],
     password: validator('presence', {
         presence: true,
         descriptionKey: 'definitions.password'

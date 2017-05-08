@@ -49,18 +49,19 @@ public class UserManagement implements Serializable {
 
         String firstName = jsonObject.getString(CommonString.getInstance().getFirstName());
         String lastName = jsonObject.getString(CommonString.getInstance().getLastName());
-        String email = jsonObject.getString(CommonString.getInstance().getEmail());
-        String userName = jsonObject.getString(CommonString.getInstance().getUsername()); 
+        String email = jsonObject.getString(CommonString.getInstance().getEmail()); 
 
         UserRepresentation user = new UserRepresentation();
-        user.setUsername(userName);
+        user.setUsername(email);
         user.setFirstName(firstName);
         user.setLastName(lastName);
+   
 
         user.setEmail(email);
         user.setEnabled(true);
         user.setEmailVerified(true);
-
+        
+   
 //        user.setAttributes(attributes);
         Response response = getUsersResource().create(user);
         String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());
