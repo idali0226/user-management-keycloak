@@ -28,6 +28,5 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
         console.log(url);
    
         return url;
-    }
-
+    }  
 });

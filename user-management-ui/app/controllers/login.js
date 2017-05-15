@@ -2,9 +2,7 @@ import Ember from 'ember';
 
 import { validator, buildValidations } from 'ember-cp-validations';
 
-const Validations = buildValidations({
- 
-
+const Validations = buildValidations({ 
     username: [
         validator('presence', {
             presence: true,
@@ -22,10 +20,12 @@ const Validations = buildValidations({
     }),
 });
 
+      
 export default Ember.Controller.extend(Validations, {
 
     session: Ember.inject.service('session'),
-    validation: Ember.inject.service(),
+    validation: Ember.inject.service(), 
+ 
 
     actions: {
 
@@ -44,12 +44,12 @@ export default Ember.Controller.extend(Validations, {
                         this.set('invalidCredentials', true);
                         this.set('validation.isHidden', false);
                         this.set('isValidating', false);
-                    });
+                    });   
                 } else {
                     this.set('validation.isHidden', false);
                     this.set('isValidating', false);
-                }
-            });
+                } 
+            }); 
         }
     }
 });

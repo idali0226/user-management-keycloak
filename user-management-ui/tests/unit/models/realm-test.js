@@ -1,13 +1,10 @@
 import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('user', 'Unit | Model | user', {
+moduleForModel('realm', 'Unit | Model | realm', {
   // Specify the other units that are required for this test.
-    needs: ['validator:presence',
-    		'validator:format',
-    		'validator:username-available',
-    		'model:realm' 
-    ]
-
+  needs: [
+      'model:client' 
+  	]
 });
 
 test('it exists', function(assert) {

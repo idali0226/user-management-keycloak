@@ -8,11 +8,20 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     session: Ember.inject.service(),  
     i18n: Ember.inject.service(),
     moment: Ember.inject.service(),
- 
-
+  
     /** Override before model and setup localization. */
     beforeModel () {
         const result = this._super(...arguments); 
+
+      	const language = this.get('session.data.locale');
+
+        if (language) {
+            this.set('i18n.locale', language);
+        }
+
+        this.get('moment').changeLocale(
+            this.get('i18n.locale')
+        );
  
         return result;
     }

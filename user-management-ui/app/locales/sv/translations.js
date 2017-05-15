@@ -38,7 +38,7 @@ export default {
         list: {
             header: 'Lista och söka efter användare',
         },
-        new: {
+        new: { 
             title: 'Ny användare', 
             toolbar: {
                 save: 'Spara',
@@ -49,6 +49,7 @@ export default {
         },
     }, 
     'user-profile': 'User profile',
+    'sign_up': "Sign up",
     fields: {
         labels: {
             user: {
@@ -57,6 +58,10 @@ export default {
                 name: 'Namn',
                 email: 'e-post',
                 username: 'Användarnamn',
+                purpose: 'Purpose',
+                created_date: 'Created date',
+                user_enabled: 'Enabled',
+                email_verified: 'Email verified',
             }, 
         },
     },   

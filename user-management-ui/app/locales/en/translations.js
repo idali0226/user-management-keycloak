@@ -38,7 +38,7 @@ export default {
         list: {
             header: 'List and search for users',
         },
-        new: {
+        new: { 
             title: 'New user', 
             toolbar: {
                 save: 'Save',
@@ -50,6 +50,7 @@ export default {
         },
     }, 
     'user-profile': 'User profile',
+    'sign_up': "Sign up",
     fields: {
         labels: {
             user: {
@@ -58,6 +59,10 @@ export default {
                 name: 'Name',
                 email: 'email',
                 username: 'Username',
+                purpose: 'Purpose',
+                created_date: 'Created date',
+                user_enabled: 'Enabled',
+                email_verified: 'Email verified',
             }, 
         },
     },   

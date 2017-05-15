@@ -7,11 +7,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         return this.store.createRecord('user');
     },
 
-    deactivate () {
-        let model = this.controllerFor('user.new').get('model');
-
+    deactivate () { 
+       let model = this.controllerFor('users.new').get('model'); 
         // TODO: Create a mixin to override `rollbackAttributes` and
         // apply `rollbackAttributes` to any dirty relationship as well.
-        model.rollbackAttributes();
+        model.rollbackAttributes();   
     }
 });

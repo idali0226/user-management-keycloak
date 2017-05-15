@@ -10,33 +10,40 @@
                 <div class="col-xs-12 col-md-12 col-lg-12">
                     <table class="table table-striped table-hover">
                         <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{{t 'fields.labels.user.first_name'}}</th>
-                                <th>{{t 'fields.labels.user.last_name'}}</th>
-                                <th>{{t 'fields.labels.user.email'}}</th>
-                                <th>{{t 'fields.labels.user.username'}}</th>
+                            <tr> 
+                                <th>{{t 'fields.labels.user.name'}}</th> 
+                                <th>{{t 'fields.labels.user.username'}}/{{t 'fields.labels.user.email'}}</th> 
+                                <th>{{t 'fields.labels.user.purpose'}}</th>
+                                <th>{{t 'fields.labels.user.created_date'}}</th>
+                                <th>{{t 'fields.labels.user.email_verified'}}</th> 
+                                <th></th> 
                             </tr>
                         </thead>
                         <tbody>
                             {{#each model as |user|}} 
-                            	 {{#link-to 'users.view' user tagName='tr' class='clickable'}}
+                            	 {{#link-to 'users.view' user tagName='tr' class='clickable'}} 
                                     <td>
-                                        {{user.id}}
-                                    </td>
-                                    <td>
-                                        {{user.first_name}} 
-                                    </td>
-                                    <td>
-                                        {{user.last_name}}
+                                        {{user.fullName}} 
                                     </td> 
                                     <td>
                                         {{user.email}}
-                                    </td> 
-                                    <td>
-                                        {{user.username}}
                                     </td>  
-                                    <br>
+                                    <td>
+                                        {{user.purpose}}
+                                    </td>   
+                                    <td>
+                                        {{user.formattedDate}}
+                                    </td>   
+                                    <td>
+                                        {{user.is_email_verified}}
+                                    </td> 
+                                    <td> 
+                                        {{#if user.new_account}}
+                                            {{#if user.is_email_verified}}
+                                                <font size="2" color="red">Enable user account</font>
+                                            {{/if}}
+                                        {{/if}}
+                                    </td> 
                                 {{/link-to}}
                             {{/each}}
                         </tbody>

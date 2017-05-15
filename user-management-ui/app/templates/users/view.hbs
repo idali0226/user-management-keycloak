@@ -1,7 +1,5 @@
 <div class="container users-view">
-    <div class="page-header"> 
-        {{model.first_name}} {{model.last_name}}
-    </div>
+ 
     <div class="row">
         <div class="col-xs-12">
             {{#field-group title='user-profile' collapsable=false as |fg|}}
@@ -17,9 +15,17 @@
                             <span>{{t 'fields.labels.user.email'}}:</span> {{model.email}}
                         </li>
                         <li>
-                            <span>{{t 'fields.labels.user.username'}}:</span>  {{model.username}}
+                            <span>{{t 'fields.labels.user.purpose'}}:</span>  {{model.purpose}}
                         </li> 
                     </ul>
+
+                    {{#if model.new_account}}
+                        {{#if model.is_email_verified}} 
+
+
+                            <button type="button" {{action "enableUser" model}}>Enable</button> 
+                        {{/if}}
+                    {{/if}}
                 {{/fg.content}}
             {{/field-group}}
         </div>

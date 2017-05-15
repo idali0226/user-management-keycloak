@@ -1,55 +1,57 @@
 import Ember from 'ember';
+ 
 
 export default Ember.Controller.extend({
 
-	i18n: Ember.inject.service(),
+	/** Inject services. */
+    i18n: Ember.inject.service(),
     session: Ember.inject.service(), 
     validation: Ember.inject.service(),
+    ajax: Ember.inject.service(),
+ 
 
+    sendInvitation(user) {
+        console.log("sendInvitation: " + user.id);
+    
+        const ajax = this.get('ajax'); 
+        return ajax.request('/sendemail?id=' + user.id, {
+            method: 'POST' 
+        });
+    },
 
-    actions: {
+    /** Transition to users View route. */
+    transitionToUser () {
+        this.transitionToRoute('users');
+    },
 
-        /** Handle navigation item click. */
-        navigationClick(fieldGroupId) {
-            Ember.$('html, body').animate({
-                scrollTop: Ember.$('#field-group-' + fieldGroupId).offset().top - 50
-            }, 300);
-        },
-
-   		/** Transition to Collection object View route. */
-    	transitionToUsers(user) {
-        	this.transitionToRoute(
-	            'users.view', user
-	        );
-	    },
+    actions: { 
 
         /** Handle form submit and validation. */
-        submitForm () {
+        submitForm () { 
             let controller = this;
 
+            console.log('submitForm');
             if (controller.get('isSaving')) {
                 return;
-            }
+            }  
 
-            this.model.validate({}, true).then(({model, validations}) => {
-                this.set('validation.isHidden', false);
+            var user = this.get('model');     
 
-                if (validations.get('isValid')) {
-
-                    this.set('validation.isHidden', true);
-                    controller.set('isSaving', true);
-
-                    this.model.save().then((record) => { 
-                        controller.transitionToCollectionObject(record);
-                    }).finally(()=>{
-                        controller.set('isSaving', false);
-                    });
-
-                } else {
-                    Ember.run.next(this, controller.scrollToValidation);
-                }
-            });
+            user.validate() 
+                .then(({ validations }) => {
+                    if (validations.get('isValid')) { 
+                        user.save()
+                            .then((record) => {   
+                                this.set('showSaved', true); 
+                                this.sendInvitation(record);
+                                this.transitionToUser(); 
+                            }).finally(()=>{
+                                controller.set('isSaving', false);
+                            });
+                    } else {
+                        console.log('invalid');  
+                } 
+            }); 
         }
- 
     }
 });

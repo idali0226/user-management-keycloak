@@ -5,10 +5,10 @@ const UsernameAvaliable = BaseValidator.extend({
   store: Ember.inject.service(),
 
   validate(value) {
-    return this.get('store').query('user', {
-      filter: { username: value }
+    return this.get('store').query('user', { 
+      filter: { email: value }
     })
-    .then((result) => {
+    .then((result) => { 
       if(result.get('length') === 0) {
         return true;
       } else {
