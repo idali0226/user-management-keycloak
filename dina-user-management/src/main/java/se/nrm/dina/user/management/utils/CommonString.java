@@ -30,6 +30,10 @@ public class CommonString {
     private static final String USER_MANAGEMENT_CLIENT_ID = "user-management";
     
     private static final String ADMIN_ROLE = "admin";
+    private static final String USER_ROLE = "user";
+    private static final String DATA_ENTRY_ROLE = "data entry";
+    
+    private static final String REALM_ROLE = "realm_role";
     
     private static final String LOCATION = "Location";
     // End of keycloak constant
@@ -54,8 +58,7 @@ public class CommonString {
     private final static String DATA = "data";
     private final static String TYPE = "type";
     private final static String ID = "id";
-    private final static String ATTRIBUTES = "attributes";
-    
+    private final static String ATTRIBUTES = "attributes"; 
     
     
     // Users
@@ -65,6 +68,11 @@ public class CommonString {
     private final static String EMAIL = "email";
     private final static String USERNAME = "username";
     private final static String PASSWORD = "password";
+    
+    private final static String PURPOSE = "purpose";
+    private final static String TIME_CREATED = "timestamp_created";
+    private final static String IS_USER_ENABLED = "is_enabled";
+    private final static String IS_EMAIL_VERIFIED = "is_email_verified";
     
     private final static String ERRORS = "errors";
     private final static String SOURCE = "source";
@@ -120,6 +128,14 @@ public class CommonString {
         return USER_MANAGEMENT_CLIENT_ID;
     }
     
+    public String isUserEnabled() {
+        return IS_USER_ENABLED;
+    }
+    
+    public String isEmailVerified() {
+        return IS_EMAIL_VERIFIED;
+    }
+    
     public String getLocation() {
         return LOCATION;
     }
@@ -127,6 +143,15 @@ public class CommonString {
     public String getAdminRole() {
         return ADMIN_ROLE;
     }
+    
+    public String getUserRole() {
+        return USER_ROLE;
+    }
+    
+    public String getDataEntryRole() {
+        return DATA_ENTRY_ROLE;
+    }
+    
     
     public String getCallEndPoint() {
         return CALL_END_POINT;
@@ -204,6 +229,14 @@ public class CommonString {
         return TYPE_USERS;
     }
      
+    public String getPurpose() {
+        return PURPOSE;
+    }
+    
+    public String getTimestampCreated() {
+        return TIME_CREATED;
+    }
+    
     public String getErrors() {
         return ERRORS;
     }
@@ -234,5 +267,9 @@ public class CommonString {
     
     public String getUsername() {
         return USERNAME;
+    }
+    
+    public String getRealmRole() {
+        return REALM_ROLE;
     }
 }

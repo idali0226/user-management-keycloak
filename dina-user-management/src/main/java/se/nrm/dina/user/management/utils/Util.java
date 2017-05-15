@@ -6,6 +6,10 @@
 package se.nrm.dina.user.management.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -17,7 +21,7 @@ public class Util {
     
    private static Util instance = null;
 
-    private final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH.mm.ss");
+    private final DateTimeFormatter FORMATTER_WITH_TIMESTAMP = DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' HH.mm.ss");
     private final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("MMM dd, yyyy");
 
     public static synchronized Util getInstance() {
@@ -34,6 +38,14 @@ public class Util {
             return null;
         }
     }
-
+     
     
+    public String dateLongToString(long dateLong) {
+        LocalDateTime localDate = Instant.ofEpochMilli(dateLong)
+                                         .atZone(ZoneId.systemDefault())
+                                         .toLocalDateTime(); 
+        String strDate = localDate.format(FORMATTER_WITH_TIMESTAMP);
+        System.out.println("strDate : " + strDate);
+        return strDate;
+    } 
 }

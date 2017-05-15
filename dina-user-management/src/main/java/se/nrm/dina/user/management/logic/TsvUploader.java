@@ -106,8 +106,8 @@ public class TsvUploader implements Serializable {
 
         List<ClientRepresentation> crs = kc.realm(DINA_REALM).clients().findAll();
         ClientRepresentation cr = crs.stream()
-                .filter(c -> c.getClientId().equals(clientId))
-                .findFirst().get();
+                                     .filter(c -> c.getClientId().equals(clientId))
+                                     .findFirst().get();
         
         String cId = cr.getId();
 
