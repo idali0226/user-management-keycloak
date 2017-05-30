@@ -15,19 +15,22 @@ public class CommonString {
     
     private static CommonString instance = null;
     
-    // keycloak constant 
+    private static final String CONFIG_PROPERTIES = "config.properties";
+    
+    // keycloak constant  
     private static final String MASTER_REALM = "master";
     private static final String DINA_REALM = "dina";
     private static final String ADMIN_CLIENT_ID = "admin-cli";
     private static final String KEYCLOAK_URL = "http://localhost:8080/auth";
+    
+    private static final String KEYCLOAK_AUTH_URL = "keycloakAuthURL";
 
     private static final String MASTER_ADMIN_USERNAME = "admin";
     private static final String MASTER_ADMIN_PASSWORD = "dina";
     
     private static final String REGEX = ".*/(.*)$";
     private static final String REGEX_1 = "$1";
-    private static final String DINA_REST_CLIENT_ID = "dina-rest";
-    private static final String USER_MANAGEMENT_CLIENT_ID = "user-management";
+
     
     private static final String ADMIN_ROLE = "admin";
     private static final String USER_ROLE = "user";
@@ -36,14 +39,34 @@ public class CommonString {
     private static final String REALM_ROLE = "realm_role";
     
     private static final String LOCATION = "Location";
+    
+    private static final String CLIENT_NAME = "claim.name";
     // End of keycloak constant
     
+    // Realm
+    private static final String REALM_NAME = "realmName";
+    private static final String SUPER_USERNAME = "superUsername";
+    private static final String SUPER_PASSWORD = "superPassword";
+    private static final String SUPER_USER_FIRST_NAME = "Admin";
+    private static final String SUPER_USER_LAST_NAME = "Admin";
+    // End of realm
     
- 
+    // Client
+    private static final String DINA_REST_CLIENT_ID = "dina-rest";
+    private static final String DINA_REST_CLIENT_NAME = "dina rest endpoint";
+    private static final String USER_MANAGEMENT_CLIENT_ID = "user-management";
+    private static final String USER_MANAGEMENT_CLIENT_NAME = "User management";
+    private static final String OPEN_ID_CONNECT_PROTOCOL = "openid-connect";
+    // End of client
     
     
-    
-    
+    // Mail server 
+    private static final String MAIL_SERVER_HOST = "mailServerHost";
+    private static final String MAIL_SERVER_PORT = "mailServerPort";
+    private static final String MAIL_SERVER_USER = "mailServerUsername";
+    private static final String MAIL_SERVER_PASSWORD = "mailServerPassword"; 
+    // End of mail server
+     
     private final static String CALL_END_POINT = "callEndpoint";
     private final static String API_VERSION = "apiVersion";
     private final static String CALL_DATE = "callDate";  
@@ -66,8 +89,7 @@ public class CommonString {
     private final static String FIRST_NAME = "first_name";
     private final static String LAST_NAME = "last_name";
     private final static String EMAIL = "email";
-    private final static String USERNAME = "username";
-    private final static String PASSWORD = "password";
+    
     
     private final static String PURPOSE = "purpose";
     private final static String TIME_CREATED = "timestamp_created";
@@ -78,7 +100,64 @@ public class CommonString {
     private final static String SOURCE = "source";
     private final static String TITLE = "title";
     private final static String DETAIL = "detail";
+    
+    private final static String TYPE_CLIENTS = "clients";
+    private final static String MANAGEMENT_REALM = "ManagementRealm";
+    
+    private final static String HOST = "host";
+    private final static String PORT = "port";
+    private final static String FROM = "from";
+    private final static String SSL = "ssl";
+    private final static String STRT_TTLS = "starttls";
+    private final static String AUTH = "auth";
+    
+    private final static String USER = "user";
+    private final static String USERNAME = "username";
+    private final static String PASSWORD = "password";
+      
+    private final static String STATUS  = "status";
+    
+    private final static String QUESTION_MARK = "?";
+    private final static String EQUAL_SIGN = "=";
+    
+    private final String MULTI_VALUED = "multivalued";
+    private final String USER_INFO_TOKEN_CLAIM = "userinfo.token.claim";
+    private final String USER_ATTRIBUTE = "user.attribute";
+    private final String ID_TOKEN_CLAIM = "id.token.claim";
+    private final String ACCESS_TOKEN_CLAIM = "access.token.claim";
+    private final String CLAIM_TOKEN_NAME = "claim.token.name";
+    private final String JSON_TYPE_LABEL = "jsonType.label";
+    private final String STRING_DATA_FORMAT = "String";
+    
+    private final String REALM_ROLE_CLAIM_NAME = "realm_role";
+    private final String PREFERRED_USERNAME = "preferred_username";
+    
+    private final String PROTOCOL_MAPPER_REALM_ROLE_MAPPER = "oidc-usermodel-realm-role-mapper";
+    private final String PROTOCOL_MAPPER_PROPERTY_MAPPER = "oidc-usermodel-property-mapper";
+    
+    private final String TOKEN_FIRST_NAME = "firstName";
+    private final String TOKEN_GIVEN_NAME = "given_name";
+    private final String TOKEN_LAST_NAME = "lastName";
+    private final String TOKEN_FAMILY_NAME = "family_name";
+      
+    private final String PROTOCOL_MAPPER_CONSENT_TEXT_REALM_ROLE = "${realmRole}"; 
+    private final String PROTOCOL_MAPPER_CONSENT_TEXT_EMAIL = "${email}"; 
+    private final String PROTOCOL_MAPPER_CONSENT_TEXT_USERNAME = "${username}";
      
+    private final String PROTOCOL_MAPPER_NAME_FALIMY_NAME = "family name";
+    private final String PROTOCOL_MAPPER_CONSENT_TEXT_FALIMY_NAME = "${familyName}";
+    
+    private final String PROTOCOL_MAPPER_NAME_GIVEN_NAME = "given name";
+    private final String PROTOCOL_MAPPER_CONSENT_TEXT_GIVEN_NAME = "${givenName}";
+    
+    private final String OFFLINE_ACCESS_ROLE = "offline_access";
+    private final String UMA_AUTHORIZATION_ROLE = "uma_authorization";
+    
+    
+    private final String REDIRECT_FRONT_END_URL = "http://localhost:4200";
+    
+    private final String NONE = "none";
+    
     public static synchronized CommonString getInstance() {
         if (instance == null) {
             instance = new CommonString();
@@ -86,7 +165,201 @@ public class CommonString {
         return instance;
     }
     
+    public String getUmaAuthorizationRole() {
+        return UMA_AUTHORIZATION_ROLE;
+    }
     
+    public String getOfflineAccessRole() {
+        return OFFLINE_ACCESS_ROLE;
+    }
+    
+    public String getProtocolMapperConsentTextGivenName() {
+        return PROTOCOL_MAPPER_CONSENT_TEXT_GIVEN_NAME;
+    }
+    
+    public String getProtocolMapperNameGivenName() {
+        return PROTOCOL_MAPPER_NAME_GIVEN_NAME;
+    }
+    
+    public String getProtocolMapperConsentTextFamilyName() {
+        return PROTOCOL_MAPPER_CONSENT_TEXT_FALIMY_NAME;
+    }
+    
+    public String getProtocolMapperNameFalimyName() {
+        return PROTOCOL_MAPPER_NAME_FALIMY_NAME;
+    }
+    
+    public String getProtocolMapperConsentTextUsername() {
+        return PROTOCOL_MAPPER_CONSENT_TEXT_USERNAME;
+    }
+    
+    public String getProtocolMapperConsentTextEmail() {
+        return PROTOCOL_MAPPER_CONSENT_TEXT_EMAIL;
+    }
+    
+    public String getProtocolMapperConsentTextRealmRole() {
+        return PROTOCOL_MAPPER_CONSENT_TEXT_REALM_ROLE;
+    }
+    
+    public String getNone() {
+        return NONE;
+    }
+    
+    public String getRedirectFrontEndURL() {
+        return REDIRECT_FRONT_END_URL;
+    }
+    
+    public String getTokenFirstName() {
+        return TOKEN_FIRST_NAME;
+    }
+    
+    public String getTokenLastName() {
+        return TOKEN_LAST_NAME;
+    }
+    
+    public String getTokenGivenName() {
+        return TOKEN_GIVEN_NAME;
+    }
+    
+    public String getTokenFamilyName() {
+        return TOKEN_FAMILY_NAME;
+    }
+    
+    public String getPreferredUsername() {
+        return PREFERRED_USERNAME;
+    }
+    
+    public String getProtocolMapperRealmRoleMapper() {
+        return PROTOCOL_MAPPER_REALM_ROLE_MAPPER;
+    }
+    
+    public String getProtocolMapperPropertyMapper() {
+        return PROTOCOL_MAPPER_PROPERTY_MAPPER;
+    }
+    
+    public String getRealmRoleClaimName() {
+        return REALM_ROLE_CLAIM_NAME;
+    }
+    
+    public String getStringDataFormat() {
+        return STRING_DATA_FORMAT;
+    }
+    
+    public String getMultiValued() {
+        return MULTI_VALUED;
+    }
+    
+    public String getUserInfoTokenClaim() {
+        return USER_INFO_TOKEN_CLAIM;
+    }
+    
+    public String getUserAttribute() {
+        return USER_ATTRIBUTE;
+    }
+    
+    public String getIdTokenClaim() {
+        return ID_TOKEN_CLAIM;
+    }
+    
+    public String getAccessTokenClaim() {
+        return ACCESS_TOKEN_CLAIM;
+    }
+    
+    public String getClaimTokenName() {
+        return CLAIM_TOKEN_NAME;
+    }
+    
+    public String getJsonTypeLabel() {
+        return JSON_TYPE_LABEL;
+    }
+    
+    public String getOpenIdConnectionProtocol() {
+        return OPEN_ID_CONNECT_PROTOCOL;
+    }
+    
+    public String getStatus() {
+        return STATUS;
+    }
+    
+    public String getSuperUserFirstName() {
+        return SUPER_USER_FIRST_NAME;
+    }
+    
+    public String getSuperUserLastName() {
+        return SUPER_USER_LAST_NAME;
+    }
+    
+    public String getUser() {
+        return USER;
+    }
+    
+    public String getPassword() {
+        return PASSWORD;
+    }
+    
+    public String getAuth() {
+        return AUTH;
+    }
+    
+    public String getSSL() {
+        return SSL;
+    }
+    
+    public String getStrtTTLS() {
+        return STRT_TTLS;
+    }
+    
+    public String getFrom() {
+        return FROM;
+    }
+    
+    public String getHost() {
+        return HOST;
+    }
+    
+    public String getPort() {
+        return PORT;
+    }
+    
+    public String getKeycloakAuthURL() {
+        return KEYCLOAK_AUTH_URL;
+    }
+    
+    public String getManagementRealm() {
+        return MANAGEMENT_REALM;
+    }
+    
+    public String getConfigProperties() {
+        return CONFIG_PROPERTIES;
+    }
+    
+    public String getRealmName() {
+        return REALM_NAME;
+    }
+    
+    public String getSuperUsername() {
+        return SUPER_USERNAME;
+    }
+    
+    public String getSuperPassword() {
+        return SUPER_PASSWORD;
+    }
+    
+    public String getMailServerHost() {
+        return MAIL_SERVER_HOST;
+    }
+    
+    public String getMailServerPort() {
+        return MAIL_SERVER_PORT;
+    }
+    
+    public String getMailServerUsername() {
+        return MAIL_SERVER_USER;
+    }
+    
+    public String getMailServerPassword() {
+        return MAIL_SERVER_PASSWORD;
+    }
     
     public String getMastRealm() {
         return MASTER_REALM;
@@ -122,6 +395,14 @@ public class CommonString {
     
     public String getDinaRestClientId() {
         return DINA_REST_CLIENT_ID;
+    }
+    
+    public String getDinaRestClientName() {
+        return DINA_REST_CLIENT_NAME;
+    }
+    
+    public String getUserManagementClientName() {
+        return USER_MANAGEMENT_CLIENT_NAME;
     }
     
     public String getUserManagementClientId() {
@@ -161,12 +442,20 @@ public class CommonString {
         return CALL_DATE;
     }
     
+    public String getClientsType() {
+        return TYPE_CLIENTS;
+    }
+    
+    public String getClientName() {
+        return CLIENT_NAME;
+    }
+    
     public String getEndPoint(String queryParam, String queryValue, String url) {
         StringBuilder sb = new StringBuilder();
         sb.append(url);
-        sb.append("?");
+        sb.append(QUESTION_MARK);
         sb.append(queryParam);
-        sb.append("=");
+        sb.append(EQUAL_SIGN);
         sb.append(queryValue);
         return sb.toString();
     }

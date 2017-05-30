@@ -6,12 +6,13 @@
 package se.nrm.dina.user.management.utils;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.Instant; 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -31,6 +32,19 @@ public class Util {
         return instance;
     }
     
+    public Map<String, String> buildProtocolMap(String attribute, String claimName) {
+        Map<String, String> protocolMap = new HashMap<>();
+        protocolMap.put(CommonString.getInstance().getMultiValued(), Boolean.TRUE.toString());
+        protocolMap.put(CommonString.getInstance().getUserInfoTokenClaim(), Boolean.TRUE.toString());
+        protocolMap.put(CommonString.getInstance().getUserAttribute(), attribute);
+        protocolMap.put(CommonString.getInstance().getIdTokenClaim(), Boolean.TRUE.toString());
+        protocolMap.put(CommonString.getInstance().getAccessTokenClaim(), Boolean.TRUE.toString());
+        protocolMap.put(CommonString.getInstance().getClientName(), claimName);
+        protocolMap.put(CommonString.getInstance().getJsonTypeLabel(), CommonString.getInstance().getStringDataFormat());  
+        
+        return protocolMap;
+    }
+    
     public String dateToString(Date date) {
         if (date != null) {
             return SIMPLE_DATE_FORMAT.format(date);
@@ -44,8 +58,7 @@ public class Util {
         LocalDateTime localDate = Instant.ofEpochMilli(dateLong)
                                          .atZone(ZoneId.systemDefault())
                                          .toLocalDateTime(); 
-        String strDate = localDate.format(FORMATTER_WITH_TIMESTAMP);
-        System.out.println("strDate : " + strDate);
+        String strDate = localDate.format(FORMATTER_WITH_TIMESTAMP); 
         return strDate;
     } 
 }

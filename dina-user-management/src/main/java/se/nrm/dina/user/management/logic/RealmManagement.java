@@ -18,8 +18,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder; 
 import org.keycloak.admin.client.resource.ClientsResource;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.RolesResource;
+import org.keycloak.admin.client.resource.RealmResource; 
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation; 
@@ -43,6 +42,26 @@ public class RealmManagement implements Serializable {
     
     public RealmManagement() {
         
+    }
+    
+    public void createRealm(String realmName) {
+        buildRealm();
+        
+        RealmRepresentation realmRepresenttion = new RealmRepresentation();
+        realmRepresenttion.setRealm(realmName);
+        realmRepresenttion.setDuplicateEmailsAllowed(false);
+        
+        Map<String, String> smtpServerMap = new HashMap<>();
+        smtpServerMap.put("swarm.mail.smtp.host", "mail.dina-web.net");
+        smtpServerMap.put("swarm.mail.smtp.port", "587");
+        smtpServerMap.put("from", "dina@mail.dina-web.net");
+        smtpServerMap.put("swarm.mail.mail-sessions.KEY.smtp-server.ssl", "yes");
+        smtpServerMap.put("swarm.mail.mail-sessions.KEY.smtp-server.username", "idali");
+        smtpServerMap.put("swarm.mail.mail-sessions.KEY.smtp-server.password", "idali");
+        smtpServerMap.put("swarm.mail.mail-sessions.KEY.smtp-server.tls", "true");
+        
+        realmRepresenttion.setSmtpServer(smtpServerMap);
+        keycloakClient.realms().create(realmRepresenttion);
     }
     
     public JsonObject getRealmByRealmName(String realmName) {
@@ -87,13 +106,7 @@ public class RealmManagement implements Serializable {
     private static Predicate<ClientRepresentation> clientRepresentationPredicate(String clientId) {
         return c -> c.getClientId().equals(clientId);
     }
-    
-    public void createRealm(String realmName) {
-        RealmRepresentation rr = new RealmRepresentation();
-        rr.setDuplicateEmailsAllowed(false);
-        rr.setRealm("myrealm");
-        keycloakClient.realms().create(rr);
-    }
+     
 
     private void buildRealm() {   
         keycloakClient = KeycloakBuilder.builder()

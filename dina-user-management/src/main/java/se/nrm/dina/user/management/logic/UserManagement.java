@@ -5,11 +5,15 @@
  */
 package se.nrm.dina.user.management.logic;
  
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;   
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List; 
 import java.util.Map;
+import java.util.Properties;
 import javax.inject.Inject; 
 import javax.json.JsonObject; 
 import javax.ws.rs.core.Response;
@@ -28,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.nrm.dina.user.management.json.JsonConverter;
 import se.nrm.dina.user.management.logic.email.MailHandler;
+import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString;
 import se.nrm.dina.user.management.utils.TempPasswordGenerator;
 
@@ -41,10 +46,12 @@ public class UserManagement implements Serializable {
     private Keycloak keycloakClient;
     
     @Inject
-    public JsonConverter json;
+    public MailHandler mail;
     
     @Inject
-    public MailHandler mail;
+    public JsonConverter json;
+    
+    
     
     public UserManagement() {  
     }
@@ -78,9 +85,9 @@ public class UserManagement implements Serializable {
         attributes.put(CommonString.getInstance().getPurpose(), purposeList);
         
         List<String> statusList = new ArrayList<>();
-        statusList.add("new");
-        attributes.put("status", statusList);
-       
+        statusList.add(AccountStatus.New.getText());
+        attributes.put(CommonString.getInstance().getStatus(), statusList);
+        
         user.setAttributes(attributes);   
         Response response = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).users().create(user);
         
@@ -122,89 +129,87 @@ public class UserManagement implements Serializable {
         keycloakClient.close();
         return getUsers(CommonString.getInstance().getDinaRealm(), null);
     }
-    
+
     public JsonObject enableUser(String id) {
-        buildRealm();  
-        UserResource userResource = getUsersResource().get(id); 
+        buildRealm();
+        UserResource userResource = getUsersResource().get(id);
         resetCredential(userResource);
-        
-        setRealmRole(userResource, CommonString.getInstance().getUserRole()); 
+
+        setRealmRole(userResource, CommonString.getInstance().getUserRole());
         setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
         setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getDataEntryRole());
-         
+
         UserRepresentation userRepresentation = userResource.toRepresentation();
-           
-        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
-        
+
+        Map<String, List<String>> attributes = userRepresentation.getAttributes();
+
         logger.info("map : {}", attributes);
         attributes.remove("status");
-        
+
         List<String> statusList = new ArrayList<>();
         statusList.add("existing");
         attributes.put("status", statusList);
-        
-        userRepresentation.setAttributes(attributes); 
+
+        userRepresentation.setAttributes(attributes);
         userResource.update(userRepresentation);
-        userResource.resetPasswordEmail(); 
+        userResource.resetPasswordEmail();
         keycloakClient.close();
         return getUsers(CommonString.getInstance().getDinaRealm(), null);
     }
-    
+
     private void setClientRole(UserResource userResource, String clientId, String roleName) {
 
         List<ClientRepresentation> crs = getClientsResource().findAll();
         ClientRepresentation cr = crs.stream()
                 .filter(c -> c.getClientId().equals(clientId))
                 .findFirst().get();
-        
-        String cId = cr.getId(); 
-        
+
+        String cId = cr.getId();
+
         List<RoleRepresentation> newRole = new ArrayList<>();
         List<RoleRepresentation> clrs = getClientsResource().get(cId).roles().list();
         clrs.stream()
                 .forEach(rr -> {
                     if (rr.getName().equals(roleName)) {
-                        newRole.add(rr); 
+                        newRole.add(rr);
                     }
                 });
         userResource.roles().clientLevel(cId).add(newRole);
     }
- 
-    
+
     private void setRealmRole(UserResource userResource, String role) {
         List<RoleRepresentation> dinaRealmRoles = getDinaRealmResource().roles().list();
 
         List<RoleRepresentation> newRole = new ArrayList<>();
         dinaRealmRoles.stream()
-                        .forEach(drr -> { 
-                            if(drr.getName().equals(role)) {
-                                newRole.add(drr);
-                            }
-                            userResource.roles().realmLevel().add(newRole);
-                        }); 
+                .forEach(drr -> {
+                    if (drr.getName().equals(role)) {
+                        newRole.add(drr);
+                    }
+                });
+        userResource.roles().realmLevel().add(newRole);
     }
-    
+
     private ClientsResource getClientsResource() {
         return getDinaRealmResource().clients();
     }
-    
-    
+
     private UsersResource getUsersResource() {
         return getDinaRealmResource().users();
     }
-    
+
     private RealmResource getDinaRealmResource() {
         return keycloakClient.realm(CommonString.getInstance().getDinaRealm());
     }
-    
+
     private void resetCredential(UserResource userResource) {
         String password = TempPasswordGenerator.generateRandomPassword();
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setType(CredentialRepresentation.PASSWORD);
         cred.setValue(password);
         cred.setTemporary(true);
-     
-        userResource.resetPassword(cred); 
+
+        userResource.resetPassword(cred);
     }
 
     private String resetTempPassword(UserResource userResource) {
@@ -214,27 +219,47 @@ public class UserManagement implements Serializable {
         cred.setType(CredentialRepresentation.PASSWORD);
         cred.setValue(password);
         cred.setTemporary(true);
-     
+
         userResource.resetPassword(cred);
         return password;
     }
- 
+
     public JsonObject getUsers(String realm, String userName) {
-        logger.info("getUsers"); 
+        logger.info("getUsers");
         buildRealm();
         List<UserRepresentation> list = keycloakClient.realm(realm).users().search(userName, 0, 100);
         keycloakClient.close();
-        return json.converterUsers(list); 
-    } 
-     
-    private void buildRealm() {   
-        keycloakClient = KeycloakBuilder.builder()
-                                        .serverUrl(CommonString.getInstance().getKeyCloakLUrl()) //
-                                        .realm(CommonString.getInstance().getMastRealm())//
-                                        .username(CommonString.getInstance().getMasterAdminUsrname()) //
-                                        .password(CommonString.getInstance().getMasterAdminPassword()) //
-                                        .clientId(CommonString.getInstance().getAdminClientId())
-                                        .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
-                                        .build(); 
+        return json.converterUsers(list);
+    }
+
+    private void buildRealm() {
+
+        String keycloakAuthURL;
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            prop.load(new FileInputStream(CommonString.getInstance().getConfigProperties()));
+            keycloakAuthURL = prop.getProperty(CommonString.getInstance().getKeycloakAuthURL());
+            
+            logger.info("keycloak url : {}", keycloakAuthURL);
+//            realmName = prop.getProperty(CommonString.getInstance().getRealmName());
+            keycloakClient = KeycloakBuilder.builder()
+                    .serverUrl(keycloakAuthURL) //
+                    .realm(CommonString.getInstance().getMastRealm())//
+                    .username(CommonString.getInstance().getMasterAdminUsrname()) //
+                    .password(CommonString.getInstance().getMasterAdminPassword()) //
+                    .clientId(CommonString.getInstance().getAdminClientId())
+                    .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
+                    .build();
+
+        } catch (IOException ex) {
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 }

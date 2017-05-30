@@ -27,6 +27,7 @@ import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.AccessToken.Access;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.nrm.dina.user.management.logic.ClientManagement;
 import se.nrm.dina.user.management.logic.TsvUploader;
 import se.nrm.dina.user.management.logic.UserManagement;
 import se.nrm.dina.user.management.utils.CommonString;
@@ -46,6 +47,9 @@ public class UserManagementServices implements Serializable {
     
     @Inject
     private UserManagement userManagement;
+    
+    @Inject
+    private ClientManagement clientManagement;
     
     @GET
     @Produces("text/plain")
@@ -88,9 +92,8 @@ public class UserManagementServices implements Serializable {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
     public Response getRealmClients(@Context HttpServletRequest req, @QueryParam("realm") String realm) {
-        logger.info("getRealmClients: {}", realm); 
-        
-        return Response.ok("ok").build();
+        logger.info("getRealmClients: {}", realm);  
+        return Response.ok(clientManagement.getAllTheClients()).build();
     }
     
     @GET    
