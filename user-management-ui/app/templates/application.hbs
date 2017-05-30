@@ -6,7 +6,7 @@
         {{dwum-language-selector class="pull-right"}}
         <div class="pull-right user-menu">
             {{#if session.isAuthenticated}}
-                <span class="capitalized">{{session.userProfile.name}} [{{session.userProfile.realm_role}}]</span>  
+                <span class="capitalized">{{session.user_profile.name}} [{{session.user_profile.realm_role}}]</span>  
                 (<a class="clickable" {{action 'invalidateSession'}}>{{t 'definitions.sign-out'}}</a>) 
             {{else}}
                 {{#link-to 'login'}}
@@ -20,7 +20,7 @@
             {{#link-to "index" tagName="li"}}
                 <a>{{t "navigation.start"}}</a>
             {{/link-to}} 
-            {{#if session.userProfile.isAdmin}} 
+            {{#if session.user_profile.isAdmin}} 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     {{t "navigation.users"}} <span class="caret"></span>
@@ -32,6 +32,21 @@
                     {{/link-to}}  
                     {{#link-to "users.new" tagName="li"}}
                         <a href="#">{{t "navigation.users.add"}}</a>
+                    {{/link-to}} 
+                </ul>
+                
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    {{t "navigation.clients"}} <span class="caret"></span>
+                </a>
+                
+                <ul class="dropdown-menu">
+                    {{#link-to "clients" tagName="li"}}
+                        <a href="#">{{t "navigation.clients.list"}}</a>
+                    {{/link-to}}  
+                    {{#link-to "users.new" tagName="li"}}
+                        <a href="#">{{t "navigation.clients.add"}}</a>
                     {{/link-to}} 
                 </ul>
                 

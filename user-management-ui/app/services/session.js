@@ -16,16 +16,14 @@ export default SessionService.extend({
             Ember.$.ajax({
                 dataType: 'json',
                 url: url,
-                success: (responseData) => {
-                    this.set('userProfile', {
-                        user_id: responseData.sub,
-                        name: responseData.name,
-                        fullName: responseData.preferred_username,
-                        agentId: responseData.agentId,
-                        email: responseData.email,
-                        realm_role: responseData.realm_role,
-                        isFocusGroupMember: responseData.agentId !== '1016',
-                        isAdmin: 'admin' === responseData.realm_role.toString(),
+                success: (response_data) => {
+                    this.set('user_profile', {
+                        user_id: response_data.sub,
+                        name: response_data.given_name + " " + response_data.family_name,
+                        full_name: response_data.preferred_username, 
+                        email: response_data.email,
+                        realm_role: response_data.realm_role, 
+                        isAdmin: 'admin' === response_data.realm_role.toString(),
                     });  
                 },
 

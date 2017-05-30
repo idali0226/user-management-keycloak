@@ -12,6 +12,10 @@ Router.map(function() {
     this.route('new');
     this.route('view');
   });
+  this.route('clients', function() {
+    this.route('new');
+    this.route('view');
+  });
   this.route('users.view', {
     path: 'users/:user_id',
   });

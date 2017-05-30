@@ -33,6 +33,9 @@ export default {
         'users': 'Users',
         'users.list': 'List all users',
         'users.add': 'Register new',
+        'clients': 'Clients',
+        'clients.list': 'List all clients',
+        'clients.add': 'Create new',
     },
     user: { 
         list: {
@@ -64,8 +67,26 @@ export default {
                 user_enabled: 'Enabled',
                 email_verified: 'Email verified',
             }, 
+            client: { 
+                name: 'Client name', 
+            }, 
         },
     },   
+    client: { 
+        list: {
+            header: 'List and search for clients',
+        },
+        new: { 
+            title: 'New client', 
+            toolbar: {
+                save: 'Save',
+                saving: 'Saving',
+                print: 'Print label',
+                close: 'Close',
+                duplicate: 'Duplicate',
+            },
+        },
+    }, 
     beta: {
         header: 'User management beta',
         intro: ' is a test site to evaluate the new user management system. The site will be continuously updated with new features and fixes based on the internal priority and feedback from user testing.',
