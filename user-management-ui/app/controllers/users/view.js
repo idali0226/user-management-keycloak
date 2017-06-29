@@ -15,7 +15,7 @@ export default Ember.Controller.extend({
     
         	const ajax = this.get('ajax');
 
-	        ajax.request('/enableUser?id=' + user.id, {
+	        ajax.request('/secure/enableUser?id=' + user.id, {
 	            method: 'PUT' 
 	        });
 

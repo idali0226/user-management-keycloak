@@ -30,12 +30,19 @@ export default {
     }, 
     navigation: {
         start: 'Start', 
+        register: 'Register',
+        profile: 'Profile',
         'users': 'Users',
         'users.list': 'List all users',
         'users.add': 'Register new',
         'clients': 'Clients',
         'clients.list': 'List all clients',
         'clients.add': 'Create new',
+    },
+    account: {
+        new: {
+            title: 'Create account',
+        }
     },
     user: { 
         list: {
@@ -63,6 +70,7 @@ export default {
                 email: 'email',
                 username: 'Username',
                 purpose: 'Purpose',
+                descriptions: 'Descriptions',
                 created_date: 'Created date',
                 user_enabled: 'Enabled',
                 email_verified: 'Email verified',

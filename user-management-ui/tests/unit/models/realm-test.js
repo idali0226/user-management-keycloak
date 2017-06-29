@@ -3,7 +3,8 @@ import { moduleForModel, test } from 'ember-qunit';
 moduleForModel('realm', 'Unit | Model | realm', {
   // Specify the other units that are required for this test.
   needs: [
-      'model:client' 
+      'model:client',
+      'model:role'
   	]
 });
 

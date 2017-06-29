@@ -3,12 +3,16 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
 
+
 	/** Inject services. */
     i18n: Ember.inject.service(),
     session: Ember.inject.service(), 
     validation: Ember.inject.service(),
     ajax: Ember.inject.service(),
- 
+
+ //   purpose: null, 
+
+ //   purposes: ['admin', 'data entry', 'test'],
 
     sendInvitation(user) {
         console.log("sendInvitation: " + user.id);
@@ -21,10 +25,20 @@ export default Ember.Controller.extend({
 
     /** Transition to users View route. */
     transitionToUser () {
+        console.log('transitionToUser');
         this.transitionToRoute('users');
     },
 
-    actions: { 
+    actions: {  
+        didMakeSelection(value) {
+            console.log('didMakeSelection : ' + value   ); 
+  
+            if(value !== 'none') {
+                this.set('model.purpose', value);  
+            } else {
+                this.set('model.purpose', null); 
+            }
+        },
 
         /** Handle form submit and validation. */
         submitForm () { 
@@ -43,8 +57,12 @@ export default Ember.Controller.extend({
                         user.save()
                             .then((record) => {   
                                 this.set('showSaved', true); 
-                                this.sendInvitation(record);
+                                console.log('save: ' + record.id);
+
+                           //     this.sendInvitation(record);
                                 this.transitionToUser(); 
+
+                                console.log('done');
                             }).finally(()=>{
                                 controller.set('isSaving', false);
                             });
@@ -52,6 +70,6 @@ export default Ember.Controller.extend({
                         console.log('invalid');  
                 } 
             }); 
-        }
+        }, 
     }
 });

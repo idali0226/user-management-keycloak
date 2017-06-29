@@ -1,0 +1,63 @@
+<div class="panel panel-default users-item">
+    <div class="panel-heading">
+        <h3 class="panel-title">{{account.full_name}} <small><i>[{{account.formatted_date}}]</i></small></h3>
+    </div>
+    <div class="panel-body">
+    	<div class="row">
+    	 	<div class="col-xs-12 col-md-12 col-lg-12">
+    	 		<div class="row">
+    	 			<div class="col-xs-3">
+	    	 			Username/email: 
+	    	 		</div>
+	    	 		<div class="col-xs-9">
+	    	 			{{account.email}}
+	    	 		</div>
+    	 		</div>
+    	 		
+    	 		<div class="row">
+	    	 		<div class="col-xs-3">
+	    	 			Purpose::
+	    	 		</div>
+	    	 		<div class="col-xs-9">
+	    	 			{{account.purpose}}
+	    	 		</div>
+	    	 	</div>
+
+			<!--
+	    	 	<div class="row">
+	    	 		<div class="col-xs-3">
+	    	 			Descriptions:
+	    	 		</div>
+	    	 		<div class="col-xs-9">
+	    	 			{{account.descriptions}}
+	    	 		</div>
+	    	 	</div>
+	    	 	-->
+
+	    	 	<div class="row">
+	    	 		<div class="col-xs-3">
+	    	 			Account status:
+	    	 		</div>
+	    	 		<div class="col-xs-9">
+	    	 			{{account.status}}
+	    	 		</div>
+    	 		</div> 
+
+    	 		{{#if account.new_account }} 
+    	 			<div class="row">
+		    	 		<div class="col-xs-3">
+		    	 			Email verified:
+		    	 		</div>
+		    	 		<div class="col-xs-9">
+		    	 			{{account.is_email_verified}}
+		    	 		</div>
+	    	 		</div>
+    	 		{{/if}}
+    	 	</div>
+    	</div> 
+    </div>
+    <div class="panel-footer text-right">
+      {{yield}}
+    </div>
+</div>
+ 

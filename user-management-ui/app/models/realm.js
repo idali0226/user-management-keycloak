@@ -5,4 +5,5 @@ export default DS.Model.extend({
 	realm_description: DS.attr('string'),
 
 	clients: DS.hasMany('client', {async: true}),
+	roles: DS.hasMany('role', {async: true})
 });

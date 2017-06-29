@@ -30,12 +30,19 @@ export default {
     }, 
     navigation: {
         start: 'Start', 
+        register: 'Register',
+        profile: 'Profile',
         'users': 'Användare',
         'users.list': 'Lista alla användare',
         'users.add': 'Registrera nytt',
         'clients': 'Clients',
         'clients.list': 'Lista alla clients',
         'clients.add': 'Registrera nytt',
+    },
+    account: {
+        new: {
+            title: 'Create account',
+        }
     },
     user: { 
         list: {
@@ -62,6 +69,7 @@ export default {
                 email: 'e-post',
                 username: 'Användarnamn',
                 purpose: 'Purpose',
+                descriptions: 'Descriptions',
                 created_date: 'Created date',
                 user_enabled: 'Enabled',
                 email_verified: 'Email verified',

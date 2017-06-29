@@ -5,6 +5,40 @@
         </h2>
     </div>
 
+    {{#user-account-form account=model}} 
+    {{/user-account-form}} 
+</div>
+<footer class="footer">
+    <div class="container">
+        <div class="btn-toolbar">
+            <button
+                class="btn btn-success btn-sm"
+                disabled={{isSaving}}
+                {{action 'submitForm'}}
+                disabled={{v-get model 'isInvalid'}}
+            >
+                {{#if isSaving}}
+                    {{dwcm-spinner button=true}}
+                    {{t 'user.new.toolbar.saving'}}
+                {{else}}
+                    {{t 'user.new.toolbar.save'}}
+                {{/if}}
+            </button>
+        </div>
+    </div>
+</footer>
+
+
+
+<!--
+
+<div class="container users-view {{if validationError 'validation-visible' ''}}">
+    <div class="page-header">
+        <h2>
+            {{t 'user.new.title' name=(t type)}}:  
+        </h2>
+    </div>
+
     <form {{action "submitForm" on="submit"}}>
         <div class="row">
             <div class="col-xs-12"> 
@@ -47,20 +81,44 @@
                             </div> 
                         {{/if}} 
 
+
                         {{input 
                             value=model.purpose 
                             placeholder="Purpose" 
-                            class="form-control"
+                            class="form-control" 
                             focus-out=(action (mut showPurposeError) true) }} 
-                        
-                        {{#if showPurposeError}}
-                            <div class="error">
+
+                        {{#if showPurposeError}} 
+                            <div class="error"> 
                                 {{v-get model 'purpose' 'message'}}
-                            </div>
-                        {{/if}}
-                
-                    
-                    {{/fg.content}}
+                            </div> 
+                        {{/if}} 
+ 
+                        <!--
+                        {{#x-select  value=model.purpose class="form-control" on-change=(action 'didMakeSelection') as |xs| }}
+                            <option>Select purpose</option>
+                            {{#each purposes as |purpose|}} 
+                                {{#xs.option value=purpose}}
+                                    {{purpose}}
+                                {{/xs.option}}
+                            {{/each}} 
+                        {{/x-select}}
+                        -->
+ 
+                        {{input 
+                            value=model.descriptions 
+                            placeholder="Descriptions" 
+                            class="form-control"  }}   
+
+                        <br>
+                        <br>
+                        <h4>Project:  <em>DINA</em></h4>
+ 
+                        {{#each model.clients as |client|}}
+                            <a class="list-group-item">dd{{client.client_name}}</a>
+                        {{/each}}
+                    {{/fg.content}} 
+
                 {{/field-group}} 
             </div>
         </div> 
@@ -68,22 +126,5 @@
     
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <div class="btn-toolbar">
-            <button
-                class="btn btn-success btn-sm"
-                disabled={{isSaving}}
-                {{action 'submitForm'}}
-                disabled={{v-get model 'isInvalid'}}
-            >
-                {{#if isSaving}}
-                    {{dwcm-spinner button=true}}
-                    {{t 'user.new.toolbar.saving'}}
-                {{else}}
-                    {{t 'user.new.toolbar.save'}}
-                {{/if}}
-            </button>
-        </div>
-    </div>
-</footer>
+
+-->

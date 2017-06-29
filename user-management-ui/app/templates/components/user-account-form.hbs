@@ -1,0 +1,91 @@
+<form {{action "submitForm" on="submit"}}>
+	<div class="row">
+		<div class="col-xs-12"> 
+  			{{#field-group title='sign_up' collapsable=false as |fg|}}
+          		{{#fg.content}}  
+              		{{input 
+                     	value=account.first_name 
+                     	placeholder="First name" 
+                   		class="form-control"  
+                    	autofocus="autofocus" 
+                     	focus-out=(action (mut showFirstNameError) true) }} 
+                            
+                	{{#if showFirstNameError}}
+                     	<div class="error">
+                        	{{v-get account 'first_name' 'message'}}
+                     	</div>
+                	{{/if}}
+                        
+                	{{input 
+                      	value=account.last_name 
+                      	placeholder="Last name" 
+                      	class="form-control" 
+                     	focus-out=(action (mut showLastNameError) true) }} 
+
+                	{{#if showLastNameError}}
+                    	<div class="error">
+                      		{{v-get account 'last_name' 'message'}}
+                     	</div>
+                	{{/if}}
+
+                 	{{input 
+                     	value=account.email 
+                   		placeholder="Username/email" 
+                     	class="form-control" 
+                    	focus-out=(action (mut showEmailError) true) }} 
+
+                	{{#if showEmailError}} 
+                		<div class="error"> 
+                       		{{v-get account 'email' 'message'}}
+                       	</div> 
+                 	{{/if}} 
+
+
+                 	{{input 
+                      value=account.purpose 
+                     	placeholder="Purpose" 
+                     	class="form-control" 
+                    	focus-out=(action (mut showPurposeError) true) }} 
+
+                 	{{#if showPurposeError}} 
+                      	<div class="error"> 
+                        	{{v-get account 'purpose' 'message'}}
+                    	</div> 
+              		{{/if}} 
+ 
+                        <!--
+                        {{#x-select  value=account.purpose class="form-control" on-change=(action 'didMakeSelection') as |xs| }}
+                            <option>Select purpose</option>
+                            {{#each purposes as |purpose|}} 
+                                {{#xs.option value=purpose}}
+                                    {{purpose}}
+                                {{/xs.option}}
+                            {{/each}} 
+                        {{/x-select}}
+                        
+ 
+                        {{input 
+                            value=model.descriptions 
+                            placeholder="Descriptions" 
+                            class="form-control"  }}   
+
+                        <br>
+                        <br>
+                        <h4>Project:  <em>DINA</em></h4>
+ 						
+                        {{#each model.clients as |client|}}
+                            <a class="list-group-item">dd{{client.client_name}}</a>
+                        {{/each}}
+                        -->
+             	{{/fg.content}} 
+
+    		{{/field-group}} 
+     	</div>
+      <div class="panel-footer text-right">
+        {{yield}}
+      </div>
+ 	</div> 
+</form>
+
+ 
+ 

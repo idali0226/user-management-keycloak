@@ -24,6 +24,7 @@ export default SessionService.extend({
                         email: response_data.email,
                         realm_role: response_data.realm_role, 
                         isAdmin: 'admin' === response_data.realm_role.toString(),
+                        isLoggedIn: true
                     });  
                 },
 

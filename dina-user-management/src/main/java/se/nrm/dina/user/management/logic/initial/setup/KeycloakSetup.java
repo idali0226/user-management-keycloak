@@ -5,6 +5,9 @@
  */
 package se.nrm.dina.user.management.logic.initial.setup;
 
+//import java.io.FileInputStream;
+//import java.io.IOException;
+//import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+//import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -21,7 +25,8 @@ import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder; 
-import org.keycloak.admin.client.resource.ClientsResource;
+import org.keycloak.admin.client.resource.ClientsResource; 
+import org.keycloak.admin.client.resource.RealmsResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation; 
@@ -32,7 +37,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.nrm.dina.user.management.utils.AccountStatus;
-import se.nrm.dina.user.management.utils.CommonString;
+import se.nrm.dina.user.management.utils.CommonString; 
 import se.nrm.dina.user.management.utils.Util;
 
 /**
@@ -74,17 +79,35 @@ public class KeycloakSetup implements Serializable {
     @PostConstruct
     public void init() {
         logger.info("init");
-        uploadProperties();
-        createRealm();
-        createRealmRoles();
-         
-        createEndpointClient();
-        createUserManagementClient();
-         
-        createClientRole(CommonString.getInstance().getDinaRestClientId());
-        createClientRole(CommonString.getInstance().getUserManagementClientId());
+        
+        uploadProperties();  
+        buildRealm();
+        
+        RealmsResource realms = keycloakClient.realms();
+        boolean isRealmExist = realms.findAll().stream() 
+                                     .anyMatch(r -> r.getDisplayName().equals(realmName)); 
+        if(!isRealmExist) { 
+            createRealm();
+            
+            Map<String, String> roleMap = new HashMap();
+            roleMap.put(CommonString.getInstance().getAdminRole(), CommonString.getInstance().getAdminRoleDescription());
+            roleMap.put(CommonString.getInstance().getUserRole(), CommonString.getInstance().getUserRoleDescription());
+            
+            roleMap.entrySet().stream()
+                    .forEach(r -> {
+                        createRealmRoles(r.getKey(), r.getValue());
+                    });
+              
+            createEndpointClient();
+            createUserManagementClient();
 
-        createInitialUser();
+            roleMap.entrySet().stream()
+                    .forEach(r -> {
+                        createClientRole(CommonString.getInstance().getDinaRestClientId(), r.getKey(), r.getValue());
+                        createClientRole(CommonString.getInstance().getUserManagementClientId(), r.getKey(), r.getValue());
+                    }); 
+            createInitialUser(); 
+        }    
     }
 
     private void createInitialUser() {
@@ -95,8 +118,7 @@ public class KeycloakSetup implements Serializable {
         user.setLastName(CommonString.getInstance().getSuperUserLastName()); 
         user.setEnabled(Boolean.TRUE);
         user.setEmailVerified(Boolean.TRUE);
-        
-        
+         
         Map<String, List<String>> attributes = new HashMap<>();
         List<String> purposeList = new ArrayList<>();
         purposeList.add(PURPOSE);
@@ -112,8 +134,7 @@ public class KeycloakSetup implements Serializable {
         response.close();
 
         if (locationHeader != null) {
-            UserResource userResource = keycloakClient.realm(realmName).users()
-                                            .get(locationHeader.replaceAll(REGEX, "$1"));  
+            UserResource userResource = keycloakClient.realm(realmName).users().get(locationHeader.replaceAll(REGEX, "$1"));  
              
             resetPassword(userResource);
             setReamlRole(userResource);
@@ -128,8 +149,8 @@ public class KeycloakSetup implements Serializable {
         ClientsResource clientsResource = keycloakClient.realm(realmName).clients();
         List<ClientRepresentation> crs = clientsResource.findAll();
         ClientRepresentation cr = crs.stream()
-                .filter(c -> c.getClientId().equals(clientId))
-                .findFirst().get();
+                                    .filter(c -> c.getClientId().equals(clientId))
+                                    .findFirst().get();
         
         String cId = cr.getId();  
         List<RoleRepresentation> newRole = new ArrayList<>();
@@ -172,25 +193,29 @@ public class KeycloakSetup implements Serializable {
         userResource.resetPassword(cred);
     }
 
-    private void createClientRole(String clientId) { 
+    private void createClientRole(String clientId, String role, String description) { 
         RoleRepresentation clientRoleRepresentation = new RoleRepresentation();
-        clientRoleRepresentation.setName(CommonString.getInstance().getAdminRole());
+        clientRoleRepresentation.setName(role);
+        clientRoleRepresentation.setDescription(description);
+        
         clientRoleRepresentation.setClientRole(true);
         keycloakClient.realm(realmName).clients().findByClientId(clientId).forEach(clientRepresentation ->
             keycloakClient.realm(realmName).clients().get(clientRepresentation.getId()).roles().create(clientRoleRepresentation)
         ); 
     }
     
-    private void createRealmRoles() {
+    private void createRealmRoles(String role, String roleDescription) {
         RoleRepresentation roleRepresentation = new RoleRepresentation();
-        roleRepresentation.setName(CommonString.getInstance().getAdminRole()); 
-        keycloakClient.realm(realmName).roles().create(roleRepresentation);
+        roleRepresentation.setName(role); 
+        roleRepresentation.setDescription(roleDescription);
+        keycloakClient.realm(realmName).roles().create(roleRepresentation); 
     }
     
     private void createUserManagementClient() {
         ClientRepresentation clientRepresentation = new ClientRepresentation();
         clientRepresentation.setClientId(CommonString.getInstance().getUserManagementClientId());
         clientRepresentation.setName(CommonString.getInstance().getUserManagementClientName());
+        clientRepresentation.setDescription("user management to management user account in keycloak");
         clientRepresentation.setEnabled(Boolean.TRUE);
         clientRepresentation.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
         clientRepresentation.setDirectAccessGrantsEnabled(Boolean.FALSE); 
@@ -203,6 +228,7 @@ public class KeycloakSetup implements Serializable {
         ClientRepresentation clientRepresentation = new ClientRepresentation();
         clientRepresentation.setClientId(CommonString.getInstance().getDinaRestClientId());
         clientRepresentation.setName(CommonString.getInstance().getDinaRestClientName());
+        clientRepresentation.setDescription("dina rest endpoint to retrieve token");
         clientRepresentation.setEnabled(Boolean.TRUE);
         clientRepresentation.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
         clientRepresentation.setDirectAccessGrantsEnabled(Boolean.TRUE);
@@ -269,33 +295,25 @@ public class KeycloakSetup implements Serializable {
         redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURL());
         clientRepresentation.setRedirectUris(redirectURIs);
          
-        keycloakClient.realm(realmName).clients().create(clientRepresentation); 
-        
-//        testDina();
+        keycloakClient.realm(realmName).clients().create(clientRepresentation);  
     } 
-    
-//    private void testDina() {
-//        
-//        keycloakClient.realm("dina").clients().findByClientId("dina-rest")
-//                .stream()
-//                .forEach(c -> {
-//                    String id = c.getId();
-//                    List<ProtocolMapperRepresentation> pmrs = c.getProtocolMappers();
-//                    pmrs.stream()
-//                            .forEach(p -> {
-//                                logger.info("config : {}", p.getConfig().toString()); 
-//                            });
-//                }); 
-//    }
-    
+ 
     private void createRealm() { 
         logger.info("createRealm"); 
         
-        buildRealm(); 
+//        buildRealm(); 
         RealmRepresentation realmRepresenttion = new RealmRepresentation();
         realmRepresenttion.setRealm(realmName);
+        realmRepresenttion.setDisplayName(realmName);
         realmRepresenttion.setSslRequired(CommonString.getInstance().getNone()); 
         realmRepresenttion.setDuplicateEmailsAllowed(false);
+        
+        realmRepresenttion.setEventsEnabled(true);
+        realmRepresenttion.setAdminEventsDetailsEnabled(Boolean.TRUE);
+        realmRepresenttion.setAdminEventsEnabled(Boolean.TRUE);
+        realmRepresenttion.setEditUsernameAllowed(Boolean.TRUE);
+        
+        realmRepresenttion.setAccessCodeLifespanUserAction(90000);
 
         Map<String, String> smtpServerMap = new HashMap<>();
         smtpServerMap.put(CommonString.getInstance().getHost(), mailHost);
@@ -306,10 +324,10 @@ public class KeycloakSetup implements Serializable {
         smtpServerMap.put(CommonString.getInstance().getAuth(), Boolean.TRUE.toString());
         smtpServerMap.put(CommonString.getInstance().getUser(), emailUserName);
         smtpServerMap.put(CommonString.getInstance().getPassword(), emailPassword);
-
+       
         realmRepresenttion.setSmtpServer(smtpServerMap);
         realmRepresenttion.setEnabled(true);
-
+          
         keycloakClient.realms().create(realmRepresenttion); 
     }
 
@@ -329,7 +347,8 @@ public class KeycloakSetup implements Serializable {
         Properties prop = new Properties();
         InputStream input = null; 
         try {  
-            prop.load(new FileInputStream(CommonString.getInstance().getConfigProperties()));
+            input = new FileInputStream(CommonString.getInstance().getConfigProperties());
+            prop.load(input);
             keycloakAuthURL = prop.getProperty(CommonString.getInstance().getKeycloakAuthURL());
 //            realmName = prop.getProperty(CommonString.getInstance().getRealmName());
             

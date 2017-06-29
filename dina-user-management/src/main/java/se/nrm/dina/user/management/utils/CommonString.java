@@ -16,10 +16,12 @@ public class CommonString {
     private static CommonString instance = null;
     
     private static final String CONFIG_PROPERTIES = "config.properties";
+    private static final String INITIAL_SETUP = "initialSetup";
     
     // keycloak constant  
     private static final String MASTER_REALM = "master";
-    private static final String DINA_REALM = "dina";
+//    private static final String DINA_REALM = "dina";
+    private static final String DINA_REALM = "myrealm";
     private static final String ADMIN_CLIENT_ID = "admin-cli";
     private static final String KEYCLOAK_URL = "http://localhost:8080/auth";
     
@@ -35,6 +37,9 @@ public class CommonString {
     private static final String ADMIN_ROLE = "admin";
     private static final String USER_ROLE = "user";
     private static final String DATA_ENTRY_ROLE = "data entry";
+    
+    private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can management user accounts, clients in User management application. ";
+    private static final String USER_ROLE_DESCRIPTION = "A user has usr role can only view and edit his/her own account.";
     
     private static final String REALM_ROLE = "realm_role";
     
@@ -92,6 +97,7 @@ public class CommonString {
     
     
     private final static String PURPOSE = "purpose";
+    private final static String DESCRIPTIONS = "descriptions";
     private final static String TIME_CREATED = "timestamp_created";
     private final static String IS_USER_ENABLED = "is_enabled";
     private final static String IS_EMAIL_VERIFIED = "is_email_verified";
@@ -153,6 +159,8 @@ public class CommonString {
     private final String OFFLINE_ACCESS_ROLE = "offline_access";
     private final String UMA_AUTHORIZATION_ROLE = "uma_authorization";
     
+    private final String TYPE_ROLES = "roles";
+    
     
     private final String REDIRECT_FRONT_END_URL = "http://localhost:4200";
     
@@ -163,6 +171,10 @@ public class CommonString {
             instance = new CommonString();
         }
         return instance;
+    }
+    
+    public String getInitialSetup() {
+        return INITIAL_SETUP;
     }
     
     public String getUmaAuthorizationRole() {
@@ -433,6 +445,13 @@ public class CommonString {
         return DATA_ENTRY_ROLE;
     }
     
+    public String getAdminRoleDescription() {
+        return ADMIN_ROLE_DESCRIPTION;
+    }
+    
+    public String getUserRoleDescription() {
+        return USER_ROLE_DESCRIPTION;
+    }
     
     public String getCallEndPoint() {
         return CALL_END_POINT;
@@ -522,6 +541,10 @@ public class CommonString {
         return PURPOSE;
     }
     
+    public String getDescriptions() {
+        return DESCRIPTIONS;
+    }
+    
     public String getTimestampCreated() {
         return TIME_CREATED;
     }
@@ -560,5 +583,9 @@ public class CommonString {
     
     public String getRealmRole() {
         return REALM_ROLE;
+    }
+    
+    public String getTypeRoles() {
+        return TYPE_ROLES;
     }
 }
