@@ -15,6 +15,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
 
       	const language = this.get('session.data.locale');
 
+        this.store.adapterFor('application').set('namespace', "user/api/v01/secure");
+
         if (language) {
             this.set('i18n.locale', language);
         }

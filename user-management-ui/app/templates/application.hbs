@@ -15,44 +15,55 @@
             {{/if}}
         </div>
     </div>
-    <div class="container dwum-secondary-navigation">
-        <ul class="nav navbar-nav">
+ 
+    <div class="container dwum-secondary-navigation"> 
+        <ul class="nav navbar-nav"> 
             {{#link-to "index" tagName="li"}}
                 <a>{{t "navigation.start"}}</a>
-            {{/link-to}} 
-            {{#if session.user_profile.isAdmin}} 
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    {{t "navigation.users"}} <span class="caret"></span>
-                </a>
-                
-                <ul class="dropdown-menu">
-                    {{#link-to "users" tagName="li"}}
-                        <a href="#">{{t "navigation.users.list"}}</a>
-                    {{/link-to}}  
-                    {{#link-to "users.new" tagName="li"}}
-                        <a href="#">{{t "navigation.users.add"}}</a>
-                    {{/link-to}} 
-                </ul>
-                
-            </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    {{t "navigation.clients"}} <span class="caret"></span>
-                </a>
-                
-                <ul class="dropdown-menu">
-                    {{#link-to "clients" tagName="li"}}
-                        <a href="#">{{t "navigation.clients.list"}}</a>
-                    {{/link-to}}  
-                    {{#link-to "users.new" tagName="li"}}
-                        <a href="#">{{t "navigation.clients.add"}}</a>
-                    {{/link-to}} 
-                </ul>
-                
-            </li>
-            {{/if}}
-      </ul> 
+            {{/link-to}}  
+            {{#if session.user_profile.isLoggedIn}} 
+                {{#if session.user_profile.isAdmin}} 
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            {{t "navigation.users"}} <span class="caret"></span>
+                        </a>
+                        
+                        <ul class="dropdown-menu">
+                            {{#link-to "users" tagName="li"}}
+                                <a href="#">{{t "navigation.users.list"}}</a>
+                            {{/link-to}}  
+                            {{#link-to "users.new" tagName="li"}}
+                                <a href="#">{{t "navigation.users.add"}}</a>
+                            {{/link-to}} 
+                        </ul>
+                        
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            {{t "navigation.clients"}} <span class="caret"></span>
+                        </a>
+                        
+                        <ul class="dropdown-menu">
+                            {{#link-to "clients" tagName="li"}}
+                                <a href="#">{{t "navigation.clients.list"}}</a>
+                            {{/link-to}}  
+                            {{#link-to "users.new" tagName="li"}}
+                                <a href="#">{{t "navigation.clients.add"}}</a>
+                            {{/link-to}} 
+                        </ul>
+                        
+                    </li>
+                {{/if}} 
+                {{#link-to "users.profile" session.user_profile.user_id tagName="li" }}
+                    <a>{{t "navigation.profile"}}</a>
+                {{/link-to}} 
+            {{else}}
+                {{#link-to "users.account" tagName="li"}}
+                    <a>{{t "navigation.register"}}</a>
+                {{/link-to}} 
+            {{/if}} 
+        </ul>  
     </div>
+    
 </nav>
 {{outlet}}

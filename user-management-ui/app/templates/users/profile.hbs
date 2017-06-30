@@ -1,0 +1,51 @@
+<div class="container users-view"> 
+    
+    {{#if model.isEditing }} 
+        {{#user-account-form account=model}} 
+            <button class="btn btn-default btn-xs" {{action 'updateUser' model}}>Update</button>
+        {{/user-account-form}}   
+    {{else}}
+        {{#user-account account=model}}  
+            <button class="btn btn-default btn-xs" {{action 'editUser' model}}>Edit</button>
+        {{/user-account}} 
+    {{/if}} 
+</div>
+
+
+
+<!--
+<div class="container users-view">
+ 
+    <div class="row">
+        <div class="col-xs-12">
+            {{#field-group title='user-profile' collapsable=false as |fg|}}
+                {{#fg.content}}
+                    <ul>
+                        <li>
+                            <span>{{t 'fields.labels.user.first_name'}}:</span> {{model.first_name}}
+                        </li>
+                        <li>
+                            <span>{{t 'fields.labels.user.last_name'}}:</span> {{model.last_name}}
+                        </li>
+                        <li>
+                            <span>{{t 'fields.labels.user.email'}}:</span> {{model.email}}
+                        </li>
+                        <li>
+                            <span>{{t 'fields.labels.user.purpose'}}:</span>  {{model.purpose}}
+                        </li> 
+                        <li>
+                            <span>{{t 'fields.labels.user.descriptions'}}:</span>  {{model.descriptions}}
+                        </li> 
+                    </ul>
+
+                    {{#if model.new_account}}
+                        {{#if model.is_email_verified}}  
+                            <button type="button" {{action "enableUser" model}}>Enable</button> 
+                        {{/if}}
+                    {{/if}}
+                {{/fg.content}}
+            {{/field-group}}
+        </div>
+    </div>
+</div>
+-->

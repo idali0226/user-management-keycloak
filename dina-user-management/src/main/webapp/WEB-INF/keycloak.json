@@ -1,5 +1,5 @@
 {
-  "realm": "dina",
+  "realm": "myrealm",
   "bearer-only": true,
   "auth-server-url": "http://localhost:8080/auth",
   "ssl-required": "none",

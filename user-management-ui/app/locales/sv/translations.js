@@ -28,16 +28,23 @@ export default {
             save: 'Det gick inte att spara',
         },
     },
-    navigation: {
-        start: 'Start',
+    navigation: { 
+        start: 'Start', 
+        register: 'Register',
+        profile: 'Profile', 
         'users': 'Användare',
         'users.list': 'Lista alla användare',
         'users.add': 'Registrera ny',
         'clients': 'Klienter',
         'clients.list': 'Lista alla klienter',
         'clients.add': 'Skapa ny',
+    }, 
+    account: {
+        new: {
+            title: 'Create account',
+        }
     },
-    user: {
+    user: {  
         list: {
             header: 'Lista och sök efter användare',
         },
@@ -60,7 +67,7 @@ export default {
                 last_name: 'Efternamn',
                 name: 'Namn',
                 email: 'e-post',
-                username: 'Användarnamn',
+                username: 'Användarnamn', 
                 purpose: 'Syfte',
                 created_date: 'Skapad datum',
                 user_enabled: 'Aktiverad',
@@ -68,7 +75,7 @@ export default {
             },
             client: {
                 name: 'Klientnamn',
-            },
+            }, 
         },
     },
     client: {

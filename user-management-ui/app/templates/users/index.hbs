@@ -1,0 +1,19 @@
+<div class="container dwcm-collectionobject-view">
+  <div class="page-header">
+    <h1>
+      {{t 'user.list.header'}}
+    </h1>
+  </div>
+
+  <div class="row">
+    {{#each model as |user|}}  
+      <div class="col-md-12">
+        {{#user-account account=user}}
+          {{#link-to 'users.view' user class='btn btn-success btn-xs'}}View{{/link-to}}
+          <button class="btn btn-danger btn-xs" {{action 'deleteLibrary' user}}>Delete</button>
+        {{/user-account}}
+      </div>  
+    {{/each}}
+  </div>
+</div>
+ 

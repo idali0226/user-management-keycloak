@@ -8,7 +8,7 @@ package se.nrm.dina.user.management.json.impl;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.Date; 
 import java.util.List;
 import java.util.Map;
 import javax.json.Json;
@@ -16,8 +16,10 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
+import javax.json.JsonReader; 
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,30 +40,78 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
     public JsonConverterImpl() {
 
     }
+    
+    @Override
+    public JsonObject converterRole(RoleRepresentation roleRepresentation) {   
+        
+        JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
+        JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
+        buildRoleJson(roleRepresentation, dataBuilder, true);
+
+        jsonBuilder.add(CommonString.getInstance().getData(), dataBuilder);
+        return jsonBuilder.build(); 
+    }
 
     @Override
-    public JsonObject converterClients(List<ClientRepresentation> clientsRepresentation) {
+    public JsonObject converterClients(Map<ClientRepresentation, List<RoleRepresentation>> clientRepresentationRolesMap) {
 
         JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
         JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
         JsonArrayBuilder dataArrBuilder = Json.createArrayBuilder();
+        
+        JsonObjectBuilder relBuilder = Json.createObjectBuilder();
 
-        if (clientsRepresentation != null && !clientsRepresentation.isEmpty()) {
-            clientsRepresentation.stream()
+        if (clientRepresentationRolesMap != null && !clientRepresentationRolesMap.isEmpty()) {
+            clientRepresentationRolesMap.entrySet().stream()
                     .forEach(c -> {
-                        if (!c.getName().contains("client")) {
-                            buildCLientData(c, dataBuilder);
-                            dataArrBuilder.add(dataBuilder);
-                        }
-                    });
+                        buildClientData(c.getKey(), dataBuilder);
+                        buildClientRoles(c.getValue(), relBuilder);
+                        dataBuilder.add("relationships", relBuilder); 
+                        dataArrBuilder.add(dataBuilder);  
+                    }); 
         }
 
         jsonBuilder.add(CommonString.getInstance().getData(), dataArrBuilder);
         return jsonBuilder.build();
     }
+    
+    private void buildClientRoles(List<RoleRepresentation> roleRepresentations, JsonObjectBuilder relBuilder) {
+         
+        JsonObjectBuilder subBuilder = Json.createObjectBuilder();  
+        JsonObjectBuilder subDataBuilder = Json.createObjectBuilder();  
+        JsonArrayBuilder subDataArrBuilder = Json.createArrayBuilder();
+         
+        if (roleRepresentations != null && !roleRepresentations.isEmpty()) {
+     
+            roleRepresentations.stream()
+                                .forEach(r -> {  
+                                    buildRoleJson(r, subDataBuilder, false);
+                                    subDataArrBuilder.add(subDataBuilder);
+                                }); 
+            subBuilder.add(CommonString.getInstance().getData(), subDataArrBuilder);
+            relBuilder.add("roles", subBuilder);  
+        }
+    }
+    
+    private void buildRoleJson(RoleRepresentation roleRepresentation, JsonObjectBuilder subDataBuilder, boolean addAttributes) { 
+        subDataBuilder.add(CommonString.getInstance().getType(), CommonString.getInstance().getTypeRoles());
+        subDataBuilder.add(CommonString.getInstance().getId(), roleRepresentation.getId()); 
+        
+        if(addAttributes) {
+            JsonObjectBuilder attBuilder = Json.createObjectBuilder(); 
+            addAttributes(attBuilder, "role_name", roleRepresentation.getName()); 
+            addAttributes(attBuilder, "descriptions", roleRepresentation.getDescription());
+             
+            subDataBuilder.add(CommonString.getInstance().getAttributes(), attBuilder);
+        }
+    }
 
+  
     @Override
-    public JsonObject converterRoles(List<String> realmRoles, Map<String, List<String>> roleMap) {
+    public JsonObject converterRoles(RolesResource realmRoles) {
+        
+        JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
+         
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -103,17 +153,20 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
         return jsonBuilder.build();
     }
 
-    private void buildCLientData(ClientRepresentation clientRepresentation, JsonObjectBuilder dataBuilder) {
+    private void buildClientData(ClientRepresentation clientRepresentation, JsonObjectBuilder dataBuilder) {
 
         JsonObjectBuilder attBuilder = Json.createObjectBuilder();
 
         dataBuilder.add(CommonString.getInstance().getType(), CommonString.getInstance().getClientsType());
         dataBuilder.add(CommonString.getInstance().getId(), clientRepresentation.getId());
-
+       
         addAttributes(attBuilder, "client_name", clientRepresentation.getName());
+        addAttributes(attBuilder, "client_id", clientRepresentation.getClientId());
+        addAttributes(attBuilder, "descriptions", clientRepresentation.getDescription());
+          
         dataBuilder.add(CommonString.getInstance().getAttributes(), attBuilder);
     }
-
+     
     private void buildUserData(UserRepresentation userRepresentation, JsonObjectBuilder dataBuilder) {
 
         JsonObjectBuilder attBuilder = Json.createObjectBuilder();
@@ -135,12 +188,17 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
             if (purposes != null && !purposes.isEmpty()) {
                 addAttributes(attBuilder, CommonString.getInstance().getPurpose(), purposes.get(0));
             }
+            List<String> status = attrs.get(CommonString.getInstance().getStatus());
+            if (status != null && !status.isEmpty()) {
+                addAttributes(attBuilder, CommonString.getInstance().getStatus(), status.get(0));
+            }
+            
+//            List<String> descriptions = attrs.get(CommonString.getInstance().getDescriptions());
+//            if(descriptions != null && !descriptions.isEmpty()) {
+//                addAttributes(attBuilder, CommonString.getInstance().getDescriptions(), descriptions);
+//            }
         }
-        
-        List<String> status = attrs.get("status");
-        if (status != null && !status.isEmpty()) {
-            addAttributes(attBuilder, "status", status.get(0));
-        }
+         
         dataBuilder.add(CommonString.getInstance().getAttributes(), attBuilder);
     }
 
@@ -165,9 +223,11 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
                 attBuilder.add(key, (Float) value);
             } else if (value instanceof Long) {
                 attBuilder.add(key, (Long) value);
+            } else if(value instanceof java.util.LinkedList) {
+                attBuilder.add(key, value.toString());
             } else {
                 attBuilder.add(key, (String) value);
             }
         } 
-    }
+    } 
 }

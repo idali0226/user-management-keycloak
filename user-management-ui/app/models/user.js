@@ -7,7 +7,7 @@ import { buildValidations, validator } from 'ember-cp-validations';
 const Validations = buildValidations({
 	first_name: validator('presence', true), 
 	last_name: validator('presence', true), 
-	purpose: validator('presence', true),
+ 	purpose: validator('presence', true), 
 
 	email: [
 		validator('presence', true),
@@ -22,7 +22,7 @@ export default DS.Model.extend(
 		first_name: DS.attr('string'),
 		last_name:  DS.attr('string'),
 		email: DS.attr('string'),
-		purpose: DS.attr('string'),
+		purpose: DS.attr('string'), 
 		password: DS.attr('string'),
 		timestamp_created: DS.attr('number'),
 		is_enabled: DS.attr('boolean'),
@@ -35,11 +35,14 @@ export default DS.Model.extend(
  			return this.get('status') === 'new';
  		}.property('person'),
   
- 		formattedDate: Ember.computed('timestamp_created', function () {
+ 		formatted_date: Ember.computed('timestamp_created', function () {
         	return moment(this.get('timestamp_created')).format('Do MMMM YYYY');
    	 	}),
 
-   	 	fullName: function() {
-  			return this.get('first_name') + ' ' + this.get('last_name');
-		}.property('first_name', 'last_name')
-});
+	   	full_name: Ember.computed('first_name', 'last_name', function() {
+		  return `${this.get('first_name')} ${this.get('last_name')}`;
+		})
+
+ 
+	}
+);

@@ -6,13 +6,17 @@
 package se.nrm.dina.user.management.logic;
 
 import java.io.Serializable; 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.json.JsonObject;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder; 
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.nrm.dina.user.management.json.JsonConverter;
@@ -37,9 +41,19 @@ public class ClientManagement implements Serializable {
     public JsonObject getAllTheClients() {
         buildRealm();
         List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).clients().findAll();
- 
+        
+        Map<ClientRepresentation, List<RoleRepresentation>> map = new HashMap();
+        clientsRepresetation.stream() 
+                .filter(c -> !c.getName().contains("client")) 
+                .forEach(c -> {
+                    RolesResource rolesResource = keycloakClient.realm(CommonString.getInstance()
+                                                                .getDinaRealm())
+                                                                .clients().get(c.getId()).roles();
+                    map.put(c, rolesResource.list());
+                });
+         
         keycloakClient.close();
-        return json.converterClients(clientsRepresetation); 
+        return json.converterClients(map); 
     }
          
     private void buildRealm() {   

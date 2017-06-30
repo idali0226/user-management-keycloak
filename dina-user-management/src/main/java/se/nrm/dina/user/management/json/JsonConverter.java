@@ -7,8 +7,10 @@ package se.nrm.dina.user.management.json;
 
 import java.util.List; 
 import java.util.Map;
-import javax.json.JsonObject;
+import javax.json.JsonObject; 
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
 /**
@@ -23,7 +25,9 @@ public interface JsonConverter {
     
     JsonObject converterUsers(List<UserRepresentation> userList);
     
-    JsonObject converterRoles(List<String> realmRoles, Map<String, List<String>> roleMap);
+    JsonObject converterRoles(RolesResource realmRoles);
     
-    JsonObject converterClients(List<ClientRepresentation> clientsRepresentation);
+    JsonObject converterRole(RoleRepresentation roleRepresentation);
+    
+    JsonObject converterClients(Map<ClientRepresentation, List<RoleRepresentation>> clientRepresentationRolesMap);
 }

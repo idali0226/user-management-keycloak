@@ -22,16 +22,22 @@ public class HelpClass {
         return instance;
     }
     
+    public String setupInitialDataInput(Console console) {
+        System.out.println("*-------------------------------------------------------------------------------------------------------*");
+        System.out.print("* Do you want to setup initial data in Keycloak (y/n)? ");
+        return console.readLine().trim();
+    }
+    
     public void initRealmVariables() {
         System.out.println();
-        System.out.println("*-------------------------------------------------------------------------------------------*");
-        System.out.println("* The following steps are readin list of values for setup initial realm in Keycloak         *");  
-        System.out.println("*-------------------------------------------------------------------------------------------*");
+        System.out.println("*------------------------------------------------------------------------------------------------------*");
+        System.out.println("* The following steps setups initial data in keycloak for running user-management                      *");  
+        System.out.println("*------------------------------------------------------------------------------------------------------*");
         System.out.println();
     }
 
     public String keycloakAuthUrlInput(Console console) {
-        System.out.println("*------------------------------------------------------------------*");
+        System.out.println("*-------------------------------------------------------------------------------------------------------*");
         System.out.print("* Enter keycloak authentication URL: ");
         return console.readLine().trim();
     }

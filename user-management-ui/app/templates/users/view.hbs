@@ -1,4 +1,19 @@
-<div class="container users-view">
+{{#user-account account=model}}
+    {{#link-to 'users.view' user class='btn btn-success btn-xs'}}View{{/link-to}}
+    <button class="btn btn-success btn-xs" {{action 'deleteLibrary' user}}>Enable user</button>
+    <button class="btn btn-danger btn-xs" {{action 'deleteLibrary' user}}>Disable user</button> 
+    <button class="btn btn-default btn-xs" {{action 'deleteLibrary' user}}>Edit user</button>
+{{/user-account}}
+
+
+
+
+
+
+
+
+
+ <div class="container users-view">
  
     <div class="row">
         <div class="col-xs-12">
@@ -17,13 +32,21 @@
                         <li>
                             <span>{{t 'fields.labels.user.purpose'}}:</span>  {{model.purpose}}
                         </li> 
+                        <li>
+                            <span>{{t 'fields.labels.user.descriptions'}}:</span>  {{model.descriptions}}
+                        </li> 
                     </ul>
 
+                    <hr>
+ 
+                    {{#each model.clients as |client|}}
+                        client
+                    {{/each}}
+
+
                     {{#if model.new_account}}
-                        {{#if model.is_email_verified}} 
-
-
-                            <button type="button" {{action "enableUser" model}}>Enable</button> 
+                        {{#if model.is_email_verified}}  
+                            <button type="button" class="btn btn-success btn-sm" {{action "enableUser" model}}>Enable</button> 
                         {{/if}}
                     {{/if}}
                 {{/fg.content}}
