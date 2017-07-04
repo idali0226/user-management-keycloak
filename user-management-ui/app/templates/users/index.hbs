@@ -5,6 +5,13 @@
     </h1>
   </div>
 
+  {{#if search}}
+    {{input type="text" value=model.first_name class="form-control" placeholder="Search by first name"}}
+  {{else}}
+    Filte users:
+  {{/if}}
+
+
   <div class="row">
     {{#each model as |user|}}  
       <div class="col-md-12">

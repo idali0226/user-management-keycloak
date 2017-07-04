@@ -1,4 +1,40 @@
 <div class="container users-view {{if validationError 'validation-visible' ''}}">
+
+    {{#if responseMessage}}
+        <br/>
+            <div class="alert alert-success">
+                <h4>{{t 'messages.account.create_account'}}</h4>
+                <p>{{t 'messages.account.verification_email'}} {{model.email}}. </p>
+                <p>{{t 'messages.account.email_verification_action'}}</p> 
+            </div>
+    {{else}} 
+        <div class="page-header">
+            <h2> {{t 'user.new.title' name=(t type)}}:  </h2>
+        </div>
+
+        {{#user-account-form account=model}}  
+            <button
+                class="btn btn-success btn-sm"
+                disabled={{isSaving}}
+                {{action 'submitForm'}}
+                disabled={{v-get model 'isInvalid'}}
+            >
+                {{#if isSaving}}
+                    {{dwcm-spinner button=true}}
+                    {{t 'user.new.toolbar.saving'}}
+                {{else}}
+                    {{t 'user.new.toolbar.save'}}
+                {{/if}}
+            </button> 
+        {{/user-account-form}} 
+    {{/if}}
+</div>
+
+ 
+
+<!--
+
+<div class="container users-view {{if validationError 'validation-visible' ''}}">
     <div class="page-header">
         <h2>
             {{t 'account.new.title'}}
@@ -93,4 +129,4 @@
         </div>
     </div>
 </footer>
-
+-->

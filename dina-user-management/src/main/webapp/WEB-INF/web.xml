@@ -51,6 +51,24 @@
         <auth-constraint>
             <role-name>admin</role-name>
         </auth-constraint>
+<!--        <auth-constraint>
+            <role-name>user</role-name>
+        </auth-constraint>-->
+    </security-constraint>
+    
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/user/api/v01/secure/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>PUT</http-method>  
+        </web-resource-collection>
+
+        <auth-constraint>
+            <role-name>user</role-name>
+        </auth-constraint>
+<!--        <auth-constraint>
+            <role-name>user</role-name>
+        </auth-constraint>-->
     </security-constraint>
  
     <login-config>

@@ -16,14 +16,24 @@
             isValid=(v-get this 'invalidCredentials' 'isValid')
             message=(v-get this 'invalidCredentials' 'message')
         }}
-            <button class="btn btn-md btn-primary" type="submit" disabled={{isValidating}}>
-                {{#if isValidating}} 
-                    {{t 'definitions.signing-in'}}
-                {{else}}
-                    {{t 'definitions.sign-in'}}
-                {{/if}}
-            </button>
+ 
         {{/validation/form-group}}
+
+        <div class="pull-right password-recover-link">
+            {{#link-to 'password_recover'}}
+                {{t 'navigation.password_recover'}}
+            {{/link-to}} 
+        </div> 
+ 
+        <br>
+        <br>
+            <button class="btn btn-md btn-primary" type="submit" disabled={{isValidating}}>
+            {{#if isValidating}} 
+                {{t 'signing-in'}}
+            {{else}}
+                {{t 'definitions.sign-in'}}
+            {{/if}}
+        </button> 
     </form>
 </div>
 

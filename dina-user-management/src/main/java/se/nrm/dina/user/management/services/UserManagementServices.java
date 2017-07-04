@@ -190,7 +190,7 @@ public class UserManagementServices implements Serializable {
     @Path("/sendemail")    
     public Response sendEmail(@QueryParam("id") String id) {
         
-        logger.info("sendEmail : {}", id); 
+        logger.info("secure/sendEmail : {}", id); 
         return Response.ok(userManagement.sendVerificationEmail(id)).build();
     }
     
@@ -208,5 +208,12 @@ public class UserManagementServices implements Serializable {
         logger.info("updateUser : {}", json);
          
         return Response.ok(userManagement.updateUser(json)).build();
+    }
+    
+    @PUT
+    @Path("/logout")
+    public Response logout(@QueryParam("id") String id) {
+        logger.info("logout : {}", id); 
+        return Response.ok(userManagement.logout(id)).build();
     }
 }

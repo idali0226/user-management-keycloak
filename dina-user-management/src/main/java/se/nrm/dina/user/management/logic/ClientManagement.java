@@ -48,7 +48,7 @@ public class ClientManagement implements Serializable {
                 .forEach(c -> {
                     RolesResource rolesResource = keycloakClient.realm(CommonString.getInstance()
                                                                 .getDinaRealm())
-                                                                .clients().get(c.getId()).roles();
+                                                                .clients().get(c.getId()).roles(); 
                     map.put(c, rolesResource.list());
                 });
          

@@ -18,7 +18,7 @@ export default Ember.Controller.extend({
         console.log("sendInvitation: " + user.id);
     
         const ajax = this.get('ajax'); 
-        return ajax.request('/sendemail?id=' + user.id, {
+        return ajax.request('/secure/sendemail?id=' + user.id, {
             method: 'POST' 
         });
     },
@@ -59,7 +59,7 @@ export default Ember.Controller.extend({
                                 this.set('showSaved', true); 
                                 console.log('save: ' + record.id);
 
-                           //     this.sendInvitation(record);
+                                this.sendInvitation(record);
                                 this.transitionToUser(); 
 
                                 console.log('done');

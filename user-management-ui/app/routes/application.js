@@ -8,6 +8,7 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     session: Ember.inject.service(),  
     i18n: Ember.inject.service(),
     moment: Ember.inject.service(),
+    ajax: Ember.inject.service(),
   
     /** Override before model and setup localization. */
     beforeModel () {
@@ -26,5 +27,24 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
         );
  
         return result;
+    },
+
+    actions: {
+        signout (id) { 
+            console.log("signout " + id); 
+
+            let session = this.get('session');
+
+            const ajax = this.get('ajax');   
+            ajax.request('/secure/logout?id=' + id, {
+                method: 'PUT' 
+            }).then(function(response) {
+                console.log("response : " + response);
+                session.invalidate();
+            });
+
+          //  this.get('session').invalidate();
+            this.transitionTo('index'); 
+        } 
     }
 });

@@ -8,6 +8,8 @@ const Router = Ember.Router.extend({
 
 Router.map(function() {
   this.route('login');
+ 
+  this.route('password_recover', {queryParams: ['username']});
 
   this.route('users', function() {
     this.route('new');

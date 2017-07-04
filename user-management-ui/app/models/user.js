@@ -13,7 +13,22 @@ const Validations = buildValidations({
 		validator('presence', true),
 		validator('format', { type: 'email' }),
 	 	validator('username-available', { debounce: 300 })
-	]  
+	],
+
+//	password: [
+//	 	validator('presence', true),
+//		validator('length', {
+//			min: 4
+//		})
+//	],
+//	passwordConfirmation: [
+//		validator('presence', true),
+//		validator('confirmation', {
+//			on: 'password',
+//			message: '{description} do not match',
+//			description: 'Password'
+//		})
+//	]
 });
  
 

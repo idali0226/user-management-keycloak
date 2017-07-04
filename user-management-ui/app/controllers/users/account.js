@@ -4,8 +4,8 @@ export default Ember.Controller.extend({
 
  	ajax: Ember.inject.service(),
 
-    sendInvitation(user) {
-        console.log("sendInvitation: " + user.id);
+    sendEmail(user) {
+        console.log("sendEmail: " + user.id);
     
         const ajax = this.get('ajax'); 
         return ajax.request('/sendemail?id=' + user.id, {
@@ -14,8 +14,9 @@ export default Ember.Controller.extend({
     },
 
 
+/**
 	actions: {  
-		/** Handle form submit and validation. */
+ 
         submitForm () { 
             let controller = this;
 
@@ -42,5 +43,5 @@ export default Ember.Controller.extend({
                 } 
             }); 
         }
-	}
+	} */
 });

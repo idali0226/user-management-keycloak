@@ -152,6 +152,13 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
         jsonBuilder.add(CommonString.getInstance().getData(), dataArrBuilder);
         return jsonBuilder.build();
     }
+    
+    @Override
+    public JsonObject successJson(String message) {
+        JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
+        jsonBuilder.add("response", message);
+        return jsonBuilder.build(); 
+    }
 
     private void buildClientData(ClientRepresentation clientRepresentation, JsonObjectBuilder dataBuilder) {
 

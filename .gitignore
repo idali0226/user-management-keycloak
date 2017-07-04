@@ -1,3 +1,5 @@
 /dina-user-management/target/ 
 /mysql-datadir
 /dina-keycloak-management/target/
+nohup.out
+execute.sh

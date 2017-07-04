@@ -12,5 +12,37 @@ export default Ember.Route.extend({
         // TODO: Create a mixin to override `rollbackAttributes` and
         // apply `rollbackAttributes` to any dirty relationship as well.
         model.rollbackAttributes();   
+    },
+
+    actions: {
+        submitForm () { 
+            let controller = this;
+
+            console.log('submitForm');
+            if (controller.get('isSaving')) {
+                return;
+            }  
+
+            var user = this.controller.get('model');     
+
+            user.validate() 
+                .then(({ validations }) => {
+                    if (validations.get('isValid')) { 
+                        user.save()
+                            .then((record) => {   
+                                console.log("record : " + record);
+                                this.set('showSaved', true); 
+                             //   this.sendInvitation(record);
+                             //   this.transitionTo('index');
+                                this.controller.sendEmail(record);
+                                this.controller.set('responseMessage', true);
+                            }).finally(()=>{
+                                controller.set('isSaving', false);
+                            });
+                    } else {
+                        console.log('invalid');  
+                } 
+            }); 
+        }
     }
 });

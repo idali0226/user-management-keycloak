@@ -21,18 +21,7 @@
 	    	 		<div class="col-xs-9">
 	    	 			{{account.purpose}}
 	    	 		</div>
-	    	 	</div>
-
-			<!--
-	    	 	<div class="row">
-	    	 		<div class="col-xs-3">
-	    	 			Descriptions:
-	    	 		</div>
-	    	 		<div class="col-xs-9">
-	    	 			{{account.descriptions}}
-	    	 		</div>
-	    	 	</div>
-	    	 	-->
+	    	 	</div> 
 
 	    	 	<div class="row">
 	    	 		<div class="col-xs-3">
@@ -53,7 +42,24 @@
 		    	 		</div>
 	    	 		</div>
     	 		{{/if}}
+
+    	 		{{#if account.changePassword}}
+    	 			<hr />
+	    	 		<h4>Change password</h4>
+
+	    	 	 	{{input 
+                      	value=account.password 
+                     	placeholder="Password" 
+                     	class="form-control"  }} 
+
+                    {{input 
+                      	value=passwordConfirmation 
+                     	placeholder="Password confirmatio" 
+                     	class="form-control"  }} 
+	    	 	{{/if}}
     	 	</div>
+
+    	 	
     	</div> 
     </div>
     <div class="panel-footer text-right">

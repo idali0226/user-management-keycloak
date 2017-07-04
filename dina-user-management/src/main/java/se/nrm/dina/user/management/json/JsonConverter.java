@@ -30,4 +30,6 @@ public interface JsonConverter {
     JsonObject converterRole(RoleRepresentation roleRepresentation);
     
     JsonObject converterClients(Map<ClientRepresentation, List<RoleRepresentation>> clientRepresentationRolesMap);
+    
+    JsonObject successJson(String message);
 }

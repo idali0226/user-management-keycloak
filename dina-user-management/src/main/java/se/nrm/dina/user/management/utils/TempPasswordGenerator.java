@@ -13,10 +13,11 @@ import org.apache.commons.lang.RandomStringUtils;
  */
 public class TempPasswordGenerator {
      
-    public static final int PASSWORD_LENGTH = 8;
+    public static final int PASSWORD_LENGTH =12;
     
     public static String generateRandomPassword() { 
-        return RandomStringUtils.random(PASSWORD_LENGTH, true, true);
+        char[] chars = {'!', '@', '#', '$', '%', '&', '*', '=', '+', '?' }; 
+        return RandomStringUtils.random(0, 11, PASSWORD_LENGTH, true, true, chars);
     }
     
 }

@@ -16,7 +16,20 @@ export default Ember.Route.extend({
 	 	updateUser(user) {
 	 		console.log("user: " + user);
 	 		user.set('isEditing', false);
-	 	}
+	 	},
+
+        changePassword(user) {  
+            user.set('changePassword', true);
+        },
+
+        cancel(user) {
+        	user.set('changePassword', false);
+        },
+
+        updatePassword(user) {
+        	user.set('changePassword', false);
+        	
+        }
  	}
 
 });

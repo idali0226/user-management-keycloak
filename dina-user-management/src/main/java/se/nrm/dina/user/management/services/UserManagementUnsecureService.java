@@ -42,15 +42,21 @@ public class UserManagementUnsecureService implements Serializable {
     @Path("/users")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
-    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email) {
-        logger.info("getUsers : email :  {}", email); 
+    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email, @QueryParam("filter[login]") boolean isLogin) {
+        logger.info("getUsers : email :  {} - login: {}", email, isLogin); 
         
-        if(email == null) {  
-            return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), null)).build();
-        } else { 
-            return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), email)).build();
+        if(isLogin) {
+            return Response.ok(userManagement.getLoggedInUser()).build();
+        } else {
+            if(email == null) {  
+                return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), null)).build();
+            } else { 
+                return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), email)).build();
+            }
         } 
     }
+    
+ 
     
     @POST
     @Path("/users")

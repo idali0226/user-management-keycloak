@@ -325,9 +325,10 @@ public class KeycloakSetup implements Serializable {
         smtpServerMap.put(CommonString.getInstance().getUser(), emailUserName);
         smtpServerMap.put(CommonString.getInstance().getPassword(), emailPassword);
        
-        realmRepresenttion.setSmtpServer(smtpServerMap);
+        realmRepresenttion.setSmtpServer(smtpServerMap); 
+        realmRepresenttion.setPasswordPolicy("hashIterations and specialChars and length and notUsername and passwordHistory");
         realmRepresenttion.setEnabled(true);
-          
+         
         keycloakClient.realms().create(realmRepresenttion); 
     }
 
