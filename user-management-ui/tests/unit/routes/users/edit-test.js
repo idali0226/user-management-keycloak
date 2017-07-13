@@ -1,13 +1,8 @@
 import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:password-recover', 'Unit | Route | password recover', {
+moduleFor('route:users/edit', 'Unit | Route | users/edit', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
-
-  	needs: ['validator:presence',
-    		'validator:format',
-    		'validator:username-available', 
-    ]
 });
 
 test('it exists', function(assert) {

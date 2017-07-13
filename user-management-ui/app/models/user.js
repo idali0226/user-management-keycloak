@@ -5,7 +5,9 @@ import moment from 'moment';
 import { buildValidations, validator } from 'ember-cp-validations';
 
 const Validations = buildValidations({
-	first_name: validator('presence', true), 
+	first_name: validator('presence', {
+ 		presence: true,
+		description: 'Username'}), 
 	last_name: validator('presence', true), 
  	purpose: validator('presence', true), 
 
@@ -49,10 +51,12 @@ export default DS.Model.extend(
  		new_account: function() { 
  			return this.get('status') === 'new';
  		}.property('person'),
+
   
  		formatted_date: Ember.computed('timestamp_created', function () {
         	return moment(this.get('timestamp_created')).format('Do MMMM YYYY');
    	 	}),
+
 
 	   	full_name: Ember.computed('first_name', 'last_name', function() {
 		  return `${this.get('first_name')} ${this.get('last_name')}`;

@@ -159,6 +159,19 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
         jsonBuilder.add("response", message);
         return jsonBuilder.build(); 
     }
+    
+    @Override
+    public JsonObject buildErrorMessages(String error, List<String> errMsgs) {
+        JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
+        
+        if(errMsgs != null && !errMsgs.isEmpty()) {
+            jsonBuilder.add("errormsgs", errMsgs.toString());
+        } else {
+            jsonBuilder.add("errormsgs", error);
+        }
+        
+        return jsonBuilder.build(); 
+    }
 
     private void buildClientData(ClientRepresentation clientRepresentation, JsonObjectBuilder dataBuilder) {
 

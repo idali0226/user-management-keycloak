@@ -1,8 +1,9 @@
 export default {
     blank: '',
     errors: {
-        blank: '{{description}} kan inte vara tom',
-        email: 'Användarnamnet måste vara en giltig e-postadress',
+        blank: '{{description}} kan inte vara tom', 
+        username: 'Användarnamnet måste vara en giltig e-postadress',
+        email: 'Måste vara en giltig e-postadress', 
     },
     definitions: {
         abort: 'Avbryt',
@@ -13,6 +14,7 @@ export default {
         user: 'Användare',
         username: 'Användarnamn',
         'username-email': 'Username/email',
+        email: 'Email',
         password: 'Lösenord',
         usernameOrPassword: 'Användarnamn eller lösenord',
         'sign-out': 'Logga ut',
@@ -64,6 +66,7 @@ export default {
     },
     'user-profile': 'Användarprofil',
     'sign_up': "Registrera dig",
+    'edit_user': "Edit user",
     fields: {
         labels: {
             user: {
@@ -99,10 +102,15 @@ export default {
     },
     messages: {
         account: {
-            create_account: 'Your User Management account is created.',
-            verification_email: 'A verification email will be sent to: ',
-            email_verification_action: 'Please click the activation link to verifiy your email address within 24 hours',
+            'create-account': 'Your User Management account is created.',
+            'verification-email': 'A verification email will be sent to: ',
+            'email-verification-action': 'Please click the activation link to verifiy your email address within 24 hours',
         }, 
+        'password-recover': {
+            'change-password': 'Your password has been changed.',
+            'update-password-email': 'An update email will be sent to:',
+            'update-email-action': 'Please click the update password link to update email',
+        },
     },
     beta: {
         header: 'Användaradministration beta',

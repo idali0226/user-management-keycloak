@@ -9,6 +9,8 @@ export default Ember.Controller.extend({
         /** Invalidate current session and logout user. */
         invalidateSession () {   
             this.get('session').invalidate();
-        }
+        },
+
+ 		
     }
 });

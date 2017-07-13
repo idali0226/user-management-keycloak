@@ -28,7 +28,7 @@ export default Ember.Controller.extend(Validations, {
  
 
     actions: {
-
+  
         /** Authenticate and sign in with currently selected agent. */
         authenticate () {
             this.set('validation.isHidden', true);

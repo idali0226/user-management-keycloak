@@ -32,4 +32,6 @@ public interface JsonConverter {
     JsonObject converterClients(Map<ClientRepresentation, List<RoleRepresentation>> clientRepresentationRolesMap);
     
     JsonObject successJson(String message);
+    
+    JsonObject buildErrorMessages(String error, List<String> errMsgs);
 }

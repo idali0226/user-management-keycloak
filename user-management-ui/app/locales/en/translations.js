@@ -2,7 +2,8 @@ export default {
     blank: '',
     errors: {
         blank: '{{description}} can\'t be blank',
-        email: 'Username must be a valid email address', 
+        username: 'Username must be a valid email address', 
+        email: 'Must be a valid email address', 
     },
     definitions: {
         abort: 'Abort',
@@ -13,6 +14,7 @@ export default {
         user: 'User',
         username: 'Username',
         'username-email': 'Username/email',
+        email: 'Email',
         password: 'Password',
         usernameOrPassword: 'Username or password',
         'sign-out': 'Sign out',
@@ -65,6 +67,7 @@ export default {
     }, 
     'user-profile': 'User profile',
     'sign_up': "Sign up",
+    'edit_user': "Edit user",
     fields: {
         labels: {
             user: {
@@ -101,10 +104,17 @@ export default {
     }, 
     messages: {
         account: {
-            create_account: 'Your User Management account is created.',
-            verification_email: 'A verification email will be sent to: ',
-            email_verification_action: 'Please click the activation link to verifiy your email address within 24 hours',
+            'create-account': 'Your User Management account is created.',
+            'verification-email': 'A verification email will be sent to: ',
+            'email-verification-action': 'Please click the activation link to verifiy your email address within 24 hours',
         }, 
+        'password-recover': {
+            'change-password': 'Your password has been changed.',
+            'update-password-email': 'An update email will be sent to:',
+            'update-email-action': 'Please click the update password link to update email',
+        },
+        
+
     },
     beta: {
         header: 'User management beta',

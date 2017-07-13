@@ -6,6 +6,15 @@ export default Ember.Route.extend({
 		this.store.adapterFor('application').set('namespace', "user/api/v01");
         return this.store.createRecord('user');
     },
+
+    beforeModel () {   
+    //  let model = this.controllerFor('users.account').get('model'); 
+    //  model.set('isNew', true);
+    },
+
+    activate: function() {
+        console.log('----- activate hook called -----');
+    },
  
     deactivate () { 
        let model = this.controllerFor('users.account').get('model'); 
@@ -13,8 +22,8 @@ export default Ember.Route.extend({
         // apply `rollbackAttributes` to any dirty relationship as well.
         model.rollbackAttributes();   
     },
-
-    actions: {
+ 
+    actions: { 
         submitForm () { 
             let controller = this;
 

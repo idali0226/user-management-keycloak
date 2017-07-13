@@ -1,8 +1,9 @@
 {{#user-account account=model}}
-    {{#link-to 'users.view' user class='btn btn-success btn-xs'}}View{{/link-to}}
-    <button class="btn btn-success btn-xs" {{action 'deleteLibrary' user}}>Enable user</button>
-    <button class="btn btn-danger btn-xs" {{action 'deleteLibrary' user}}>Disable user</button> 
-    <button class="btn btn-default btn-xs" {{action 'deleteLibrary' user}}>Edit user</button>
+    {{#link-to 'users.view' model class='btn btn-success btn-xs'}}View{{/link-to}}
+    <button class="btn btn-success btn-xs" {{action 'deleteLibrary' model}}>Enable user</button>
+    <button class="btn btn-danger btn-xs" {{action 'deleteLibrary' model}}>Disable user</button> 
+    <button class="btn btn-default btn-xs" {{action 'edit' model}}>Edit user</button>
+    {{#link-to 'users.edit' model.id tagName='button'}}Edit{{/link-to}}  
 {{/user-account}}
 
 

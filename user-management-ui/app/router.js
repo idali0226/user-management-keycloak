@@ -9,14 +9,19 @@ const Router = Ember.Router.extend({
 Router.map(function() {
   this.route('login');
  
-  this.route('password_recover', {queryParams: ['username']});
+  this.route('password-recover');
 
   this.route('users', function() {
     this.route('new');
-    this.route('view', {path: ':id'});
-    this.route('profile', {path: '/:user_id'});
+    this.route('view', {path: '/:id'});
+    this.route('profile', {path: '/profile/:user_id'});
+    this.route('edit', {path: ':id/edit'});
   //  this.route('account');
   });
+
+
+ // this.route('profile', {path: 'users/:user_id'});
+
 
   this.route('clients', function() {
     this.route('new');

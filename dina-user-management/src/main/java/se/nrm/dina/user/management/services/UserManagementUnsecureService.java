@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -35,9 +36,7 @@ public class UserManagementUnsecureService implements Serializable {
 
     @Inject
     private UserManagement userManagement;
-    
-    
-         
+     
     @GET    
     @Path("/users")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
@@ -55,9 +54,7 @@ public class UserManagementUnsecureService implements Serializable {
             }
         } 
     }
-    
- 
-    
+     
     @POST
     @Path("/users")
     public Response createUser(String json) {
@@ -68,9 +65,19 @@ public class UserManagementUnsecureService implements Serializable {
     
     @POST
     @Path("/sendemail")    
-    public Response sendEmail(@QueryParam("id") String id) {
+    public Response sendEmail(@QueryParam("id") String id, @QueryParam("email") String email) {
         
-        logger.info("sendEmail : {}", id); 
-        return Response.ok(userManagement.sendVerificationEmail(id)).build();
+        logger.info("sendEmail : {} -- {}", id, email); 
+         
+        return Response.ok(userManagement.sendVerificationEmail(id, email)).build();
+    }
+    
+    @PUT
+    @Path("/recover-password")    
+    public Response updatePassword(@QueryParam("email") String email) {
+        
+        logger.info("updatePassword : {} ", email); 
+         
+        return Response.ok(userManagement.updatePassword(email)).build();
     }
 }

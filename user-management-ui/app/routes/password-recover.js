@@ -1,12 +1,14 @@
 import Ember from 'ember';
 
+ 
+ 
 export default Ember.Route.extend({
+  
+    beforeModel () {   
+        this.store.adapterFor('application').set('namespace', "user/api/v01"); 
+    },
 
-	actions: {
-        send(email) { 
-            console.log("send " + email); 
-   
-            this.transitionTo('login'); 
-        } 
-    }
+ 	setupController(controller) {
+		controller.set('responseMessage', false); 
+	}
 });

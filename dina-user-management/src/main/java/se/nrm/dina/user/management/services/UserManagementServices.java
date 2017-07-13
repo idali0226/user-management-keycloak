@@ -4,17 +4,19 @@
  * and open the template in the editor.
  */
 package se.nrm.dina.user.management.services;
-
+ 
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map; 
+import javax.annotation.security.PermitAll;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
+import javax.ws.rs.GET; 
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
+import javax.ws.rs.PUT; 
 import javax.ws.rs.Path; 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,6 +36,7 @@ import se.nrm.dina.user.management.logic.RoleManagement;
 import se.nrm.dina.user.management.logic.TsvUploader;
 import se.nrm.dina.user.management.logic.UserManagement;
 import se.nrm.dina.user.management.utils.CommonString;
+import se.nrm.dina.user.management.utils.PATCH;
 
 /**
  *
@@ -191,7 +194,7 @@ public class UserManagementServices implements Serializable {
     public Response sendEmail(@QueryParam("id") String id) {
         
         logger.info("secure/sendEmail : {}", id); 
-        return Response.ok(userManagement.sendVerificationEmail(id)).build();
+        return Response.ok(userManagement.sendVerificationEmail(id, null)).build();
     }
     
     @PUT
@@ -202,10 +205,10 @@ public class UserManagementServices implements Serializable {
         return Response.ok(userManagement.enableUser(id)).build();
     }
     
-    @PUT
-    @Path("/updateUser")
-    public Response updateUser(String json) {
-        logger.info("updateUser : {}", json);
+    @PATCH
+    @Path("/users/{id}")
+    public Response updateUser(String json, @PathParam("id") String id) {
+        logger.info("updateUser : {}  --  {}", json, id);
          
         return Response.ok(userManagement.updateUser(json)).build();
     }
@@ -216,4 +219,17 @@ public class UserManagementServices implements Serializable {
         logger.info("logout : {}", id); 
         return Response.ok(userManagement.logout(id)).build();
     }
+    
+    
+//    @PermitAll
+//    @OPTIONS
+//    @Path("/")
+//    public Response preFlight() throws Exception {
+//        logger.info("preFlightUploadFile");
+//        return Response.ok()
+//                .header("Access-Control-Allow-Origin", "*")
+//                .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
+//                .header("Access-Control-Allow-Headers", "accept, Cache-Control, content-type, x-requested-with")
+//                .build();
+//    }
 }
