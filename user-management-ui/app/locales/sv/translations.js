@@ -4,6 +4,7 @@ export default {
         blank: '{{description}} kan inte vara tom', 
         username: 'Användarnamnet måste vara en giltig e-postadress',
         email: 'Måste vara en giltig e-postadress', 
+        'invalid-credentials': 'Username or password is invalid',
     },
     definitions: {
         abort: 'Avbryt',

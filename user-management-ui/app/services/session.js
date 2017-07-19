@@ -8,8 +8,7 @@ export default SessionService.extend({
 
     
     tokenObserver: Ember.observer('data.authenticated.access_token', function() {
-
-        console.log("access_token: " + 'data.authenticated.access_token');
+ 
         if (this.get('data.authenticated.access_token')) {
             const url = `${config.AUTHENTICATION_HOST}/userinfo`;
             console.log(url); 
@@ -29,7 +28,7 @@ export default SessionService.extend({
                 },
 
                 error: (responseData) => {
-                    console.log(responseData);
+                    console.log("responseData: " + responseData);
                     // If fetching the user profile errors, sign out to
                     // retrieve a new token.
                     this.invalidate();

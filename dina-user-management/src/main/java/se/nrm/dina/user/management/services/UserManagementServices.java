@@ -218,18 +218,5 @@ public class UserManagementServices implements Serializable {
     public Response logout(@QueryParam("id") String id) {
         logger.info("logout : {}", id); 
         return Response.ok(userManagement.logout(id)).build();
-    }
-    
-    
-//    @PermitAll
-//    @OPTIONS
-//    @Path("/")
-//    public Response preFlight() throws Exception {
-//        logger.info("preFlightUploadFile");
-//        return Response.ok()
-//                .header("Access-Control-Allow-Origin", "*")
-//                .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, OPTIONS")
-//                .header("Access-Control-Allow-Headers", "accept, Cache-Control, content-type, x-requested-with")
-//                .build();
-//    }
+    } 
 }

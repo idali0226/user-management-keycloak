@@ -34,8 +34,8 @@ const Validations = buildValidations({
 });
  
 
-export default DS.Model.extend( 
-	Validations, {   
+export default DS.Model.extend(Validations, {
+
 		first_name: DS.attr('string'),
 		last_name:  DS.attr('string'),
 		email: DS.attr('string'),
@@ -61,7 +61,19 @@ export default DS.Model.extend(
 	   	full_name: Ember.computed('first_name', 'last_name', function() {
 		  return `${this.get('first_name')} ${this.get('last_name')}`;
 		})
+});
+
+
+
+
+
+
+
+
+
+//	Validations, {   
+
 
  
-	}
-);
+//	}
+//);

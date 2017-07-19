@@ -4,6 +4,7 @@ export default {
         blank: '{{description}} can\'t be blank',
         username: 'Username must be a valid email address', 
         email: 'Must be a valid email address', 
+        'invalid-credentials': 'Username or password is invalid',
     },
     definitions: {
         abort: 'Abort',
@@ -76,6 +77,7 @@ export default {
                 name: 'Name',
                 email: 'email',
                 username: 'Username',
+                'username-email': 'Username/Email',
                 purpose: 'Purpose',
                 descriptions: 'Descriptions',
                 created_date: 'Created date',

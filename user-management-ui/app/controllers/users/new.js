@@ -10,8 +10,7 @@ export default Ember.Controller.extend({
     validation: Ember.inject.service(),
     ajax: Ember.inject.service(),
 
- //   purpose: null, 
-
+ //   purpose: null,  
  //   purposes: ['admin', 'data entry', 'test'],
 
     sendInvitation(user) {
@@ -30,15 +29,15 @@ export default Ember.Controller.extend({
     },
 
     actions: {  
-        didMakeSelection(value) {
-            console.log('didMakeSelection : ' + value   ); 
+   //     didMakeSelection(value) {
+   //         console.log('didMakeSelection : ' + value   ); 
   
-            if(value !== 'none') {
-                this.set('model.purpose', value);  
-            } else {
-                this.set('model.purpose', null); 
-            }
-        },
+   //         if(value !== 'none') {
+   //             this.set('model.purpose', value);  
+   //         } else {
+   //             this.set('model.purpose', null); 
+   //         }
+   //     },
 
         /** Handle form submit and validation. */
         submitForm () { 

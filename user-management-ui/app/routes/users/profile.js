@@ -8,7 +8,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 	},
 
  	beforeModel () {   
-      //  this.store.adapterFor('application').set('namespace', "user/api/v01/secure");  
+        this.store.adapterFor('application').set('namespace', "user/api/v01/secure");  
     },
  
  	actions: {

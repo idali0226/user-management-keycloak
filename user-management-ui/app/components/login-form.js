@@ -20,8 +20,7 @@ const Validations = buildValidations({
     }),
 });
 
-      
-export default Ember.Controller.extend(Validations, {
+export default Ember.Component.extend(Validations, {
 
     session: Ember.inject.service('session'),
     validation: Ember.inject.service(), 
@@ -35,12 +34,12 @@ export default Ember.Controller.extend(Validations, {
             this.set('invalidCredentials', null);
             this.set('isValidating', true);
 
-            this.validate({}, true).then(({model, validations}) => {
-                if (validations.get('isValid')) {
+            this.validate({}, true).then(({model, validations}) => { 
+                if (validations.get('isValid')) { 
                     this.get('session').authenticate(
                         'authenticator:oauth',
                         this.get('username'), this.get('password')
-                    ).catch(() => {
+                    ).catch(() => { 
                         this.set('invalidCredentials', true);
                         this.set('validation.isHidden', false);
                         this.set('isValidating', false);

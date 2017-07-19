@@ -1,38 +1,3 @@
-<div class="container users-view {{if validationError 'validation-visible' ''}}">  
-    {{#if responseMessage}}
-        <br/>
-        <div class="alert alert-success">
-            <h4>{{t 'messages.account.create-account'}}</h4>
-            <p>{{t 'messages.account.verification-email'}} {{model.email}}. </p>
-            <p>{{t 'messages.account.email-verification-action'}}</p> 
-        </div>
-    {{else}} 
-        {{#user-account-form account=model title='sign_up' isNew = true}} 
-        {{/user-account-form}} 
-    {{/if}}
-</div>
-<footer class="footer">
-    <div class="container">
-        <div class="btn-toolbar">
-            <button
-                class="btn btn-success btn-sm"
-                disabled={{isSaving}}
-                {{action 'submitForm'}}
-                disabled={{v-get model 'isInvalid'}}
-            >
-                {{#if isSaving}}
-                    {{dwcm-spinner button=true}}
-                    {{t 'user.new.toolbar.saving'}}
-                {{else}}
-                    {{t 'user.new.toolbar.save'}}
-                {{/if}}
-            </button>
-        </div>
-    </div>
-</footer>
-
- 
-<!--
  <div class="container users-view {{if validationError 'validation-visible' ''}}">
  
     <form {{action "submitForm" on="submit"}}>
@@ -42,7 +7,7 @@
                     {{#fg.content}}  
                         {{input 
                             value=model.first_name 
-                            placeholder="First name" 
+                            placeholder=(t 'fields.labels.user.first_name') 
                             class="form-control"  
                             autofocus="autofocus" 
                             focus-out=(action (mut showFirstNameError) true) }} 
@@ -54,26 +19,28 @@
                         {{/if}}
                         
                         {{input 
-                            value=model.last_name 
-                            placeholder="Last name" 
+                            value=model.last_name
+                            placeholder=(t 'fields.labels.user.last_name') 
                             class="form-control" 
                             focus-out=(action (mut showLastNameError) true) }} 
 
                         {{#if showLastNameError}}
                             <div class="error">
-                                {{v-get model 'last_name' 'message'}}
+                                {{v-get this 'last_name' 'message'}}
                             </div>
                         {{/if}}
 
+
                         {{input 
                             value=model.email 
-                            placeholder="Username/email" 
+                            placeholder=(t 'fields.labels.user.username-email') 
                             class="form-control" 
+                            type = "email"
                             focus-out=(action (mut showEmailError) true) }} 
 
                         {{#if showEmailError}} 
                             <div class="error"> 
-                                {{v-get model 'email' 'message'}}
+                                {{v-get this 'email' 'message'}}
                             </div> 
                         {{/if}} 
 
@@ -89,12 +56,7 @@
                             </div> 
                         {{/if}} 
  
-                      
- 
-                        {{input 
-                            value=model.descriptions 
-                            placeholder="Descriptions" 
-                            class="form-control"  }}   
+                       
 
                       
                     {{/fg.content}} 
@@ -125,4 +87,3 @@
         </div>
     </div>
 </footer>
--->

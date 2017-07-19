@@ -7,10 +7,7 @@
         <div class="pull-right user-menu">
             {{#if session.isAuthenticated}}
                 <span class="capitalized">{{session.user_profile.name}} [{{session.user_profile.realm_role}}]</span>  
-                (<a class="clickable" {{action 'signout' session.user_profile.user_id}}>{{t 'definitions.sign-out'}}</a>)
-                <!--
-               (<a class="clickable" {{action 'invalidateSession' session.user_profile.user_id}}>{{t 'definitions.sign-out'}}</a>) 
-               -->
+                (<a class="clickable" {{action 'signout' session.user_profile.user_id}}>{{t 'definitions.sign-out'}}</a>) 
             {{else}}
                 {{#link-to 'login'}}
                     {{t 'definitions.sign-in'}}
@@ -61,7 +58,7 @@
                     <a>{{t "navigation.profile"}}</a>
                 {{/link-to}} 
             {{else}}
-                {{#link-to "users.account" tagName="li"  }}
+                {{#link-to "register" tagName="li"  }}
                     <a>{{t "navigation.register"}}</a>  
                 {{/link-to}}   
             {{/if}} 

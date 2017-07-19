@@ -32,8 +32,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                             });
                     } else {
                         console.log('invalid');  
-                } 
-            });   
+                    } 
+                });   
 		}
 	}
 });
