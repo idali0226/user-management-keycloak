@@ -41,6 +41,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
             }).then(function(response) {
                 console.log("response : " + response);
                 session.invalidate();
+            }).finally(()=>{  
+                 session.invalidate();
             });
 
           //  this.get('session').invalidate();

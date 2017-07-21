@@ -6,8 +6,8 @@
     	<div class="row">
     	 	<div class="col-xs-12 col-md-12 col-lg-12">
     	 		<div class="row">
-    	 			<div class="col-xs-3">
-	    	 			Username/email: 
+    	 			<div class="col-xs-3"> 
+              <span>{{t 'fields.labels.user.username-email'}}:</span>
 	    	 		</div>
 	    	 		<div class="col-xs-9">
 	    	 			{{account.email}}
@@ -16,7 +16,7 @@
     	 		
     	 		<div class="row">
 	    	 		<div class="col-xs-3">
-	    	 			Purpose::
+	    	 			<span>{{t 'fields.labels.user.purpose'}}:</span>
 	    	 		</div>
 	    	 		<div class="col-xs-9">
 	    	 			{{account.purpose}}
@@ -25,7 +25,7 @@
 
 	    	 	<div class="row">
 	    	 		<div class="col-xs-3">
-	    	 			Account status:
+	    	 			<span>{{t 'fields.labels.user.account-status'}}:</span>
 	    	 		</div>
 	    	 		<div class="col-xs-9">
 	    	 			{{account.status}}
@@ -57,9 +57,7 @@
                      	placeholder="Password confirmatio" 
                      	class="form-control"  }} 
 	    	 	{{/if}}
-    	 	</div>
-
-    	 	
+    	 	</div> 
     	</div> 
     </div>
     <div class="panel-footer text-right">

@@ -5,14 +5,15 @@ export default Ember.Controller.extend({
 
 
 	/** Inject services. */
-    i18n: Ember.inject.service(),
-    session: Ember.inject.service(), 
-    validation: Ember.inject.service(),
-    ajax: Ember.inject.service(),
+ //   i18n: Ember.inject.service(),
+ //   session: Ember.inject.service(), 
+ //   validation: Ember.inject.service(),
+ //   ajax: Ember.inject.service(),
 
  //   purpose: null,  
  //   purposes: ['admin', 'data entry', 'test'],
 
+/*
     sendInvitation(user) {
         console.log("sendInvitation: " + user.id);
     
@@ -22,12 +23,17 @@ export default Ember.Controller.extend({
         });
     },
 
+    */
+
     /** Transition to users View route. */
+    /*
     transitionToUser () {
         console.log('transitionToUser');
         this.transitionToRoute('users');
     },
+    */
 
+/**
     actions: {  
    //     didMakeSelection(value) {
    //         console.log('didMakeSelection : ' + value   ); 
@@ -38,8 +44,7 @@ export default Ember.Controller.extend({
    //             this.set('model.purpose', null); 
    //         }
    //     },
-
-        /** Handle form submit and validation. */
+ 
         submitForm () { 
             let controller = this;
 
@@ -70,5 +75,5 @@ export default Ember.Controller.extend({
                 } 
             }); 
         }, 
-    }
+    }*/
 });

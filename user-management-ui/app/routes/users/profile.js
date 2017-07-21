@@ -19,7 +19,18 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 	 	updateUser(user) {  
 	 		console.log("update user : " + user.id);
+
+             user.save().then((record) => {   
+                console.log("record : " + record);
+                this.refresh(); 
+                this.set('showSaved', true);   
+            }).catch((msg) => { 
+                console.log("error : " + msg);
+            }).finally(()=>{ 
+                                 
+            });
  
+ /**
 			user.validate() 
                 .then(({ validations }) => {
                     if (validations.get('isValid')) { 
@@ -33,7 +44,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                     } else {
                         console.log('invalid');  
                 	} 
-            	});    
+            	});    */
 	 		user.set('isEditing', false);
 	 	},
 

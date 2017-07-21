@@ -1,130 +1,18 @@
 <div class="container users-view {{if validationError 'validation-visible' ''}}">
-    <div class="page-header">
-        <h2>
-            {{t 'user.new.title' name=(t type)}}:  
-        </h2>
-    </div>
-
-    {{#user-account-form account=model}} 
+    {{#user-account-form account=model title="register-new-account" isNew=true}} 
+        <button
+            class="btn btn-success btn-sm"
+            disabled={{isSaving}}
+            {{action 'submitForm'}}
+            disabled={{v-get model 'isInvalid'}}
+        >
+            {{#if isSaving}}
+                {{dwum-spinner button=true}}
+                {{t 'user.new.toolbar.saving'}}
+            {{else}}
+                {{t 'user.new.toolbar.save'}}
+            {{/if}}
+        </button>
     {{/user-account-form}} 
 </div>
-<footer class="footer">
-    <div class="container">
-        <div class="btn-toolbar">
-            <button
-                class="btn btn-success btn-sm"
-                disabled={{isSaving}}
-                {{action 'submitForm'}}
-                disabled={{v-get model 'isInvalid'}}
-            >
-                {{#if isSaving}}
-                    {{dwcm-spinner button=true}}
-                    {{t 'user.new.toolbar.saving'}}
-                {{else}}
-                    {{t 'user.new.toolbar.save'}}
-                {{/if}}
-            </button>
-        </div>
-    </div>
-</footer>
-
-
-
-<!--
-
-<div class="container users-view {{if validationError 'validation-visible' ''}}">
-    <div class="page-header">
-        <h2>
-            {{t 'user.new.title' name=(t type)}}:  
-        </h2>
-    </div>
-
-    <form {{action "submitForm" on="submit"}}>
-        <div class="row">
-            <div class="col-xs-12"> 
-                {{#field-group title='sign_up' collapsable=false as |fg|}}
-                    {{#fg.content}}  
-                        {{input 
-                            value=model.first_name 
-                            placeholder="First name" 
-                            class="form-control"  
-                            autofocus="autofocus" 
-                            focus-out=(action (mut showFirstNameError) true) }} 
-                            
-                        {{#if showFirstNameError}}
-                            <div class="error">
-                                {{v-get model 'first_name' 'message'}}
-                            </div>
-                        {{/if}}
-                        
-                        {{input 
-                            value=model.last_name 
-                            placeholder="Last name" 
-                            class="form-control" 
-                            focus-out=(action (mut showLastNameError) true) }} 
-
-                        {{#if showLastNameError}}
-                            <div class="error">
-                                {{v-get model 'last_name' 'message'}}
-                            </div>
-                        {{/if}}
-
-                        {{input 
-                            value=model.email 
-                            placeholder="Username/email" 
-                            class="form-control" 
-                            focus-out=(action (mut showEmailError) true) }} 
-
-                        {{#if showEmailError}} 
-                            <div class="error"> 
-                                {{v-get model 'email' 'message'}}
-                            </div> 
-                        {{/if}} 
-
-
-                        {{input 
-                            value=model.purpose 
-                            placeholder="Purpose" 
-                            class="form-control" 
-                            focus-out=(action (mut showPurposeError) true) }} 
-
-                        {{#if showPurposeError}} 
-                            <div class="error"> 
-                                {{v-get model 'purpose' 'message'}}
-                            </div> 
-                        {{/if}} 
  
-                        <!--
-                        {{#x-select  value=model.purpose class="form-control" on-change=(action 'didMakeSelection') as |xs| }}
-                            <option>Select purpose</option>
-                            {{#each purposes as |purpose|}} 
-                                {{#xs.option value=purpose}}
-                                    {{purpose}}
-                                {{/xs.option}}
-                            {{/each}} 
-                        {{/x-select}}
-                        -->
- 
-                        {{input 
-                            value=model.descriptions 
-                            placeholder="Descriptions" 
-                            class="form-control"  }}   
-
-                        <br>
-                        <br>
-                        <h4>Project:  <em>DINA</em></h4>
- 
-                        {{#each model.clients as |client|}}
-                            <a class="list-group-item">dd{{client.client_name}}</a>
-                        {{/each}}
-                    {{/fg.content}} 
-
-                {{/field-group}} 
-            </div>
-        </div> 
-    </form>
-    
-</div>
-
-
--->

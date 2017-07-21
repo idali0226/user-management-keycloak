@@ -7,14 +7,12 @@ package se.nrm.dina.user.management.services;
  
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.Map; 
-import javax.annotation.security.PermitAll;
+import java.util.Map;  
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET; 
-import javax.ws.rs.OPTIONS;
+import javax.ws.rs.GET;  
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT; 
 import javax.ws.rs.Path; 
@@ -101,7 +99,7 @@ public class UserManagementServices implements Serializable {
         if(email == null) {
             getInfoFromToken(req);
             
-            realmManagement.getRealmEvent(CommonString.getInstance().getDinaRealm());
+        //    realmManagement.getRealmEvent(CommonString.getInstance().getDinaRealm());
             return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), null)).build();
         } else { 
             return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), email)).build();
@@ -203,6 +201,14 @@ public class UserManagementServices implements Serializable {
         
         logger.info("enableUser : {}", id); 
         return Response.ok(userManagement.enableUser(id)).build();
+    }
+    
+        
+    @PUT
+    @Path("/disableUser")    
+    public Response disableUser(@QueryParam("id") String id) { 
+        logger.info("disableUser : {}", id); 
+        return Response.ok(userManagement.disableUser(id)).build();
     }
     
     @PATCH

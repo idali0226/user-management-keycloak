@@ -92,6 +92,7 @@ public class KeycloakSetup implements Serializable {
             Map<String, String> roleMap = new HashMap();
             roleMap.put(CommonString.getInstance().getAdminRole(), CommonString.getInstance().getAdminRoleDescription());
             roleMap.put(CommonString.getInstance().getUserRole(), CommonString.getInstance().getUserRoleDescription());
+            roleMap.put(CommonString.getInstance().getDisabledUserRole(), CommonString.getInstance().getUserRoleDescription());
             
             roleMap.entrySet().stream()
                     .forEach(r -> {

@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List; 
 import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.util.Properties; 
 import javax.inject.Inject; 
 import javax.json.JsonObject;  
 import javax.ws.rs.core.Response;
@@ -26,8 +25,7 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource; 
 import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation; 
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;  
 import org.slf4j.Logger;
@@ -210,6 +208,43 @@ public class UserManagement implements Serializable {
         return json.successJson("Email sent successfully");
     }
     
+    public JsonObject disableUser(String id) {
+        buildRealm();
+        
+        UserResource userResource = getUsersResource().get(id); 
+        
+        removeCientRoles(userResource, CommonString.getInstance().getDinaRestClientId());
+        removeCientRoles(userResource, CommonString.getInstance().getUserManagementClientId());
+        setRealmRole(userResource, CommonString.getInstance().getDisabledUserRole());
+ 
+        List<String> statusList = new ArrayList<>();
+        statusList.add("disabled");
+    
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setEnabled(Boolean.FALSE);
+        userRepresentation.setAttributes(setUpAttributes(userRepresentation, statusList, CommonString.getInstance().getStatus()));
+        userResource.update(userRepresentation);
+        
+        keycloakClient.close();
+        logger.info("is keycloakclient is null ? {}", keycloakClient);
+        return getUsers(CommonString.getInstance().getDinaRealm(), null);
+    }
+    
+    private Map<String, List<String>> setUpAttributes(UserRepresentation userRepresentation, List<String> attrList, String attrKey) {
+        
+        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
+        attributes.remove(attrKey);
+        
+        List<String> statusList = new ArrayList<>();
+        attrList.stream()
+                .forEach(s -> {
+                    statusList.add(s);
+                });
+        attributes.put(attrKey, statusList);
+        return attributes;
+    }
+    
+    
  
     public JsonObject enableUser(String id) {
         buildRealm();
@@ -218,18 +253,17 @@ public class UserManagement implements Serializable {
         setRealmRole(userResource, CommonString.getInstance().getUserRole());
         setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
         setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
-
-        UserRepresentation userRepresentation = userResource.toRepresentation();
-
-        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
-        attributes.remove("status");
+ 
+//        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
+//        attributes.remove("status");
 
         List<String> statusList = new ArrayList<>();
-        statusList.add("existing");
-        attributes.put("status", statusList);
+        statusList.add("existing"); 
 
-        userRepresentation.setAttributes(attributes);
-        userResource.update(userRepresentation);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setEnabled(Boolean.TRUE);
+        userRepresentation.setAttributes(setUpAttributes(userRepresentation, statusList, CommonString.getInstance().getStatus()));
+        userResource.update(userRepresentation); 
         userResource.resetPasswordEmail();
         keycloakClient.close();
          
@@ -249,7 +283,7 @@ public class UserManagement implements Serializable {
         
         String id = dataJson.getString(CommonString.getInstance().getId());
         UserResource userResource = getUsersResource().get(id);
-        
+         
 //        String password = attributesJson.getString(CommonString.getInstance().getPassword()); 
 //        resetCredential(userResource, password);
         
@@ -258,6 +292,10 @@ public class UserManagement implements Serializable {
         userRepresentation.setLastName(lastName);
         userRepresentation.setEmail(email);
         userRepresentation.setUsername(email);
+        
+        List<String> purposeList = new ArrayList<>();
+        purposeList.add(purpose); 
+        userRepresentation.setAttributes(setUpAttributes(userRepresentation, purposeList, CommonString.getInstance().getPurpose()));
         userResource.update(userRepresentation);
          
         return getUsers(CommonString.getInstance().getDinaRealm(), email);
@@ -271,15 +309,23 @@ public class UserManagement implements Serializable {
         keycloakClient.close();
         return json.successJson("User logout success");
     }
-        
-    private void setClientRole(UserResource userResource, String clientId, String roleName) {
-
+    
+    private void removeCientRoles(UserResource userResource, String clientId) {
+        String cId = getClientRepresentationByClientId(clientId).getId();
+        List<RoleRepresentation> clrs = getClientsResource().get(cId).roles().list();
+        userResource.roles().clientLevel(cId).remove(clrs);
+    }
+    
+    private ClientRepresentation getClientRepresentationByClientId(String clientId) {
         List<ClientRepresentation> crs = getClientsResource().findAll();
-        ClientRepresentation cr = crs.stream()
+        return crs.stream()
                 .filter(c -> c.getClientId().equals(clientId))
                 .findFirst().get();
-
-        String cId = cr.getId();
+    }
+        
+    private void setClientRole(UserResource userResource, String clientId, String roleName) {
+ 
+        String cId = getClientRepresentationByClientId(clientId).getId();
 
         List<RoleRepresentation> newRole = new ArrayList<>();
         List<RoleRepresentation> clrs = getClientsResource().get(cId).roles().list();
@@ -291,15 +337,16 @@ public class UserManagement implements Serializable {
                 });
         userResource.roles().clientLevel(cId).add(newRole);
     }
+    
+    private void removeRealmRoles(UserResource userResource) {
+        List<RoleRepresentation> rrs = userResource.roles().realmLevel().listAll();
+        userResource.roles().realmLevel().remove(rrs);
+    }
 
     private void setRealmRole(UserResource userResource, String role) {
         
-        
-        List<RoleRepresentation> rrs = userResource.roles().realmLevel().listAll();
-        userResource.roles().realmLevel().remove(rrs);
-        
-        List<RoleRepresentation> dinaRealmRoles = getDinaRealmResource().roles().list();
-
+        removeRealmRoles(userResource); 
+        List<RoleRepresentation> dinaRealmRoles = getDinaRealmResource().roles().list(); 
         List<RoleRepresentation> newRole = new ArrayList<>();
         dinaRealmRoles.stream()
                         .filter(drr -> !drr.getName().equals(CommonString.getInstance().getOfflineAccessRole()))

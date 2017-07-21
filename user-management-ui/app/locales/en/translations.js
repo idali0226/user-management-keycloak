@@ -67,28 +67,39 @@ export default {
         },
     }, 
     'user-profile': 'User profile',
-    'sign_up': "Sign up",
-    'edit_user': "Edit user",
+    'sign-up': "Sign up",
+    'edit-user': "Edit user",
+    'register-new-account': 'Register new account',
     fields: {
         labels: {
             user: {
-                first_name: 'First name',
-                last_name: 'Last name',
+                'first-name': 'First name',
+                'last-name': 'Last name',
                 name: 'Name',
                 email: 'email',
                 username: 'Username',
                 'username-email': 'Username/Email',
                 purpose: 'Purpose',
                 descriptions: 'Descriptions',
-                created_date: 'Created date',
-                user_enabled: 'Enabled',
-                email_verified: 'Email verified',
+                'created-date': 'Created date',
+                'user-enabled': 'Enabled',
+                'email-verified': 'Email verified',
+                'account-status': 'Account status',
             }, 
             client: { 
                 name: 'Client name', 
             }, 
         },
     },   
+    buttons: {
+        labels: {
+            'enable-user': 'Enable user',
+            'disable-user': 'Disable user',
+            'view': 'View',
+            'edit-user': 'Edit user',
+            'cancel': 'Cancel',
+        }
+    },
     client: { 
         list: {
             header: 'List and search for clients',
@@ -111,9 +122,8 @@ export default {
             'email-verification-action': 'Please click the activation link to verifiy your email address within 24 hours',
         }, 
         'password-recover': {
-            'change-password': 'Your password has been changed.',
-            'update-password-email': 'An update email will be sent to:',
-            'update-email-action': 'Please click the update password link to update email',
+            'password-recover': 'Recovery link has been sent to your email address: ', 
+            'update-email-action': 'Please click the recovery link to change password within 24 hours.',
         },
         
 

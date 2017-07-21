@@ -36,44 +36,43 @@ const Validations = buildValidations({
 
 export default DS.Model.extend(Validations, {
 
-		first_name: DS.attr('string'),
-		last_name:  DS.attr('string'),
-		email: DS.attr('string'),
-		purpose: DS.attr('string'), 
-		password: DS.attr('string'),
-		timestamp_created: DS.attr('number'),
-		is_enabled: DS.attr('boolean'),
- 		is_email_verified: DS.attr('boolean'),
- 		status: DS.attr('string'),
+ 	first_name: DS.attr('string'),
+ 	last_name:  DS.attr('string'),
+ 	email: DS.attr('string'),
+ 	purpose: DS.attr('string'), 
+ 	password: DS.attr('string'),
+	timestamp_created: DS.attr('number'),
+ 	is_enabled: DS.attr('boolean'),
+ 	is_email_verified: DS.attr('boolean'),
+ 	status: DS.attr('string'),
 
- 		realms: DS.hasMany('realm', {async: true}),
+ 	realms: DS.hasMany('realm', {async: true}),
 
- 		new_account: function() { 
- 			return this.get('status') === 'new';
- 		}.property('person'),
+ 	new_account: function() { 
+ 	 	return this.get('status') === 'new';
+  	}.property('status'),
 
   
- 		formatted_date: Ember.computed('timestamp_created', function () {
-        	return moment(this.get('timestamp_created')).format('Do MMMM YYYY');
-   	 	}),
+ 	formatted_date: Ember.computed('timestamp_created', function () {
+     	return moment(this.get('timestamp_created')).format('Do MMMM YYYY');
+ 	}),
 
 
-	   	full_name: Ember.computed('first_name', 'last_name', function() {
-		  return `${this.get('first_name')} ${this.get('last_name')}`;
-		})
+ 	full_name: Ember.computed('first_name', 'last_name', function() {
+	 	return `${this.get('first_name')} ${this.get('last_name')}`;
+ 	}),
+
+    show_disable_button: Ember.computed('status', 'email', function() {
+        return this.get('status') !== 'disabled'  & this.get('email') !== 'admin@nrm.se';
+    }),
+  
+ 	show_enable_button: Ember.computed('status', function() { 
+ 	 	return this.get('status') === 'disabled' | this.get('status') === 'new';
+  	}),
+
+    is_super_admin: function() {
+        return  this.get('email') === 'admin@nrm.se';
+    }.property('email')
+
 });
-
-
-
-
-
-
-
-
-
-//	Validations, {   
-
-
  
-//	}
-//);

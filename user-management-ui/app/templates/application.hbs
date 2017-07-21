@@ -53,10 +53,11 @@
                         </ul>
                         
                     </li>
-                {{/if}} 
-                {{#link-to "users.profile" session.user_profile.user_id tagName="li" }}
-                    <a>{{t "navigation.profile"}}</a>
-                {{/link-to}} 
+                {{else}}
+                    {{#link-to "users.profile" session.user_profile.user_id tagName="li" }}
+                        <a>{{t "navigation.profile"}}</a>
+                    {{/link-to}} 
+                {{/if}}  
             {{else}}
                 {{#link-to "register" tagName="li"  }}
                     <a>{{t "navigation.register"}}</a>  

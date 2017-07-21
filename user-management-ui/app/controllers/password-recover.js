@@ -17,11 +17,15 @@ export default Ember.Controller.extend(Validations, {
  
     validation: Ember.inject.service(), 
     ajax: Ember.inject.service(),
-  
+   
     actions: {
    
         send () {
         	let controller = this;
+
+            if (controller.get('isSending')) {
+                return;
+            }
 
         	const ajax = this.get('ajax'); 
 
@@ -30,12 +34,18 @@ export default Ember.Controller.extend(Validations, {
 
             this.validate({}, true).then(({model, validations}) => {  
                 if (validations.get('isValid')) {
+
+                    this.set('validation.isHidden', true);
+                    controller.set('isSending', true);
+
                 	ajax.request('/recover-password?email=' + this.get('email'), {
                			method: 'PUT' 
            			}).then(function(response) {
                			console.log("response : " + response); 
                			controller.set('responseMessage', true);
-          			}); 
+          			}).finally(() => {
+                        controller.set('isSending', false);
+                    }); 
                      
                 } else {
                     this.set('validation.isHidden', false);
@@ -43,6 +53,6 @@ export default Ember.Controller.extend(Validations, {
                 } 
             }); 
         }
-    }
+    } 
 
 });

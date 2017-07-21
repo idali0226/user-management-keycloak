@@ -1,17 +1,17 @@
 <div class="container users-view"> 
     
     {{#if model.isEditing }} 
-        {{#user-account-form account=model title='edit_user'}} 
-            <button class="btn btn-md btn-primary" {{action 'updateUser' model}}>Update</button>
+        {{#user-account-form account=model title='edit-user'}} 
+            <button class="btn btn-success btn-sm" {{action 'updateUser' model}}>Update</button>
         {{/user-account-form}}   
     {{else}}
         {{#user-account account=model}} 
             {{#if model.changePassword}}
-                <button class="btn btn-md btn-primary" {{action 'cancel' model}}>Cancel</button>
-                <button class="btn btn-md btn-primary" {{action 'updatePassword' model}}>Update password</button>
+                <button class="btn btn-success btn-sm" {{action 'cancel' model}}>Cancel</button>
+                <button class="btn btn-success btn-sm" {{action 'updatePassword' model}}>Update password</button>
             {{else}}
-                <button class="btn btn-md btn-primary" {{action 'changePassword' model}}>Change password</button>
-                <button class="btn btn-md btn-primary" {{action 'editUser' model}}>Edit</button>
+                <button class="btn btn-success btn-sm" {{action 'changePassword' model}}>Change password</button>
+                <button class="btn btn-success btn-sm" {{action 'editUser' model}}>Edit</button>
             {{/if}} 
         {{/user-account}} 
     {{/if}} 

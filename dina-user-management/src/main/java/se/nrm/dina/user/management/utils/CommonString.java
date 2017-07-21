@@ -37,6 +37,7 @@ public class CommonString {
     private static final String ADMIN_ROLE = "admin";
     private static final String USER_ROLE = "user";
     private static final String DATA_ENTRY_ROLE = "data entry";
+    private static final String DISABLED_USER_ROLE = "disabled_user";
     
     private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can management user accounts, clients in User management application. ";
     private static final String USER_ROLE_DESCRIPTION = "A user has usr role can only view and edit his/her own account.";
@@ -443,6 +444,10 @@ public class CommonString {
     
     public String getDataEntryRole() {
         return DATA_ENTRY_ROLE;
+    }
+    
+    public String getDisabledUserRole() {
+        return DISABLED_USER_ROLE;
     }
     
     public String getAdminRoleDescription() {

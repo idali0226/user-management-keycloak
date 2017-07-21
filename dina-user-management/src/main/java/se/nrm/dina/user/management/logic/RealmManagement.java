@@ -84,27 +84,24 @@ public class RealmManagement implements Serializable {
         keycloakClient.realms().create(realmRepresenttion);
     }
     
-    public void getRealmEvent(String realmName) {
-        buildKeycloakClient();
-        List<EventRepresentation> events = keycloakClient.realm(realmName).getEvents();
-        events.stream()
-                .forEach(e -> {
-                    logger.info("event type : {}", e.getType());
-                    logger.info("client : {}", e.getClientId());
-                    logger.info("event detial : {}", e.getDetails());
-       
-                });
-        
-        List<AdminEventRepresentation> adminEvents = keycloakClient.realm(realmName).getAdminEvents();
-        adminEvents.stream()
-                .forEach(e -> {
-                    logger.info("operation type : {}", e.getOperationType());
-                    logger.info("resource type : {}", e.getResourceType()); 
-                });
-        
-        
-         
-    }
+//    public void getRealmEvent(String realmName) {
+//        buildKeycloakClient();
+//        List<EventRepresentation> events = keycloakClient.realm(realmName).getEvents();
+//        events.stream()
+//                .forEach(e -> {
+//                    logger.info("event type : {}", e.getType());
+//                    logger.info("client : {}", e.getClientId());
+//                    logger.info("event detial : {}", e.getDetails());
+//       
+//                });
+//        
+//        List<AdminEventRepresentation> adminEvents = keycloakClient.realm(realmName).getAdminEvents();
+//        adminEvents.stream()
+//                .forEach(e -> {
+//                    logger.info("operation type : {}", e.getOperationType());
+//                    logger.info("resource type : {}", e.getResourceType()); 
+//                }); 
+//    }
     
     public JsonObject getRealmByRealmName(String realmName) {
         buildKeycloakClient();
