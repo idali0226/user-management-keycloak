@@ -4,10 +4,7 @@
  * and open the template in the editor.
  */
 package se.nrm.dina.user.management.logic.initial.setup;
-
-//import java.io.FileInputStream;
-//import java.io.IOException;
-//import java.io.InputStream;
+ 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,8 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-//import java.util.Properties;
+import java.util.Properties; 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -216,7 +212,7 @@ public class KeycloakSetup implements Serializable {
         ClientRepresentation clientRepresentation = new ClientRepresentation();
         clientRepresentation.setClientId(CommonString.getInstance().getUserManagementClientId());
         clientRepresentation.setName(CommonString.getInstance().getUserManagementClientName());
-        clientRepresentation.setDescription("user management to management user account in keycloak");
+        clientRepresentation.setDescription("Management user account in keycloak");
         clientRepresentation.setEnabled(Boolean.TRUE);
         clientRepresentation.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
         clientRepresentation.setDirectAccessGrantsEnabled(Boolean.FALSE); 

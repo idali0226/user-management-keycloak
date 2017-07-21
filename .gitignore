@@ -3,3 +3,9 @@
 /dina-keycloak-management/target/
 nohup.out
 execute.sh
+wildfly-swarm.jar
+/wildfly-swarm.jar
+api
+dina-user-management/Dockerfile
+dina-user-management/docker-compose.yaml
+dina-user-management/docker/
