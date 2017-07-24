@@ -11,7 +11,9 @@ Dependencies on the host
 
 ## Startup
 
-To start dina-user-management api in wildfly:
+### To start dina-user-management api in wildfly:
+
+Go to directory dina-user-management/target
 
   java -Dswarm.http.port=8181 -jar user-management-api-swarm.jar
 
@@ -22,5 +24,9 @@ Kill non-gracefully stopped processes before re-launching:
 
   ps 
   kill -9 [process id]
-  
-  
+ 
+### To start frontend
+
+Go to directory user-management-ui
+
+  ember s
