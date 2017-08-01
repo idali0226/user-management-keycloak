@@ -5,27 +5,47 @@
     </h1>
   </div>
 
-  {{#if search}}
-    {{input type="text" value=model.first_name class="form-control" placeholder="Search by first name"}}
-  {{else}}
-    Filte users:
-  {{/if}}
-
+ 
 
   <div class="row">
+    {{#users-filter filter=(action 'filterByUsername') as |users|}}
+
+      <hr >
+      <ul class="results">
+        {{#each users as |user|}}
+          {{#user-account account=user}}
+            {{#link-to 'users.view' user class='btn btn-success btn-sm' disabled=user.is_super_admin}}
+              {{t 'buttons.labels.view'}}   
+            {{/link-to}}
+          {{/user-account}}
+        {{/each}}
+      </ul>
+  {{/users-filter}}
+
+
+<!--
     {{#each model as |user|}}  
       <div class="col-md-12">
         {{#user-account account=user}}
-          {{#link-to 'users.view' user class='btn btn-success btn-sm'}}{{t 'buttons.labels.view'}}{{/link-to}}
+          {{#link-to 'users.view' user class='btn btn-success btn-sm' disabled=user.is_super_admin}}
+            {{t 'buttons.labels.view'}}  
+          {{/link-to}}
             
-          {{#if user.show_disable_button}}
-            <button class="btn btn-danger btn-sm" {{action 'disableUser' user}}>
-              {{t 'buttons.labels.disable-user'}} 
+          <!--
+          {{#if user.show_reject_button}}
+            <button class="btn btn-danger btn-sm" {{action 'rejectUser' user}}>
+              {{t 'buttons.labels.reject-user'}} 
             </button>
           {{/if}}
+          -->
+        
         {{/user-account}}
       </div> 
     {{/each}}
+
+    -->
+
+
   </div>
 </div>
  

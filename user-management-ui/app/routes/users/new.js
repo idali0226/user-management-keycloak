@@ -50,16 +50,15 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
             user.validate() 
                 .then(({ validations }) => {
                     if (validations.get('isValid')) {  
+                        console.log("valid");
                         controller.set('isSaving', true);
-
+                        console.log(controller.get('isSaving'));
                         user.save()
                             .then((record) => {   
                                 this.set('showSaved', true); 
-                                console.log('save: ' + record.id);
-
-                                this.sendInvitation(record);
-                                this.transitionToUser(); 
-
+                                console.log('save: ' + record.id); 
+                            //    this.sendInvitation(record);
+                                this.transitionToUser();  
                                 console.log('done');
                             }).finally(()=>{
                                 controller.set('isSaving', false);

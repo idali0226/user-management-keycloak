@@ -9,7 +9,7 @@ const Validations = buildValidations({
             descriptionKey: 'definitions.email'
         }),
         validator('format', { type: 'email', debounce: 300}),
-        validator('account-exist', { debounce: 300 })
+       // validator('account-exist', { debounce: 300 })
     ]  
 });
 

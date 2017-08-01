@@ -95,9 +95,10 @@ export default {
         labels: {
             'enable-user': 'Enable user',
             'disable-user': 'Disable user',
+            'reject-user': 'Reject user',
             'view': 'View',
             'edit-user': 'Edit user',
-            'cancel': 'Cancel',
+            'cancel': 'Cancel', 
         }
     },
     client: { 

@@ -125,11 +125,13 @@ public class JsonConverterImpl implements Serializable, JsonConverter {
     @Override
     public JsonObject converterUser(UserRepresentation userRepresentation) {
         logger.info("converterUser");
-
+ 
         JsonObjectBuilder jsonBuilder = JSON_FACTORY.createObjectBuilder();
         JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
-        buildUserData(userRepresentation, dataBuilder);
-
+        
+        if(userRepresentation != null) {
+            buildUserData(userRepresentation, dataBuilder);
+        } 
         jsonBuilder.add(CommonString.getInstance().getData(), dataBuilder);
         return jsonBuilder.build();
     }

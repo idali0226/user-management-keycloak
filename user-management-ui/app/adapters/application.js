@@ -1,7 +1,10 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 import config from '../config/environment';
 
 import DataAdapterMixin from 'ember-simple-auth/mixins/data-adapter-mixin';
+
+const {RSVP, run} = Ember;
 
 export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
     host: config.HOST,
@@ -31,6 +34,62 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
    
         return url;
     },
+
+
+
+
+
+
+
+
+
+
+
+    createRecord(store, type, snapshot) {
+      let saving = this._super(store, type, snapshot);
+
+      return new RSVP.Promise(
+        (resolve, reject) => {
+          saving.then(
+            (payload) => {
+              console.log("payload : " + payload.data.id);
+
+              let id = payload.data.id;
+              let existing = store.peekRecord('user', id);
+              console.log("existing : " + existing.id);
+              if (existing) {
+                store.unloadRecord(existing);
+          //      store._removeFromIdMap(existing._internalModel);
+                run.next(() => { 
+                  resolve(payload); 
+                });
+              } else {
+                resolve(payload);
+              }
+            },
+            (error) => {
+              reject(error);
+            }
+          );
+        }
+      );
+    },
+
+  
+
+
+ 
+    
+
+
+
+
+
+
+
+
+
+
 
   //  urlForCreateRecord(modelName/*, snapshot*/) {
   //      switch(modelName) {

@@ -1,16 +1,15 @@
-<div class="container users-view {{if validationError 'validation-visible' ''}}">
+<div class="container users-view  ">
     {{#user-account-form account=model title="register-new-account" isNew=true}} 
         <button
-            class="btn btn-success btn-sm"
-            disabled={{isSaving}}
+            class="btn btn-success btn-sm" 
             {{action 'submitForm'}}
             disabled={{v-get model 'isInvalid'}}
         >
-            {{#if isSaving}}
+            {{#if isSaving}}  
                 {{dwum-spinner button=true}}
-                {{t 'user.new.toolbar.saving'}}
+                {{t 'user.new.toolbar.saving'}} 
             {{else}}
-                {{t 'user.new.toolbar.save'}}
+                {{t 'user.new.toolbar.save'}} 
             {{/if}}
         </button>
     {{/user-account-form}} 

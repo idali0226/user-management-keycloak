@@ -1,63 +1,61 @@
 <form {{action "submitForm" on="submit"}}>
 	<div class="row">
 		<div class="col-xs-12"> 
-  			{{#field-group title=title collapsable=false as |fg|}}
-          		{{#fg.content}}  
+      {{#field-group title=title collapsable=false as |fg|}}
+        {{#fg.content}}  
+          {{#if isNew}}
+            {{input 
+              value=account.email 
+              placeholder=(t 'fields.labels.user.username-email')
+              class="form-control" 
+              autofocus="autofocus" 
+              focus-out=(action (mut showEmailError) true) }} 
 
-                {{#if isNew}}
-                  {{input 
-                      value=account.email 
-                      placeholder="Username/email" 
-                      class="form-control" 
-                      autofocus="autofocus" 
-                      focus-out=(action (mut showEmailError) true) }} 
+            {{#if showEmailError}} 
+              <div class="error"> 
+                {{v-get account 'email' 'message'}}
+              </div> 
+            {{/if}} 
+          {{else}}
+            {{account.email}}
+          {{/if}}
 
-                  {{#if showEmailError}} 
-                    <div class="error"> 
-                          {{v-get account 'email' 'message'}}
-                        </div> 
-                  {{/if}} 
-                {{else}}
-                  {{account.email}}
-                {{/if}}
-
-              		{{input 
-                     	value=account.first_name 
-                     	placeholder="First name" 
-                   		class="form-control"   
-                     	focus-out=(action (mut showFirstNameError) true) }} 
+          {{input 
+            value=account.first_name 
+            placeholder=(t 'fields.labels.user.first-name')
+            class="form-control"   
+            focus-out=(action (mut showFirstNameError) true) }} 
                             
-                	{{#if showFirstNameError}}
-                     	<div class="error">
-                        	{{v-get account 'first_name' 'message'}}
-                     	</div>
-                	{{/if}}
+            {{#if showFirstNameError}}
+              <div class="error">
+                {{v-get account 'first_name' 'message'}}
+              </div>
+            {{/if}}
                         
-                	{{input 
-                      	value=account.last_name 
-                      	placeholder="Last name" 
-                      	class="form-control" 
-                     	  focus-out=(action (mut showLastNameError) true) }} 
+          {{input 
+            value=account.last_name 
+            placeholder=(t 'fields.labels.user.last-name')
+            class="form-control" 
+            focus-out=(action (mut showLastNameError) true) }} 
 
-                	{{#if showLastNameError}}
-                    	<div class="error">
-                      		{{v-get account 'last_name' 'message'}}
-                     	</div>
-                	{{/if}}
+            {{#if showLastNameError}}
+              <div class="error">
+                {{v-get account 'last_name' 'message'}}
+              </div>
+            {{/if}}
  
-                 	{{input 
-                      value=account.purpose 
-                     	placeholder="Purpose" 
-                     	class="form-control" 
-                    	focus-out=(action (mut showPurposeError) true) }} 
+          {{input 
+            value=account.purpose 
+            placeholder=(t 'fields.labels.user.purpose')
+            class="form-control" 
+            focus-out=(action (mut showPurposeError) true) }} 
 
-                 	{{#if showPurposeError}} 
-                      	<div class="error"> 
-                        	{{v-get account 'purpose' 'message'}}
-                    	</div> 
-              		{{/if}}  
-             	{{/fg.content}} 
-
+            {{#if showPurposeError}} 
+              <div class="error"> 
+                {{v-get account 'purpose' 'message'}}
+              </div> 
+            {{/if}}  
+          {{/fg.content}}  
     		{{/field-group}} 
      	</div>
       <div class="panel-footer text-right">

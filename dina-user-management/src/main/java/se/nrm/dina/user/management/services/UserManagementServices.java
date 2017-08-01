@@ -7,11 +7,13 @@ package se.nrm.dina.user.management.services;
  
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;  
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;  
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT; 
@@ -21,7 +23,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.KeycloakSecurityContext;
 import org.keycloak.representations.AccessToken;
@@ -67,17 +71,7 @@ public class UserManagementServices implements Serializable {
         logger.info("doGet");
         return Response.ok("Hello from WildFly Swarm!").build();
     }
-    
-//    @GET    
-//    @Path("/users")
-//    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-//    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})    
-//    public Response getUsers(@Context HttpServletRequest req) {
-//        logger.info("getUsers");
-//        
-//        getInfoFromToken(req);
-//        return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm())).build();
-//    }
+     
   
     @GET    
     @Path("/users/{id}")
@@ -86,24 +80,40 @@ public class UserManagementServices implements Serializable {
     public Response getUserById(@Context HttpServletRequest req, @PathParam("id") String id) {
         logger.info("getUserById : id :  {}", id); 
         
-        return Response.ok(userManagement.getUserById(CommonString.getInstance().getDinaRealm(), id)).build();
+        return Response.ok(userManagement.getUserById(id)).build();
     }
      
     @GET    
     @Path("/users")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
-    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email) {
-        logger.info("getUsers : email :  {}", email); 
+    public Response getUsers(   @Context HttpServletRequest req, 
+                                @QueryParam("filter[email]") String email, 
+                                @QueryParam("filter[login]") boolean isLogin,
+                                @Context UriInfo info) {
+        logger.info("getUsers : email :  {} -- {}", email, isLogin); 
         
-        if(email == null) {
-            getInfoFromToken(req);
-            
-        //    realmManagement.getRealmEvent(CommonString.getInstance().getDinaRealm());
-            return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), null)).build();
-        } else { 
-            return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), email)).build();
-        } 
+        
+        MultivaluedMap<String, String> map = info.getQueryParameters();
+        logger.info("map : {}", map );
+        
+        map.entrySet().stream()
+                .forEach(m -> { 
+                    
+                    logger.info("key : {}", m.getKey());
+                    logger.info("value : {}", m.getValue());
+                });
+         
+        if(isLogin) {
+            return Response.ok(userManagement.getLoggedInUser()).build();                   // Returns a list of logged in users
+        } else {
+            if(email == null) {
+//                getInfoFromToken(req); 
+                return Response.ok(userManagement.getUsers()).build();
+            } else { 
+                return Response.ok(userManagement.getUserByUserName(email)).build();
+            } 
+        }
     }
       
     @GET    
@@ -165,8 +175,8 @@ public class UserManagementServices implements Serializable {
     @Path("/users")
     public Response createUser(String json) {
         logger.info("createUser : {}", json);
-         
-        return Response.ok(userManagement.createUser(json)).build();
+          
+        return Response.ok(userManagement.createUser(json, true)).build();
     }
     
     @POST
@@ -189,27 +199,40 @@ public class UserManagementServices implements Serializable {
     
     @POST
     @Path("/sendemail")    
-    public Response sendEmail(@QueryParam("id") String id) {
+    public Response sendEmail(@QueryParam("id") String id) { 
+        logger.info("sendEmail : {}", id); 
         
-        logger.info("secure/sendEmail : {}", id); 
-        return Response.ok(userManagement.sendVerificationEmail(id, null)).build();
+        return Response.ok(userManagement.sendVerificationEmailById(id)).build();
     }
     
+    
+    
     @PUT
-    @Path("/enableUser")    
-    public Response enableUser(@QueryParam("id") String id) {
+    @Path("/enableDisableUser")
+    public Response userActions(@QueryParam("id") String id, @QueryParam("action") String action) {
+        logger.info("userActions : {} -- {}", id, action); 
         
-        logger.info("enableUser : {}", id); 
-        return Response.ok(userManagement.enableUser(id)).build();
+        return Response.ok(action.equals("enableUser") ? userManagement.enableUser(id) : userManagement.disableUser(id)).build();
+
+    //   return action.equals("enableUser") ? Response.ok(userManagement.enableUser(id)).build() : Response.ok(userManagement.disableUser(id)).build();
     }
     
-        
-    @PUT
-    @Path("/disableUser")    
-    public Response disableUser(@QueryParam("id") String id) { 
-        logger.info("disableUser : {}", id); 
-        return Response.ok(userManagement.disableUser(id)).build();
-    }
+    
+//    @PUT
+//    @Path("/enableUser")    
+//    public Response enableUser(@QueryParam("id") String id) {
+//        
+//        logger.info("enableUser : {}", id ); 
+//        return Response.ok(userManagement.enableUser(id)).build();
+//    }
+//    
+//        
+//    @PUT
+//    @Path("/disableUser")    
+//    public Response disableUser(@QueryParam("id") String id) { 
+//        logger.info("disableUser : {}", id); 
+//        return Response.ok(userManagement.disableUser(id)).build();
+//    }
     
     @PATCH
     @Path("/users/{id}")
@@ -225,4 +248,13 @@ public class UserManagementServices implements Serializable {
         logger.info("logout : {}", id); 
         return Response.ok(userManagement.logout(id)).build();
     } 
+    
+    @DELETE
+    @Path("/users/{id}") 
+    public Response delete(@PathParam("id") String id) {
+        logger.info("delete : {}", id);
+        userManagement.deleteUser(id);
+        
+        return Response.noContent().build();
+    }
 }

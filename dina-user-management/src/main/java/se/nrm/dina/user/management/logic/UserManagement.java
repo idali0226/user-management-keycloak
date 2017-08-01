@@ -4,59 +4,471 @@
  * and open the template in the editor.
  */
 package se.nrm.dina.user.management.logic;
- 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;   
+
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List; 
+import java.util.List;
 import java.util.Map;
-import java.util.Properties; 
-import javax.inject.Inject; 
-import javax.json.JsonObject;  
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.json.JsonObject;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;  
+import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.admin.client.resource.UsersResource; 
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.CredentialRepresentation; 
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;  
+import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.nrm.dina.user.management.exceptions.UserManagementException;
 import se.nrm.dina.user.management.json.JsonConverter;
 import se.nrm.dina.user.management.logic.email.MailHandler;
 import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString;
-import se.nrm.dina.user.management.utils.TempPasswordGenerator; 
 
 /**
  *
  * @author idali
- */ 
+ */
 public class UserManagement implements Serializable {
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());  
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Keycloak keycloakClient;
-    
+
     @Inject
     public MailHandler mail;
-    
+
     @Inject
     public JsonConverter json;
-    
-    
-    
-    public UserManagement() {  
+
+    public UserManagement() {
+    }
+
+    @PostConstruct
+    public void init() {
+        logger.info("init");
+        buildRealm();
+    }
+
+    public JsonObject createUser(String jsonString, boolean createdByAdmin) {
+        logger.info("createuser : {}", createdByAdmin);
+
+        JsonObject dataJson = json.readInJson(jsonString).getJsonObject(CommonString.getInstance().getData());
+        JsonObject attributesJson = dataJson.getJsonObject(CommonString.getInstance().getAttributes());
+
+        String firstName = attributesJson.getString(CommonString.getInstance().getFirstName());
+        String lastName = attributesJson.getString(CommonString.getInstance().getLastName());
+        String email = attributesJson.getString(CommonString.getInstance().getEmail());
+        String purpose = attributesJson.getString(CommonString.getInstance().getPurpose());
+
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setEnabled(true);                              // Note: Must be enabled.  Otherwies can not send email
+        user.setEmailVerified(createdByAdmin);
+
+        String status = createdByAdmin ? AccountStatus.Enabled.name() : AccountStatus.Pending.name();
+        user.singleAttribute(CommonString.getInstance().getStatus(), status);
+        user.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
+
+        Response response = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).users().create(user);
+        String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());
+        response.close();
+
+        UserRepresentation userRespresentation = null;
+        if (locationHeader != null) {
+            UserResource userResource = getUsersResource()
+                    .get(locationHeader
+                            .replaceAll(CommonString.getInstance().getREGEX(),
+                                    CommonString.getInstance().getREGEX1()));
+            if (createdByAdmin) {
+                setRealmRole(userResource, CommonString.getInstance().getUserRole());
+                setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
+                setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
+                userResource.resetPasswordEmail();
+            } else {
+                userResource.sendVerifyEmail();
+            }
+            userRespresentation = userResource.toRepresentation();
+        }
+        return json.converterUser(userRespresentation);
+    }
+
+
+
+    public JsonObject sendVerificationEmailById(String id) {
+        logger.info("sendVerificationEmailById : {}", id);
+
+        UserResource userResource = getUsersResource().get(id); 
+        userResource.sendVerifyEmail();
+        return json.converterUser(userResource.toRepresentation());
+    }
+
+    public JsonObject recoverPassword(String email) {
+        logger.info("recoverPassword : {}", email);
+
+        List<UserRepresentation> userRepresentations = getUsersRepresentation(email);
+        if (userRepresentations.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Eamil: ");
+            sb.append(email);
+            sb.append(" not exist.");
+            return json.buildErrorMessages(sb.toString(), null);
+        } else { 
+            UserRepresentation userRepresentation = userRepresentations.get(0);
+            if (getAccountStatus(userRepresentation).equals(AccountStatus.Enabled.name())) { 
+                UserResource userResource = getUsersResource().get(userRepresentation.getId());
+                userResource.resetPasswordEmail();
+                return json.successJson("Email sent successfully");
+            }
+            return json.successJson("User email address is not verified or user is not enabled. Update password email do not send.");
+        }
     }
     
+    private String getAccountStatus(UserRepresentation userRepresentation) {
+        Map<String, List<String>> status = userRepresentation.getAttributes();
+        return status.get(CommonString.getInstance().getStatus()).get(0);
+    }
+
+    /**
+     * Disable a user from keycloak server
+     *
+     * @param id
+     * @return user in JsonObject format
+     */
+    public JsonObject disableUser(String id) {
+        logger.info("disableLUser");
+
+        UserResource userResource = getUsersResource().get(id);
+        removeCientRoles(userResource, CommonString.getInstance().getDinaRestClientId());
+        removeCientRoles(userResource, CommonString.getInstance().getUserManagementClientId());
+        setRealmRole(userResource, CommonString.getInstance().getDisabledUserRole());
+
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setEnabled(Boolean.FALSE);
+        userRepresentation.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Disabled.name());
+
+        userResource.update(userRepresentation);
+
+        return getUserById(id);
+    }
+
+    /**
+     * Remove user from keycloak server
+     *
+     * @param id
+     * @return String
+     */
+    public JsonObject rejectUser(String id) {
+        logger.info("rejectUser");
+        
+        UserResource userResource = getUsersResource().get(id);
+        removeCientRoles(userResource, CommonString.getInstance().getDinaRestClientId());
+        removeCientRoles(userResource, CommonString.getInstance().getUserManagementClientId());
+        setRealmRole(userResource, CommonString.getInstance().getDisabledUserRole());
+
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setEnabled(Boolean.FALSE);
+        userRepresentation.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Rejected.name());
+
+        userResource.update(userRepresentation);
+ 
+
+//        UserResource userResource = getUsersResource().get(id);
+//        userResource.remove();
+    
+        return getUsers();
+    }
+    
+    public JsonObject deleteUser(String id) {
+        logger.info("deleteUser");
+        
+        getUsersResource().delete(id);
+        return getUsers();
+    }
+
+    /**
+     * Enable user by given user id in Keycloak server
+     *
+     * @param id (value = user id)
+     * @return user in JsonFormat
+     */
+    public JsonObject enableUser(String id) {
+        logger.info("enableUser");
+
+        UserResource userResource = getUsersResource().get(id);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+
+        if (!userRepresentation.isEmailVerified()) {
+            return json.buildErrorMessages("User can not be enabled", null);
+        } else {
+            boolean resetPassword = false;
+            
+            Map<String, List<String>> attributes = userRepresentation.getAttributes();
+            String status = attributes.get(CommonString.getInstance().getStatus()).get(0);
+
+            if (status.equals(AccountStatus.Pending.name())) {
+                resetPassword = true;
+            }
+
+            userRepresentation.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Enabled.name()); 
+            setRealmRole(userResource, CommonString.getInstance().getUserRole());
+            setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
+            setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
+
+            userRepresentation.setEnabled(Boolean.TRUE);
+            userResource.update(userRepresentation);
+
+            if (resetPassword) {
+                userResource.resetPasswordEmail();
+            } 
+            return getUserById(id);
+        }
+    }
+
+    public JsonObject updateUser(String jsonString) {
+        buildRealm();
+
+        JsonObject dataJson = json.readInJson(jsonString).getJsonObject(CommonString.getInstance().getData());
+        JsonObject attributesJson = dataJson.getJsonObject(CommonString.getInstance().getAttributes());
+
+        String firstName = attributesJson.getString(CommonString.getInstance().getFirstName());
+        String lastName = attributesJson.getString(CommonString.getInstance().getLastName());
+        String email = attributesJson.getString(CommonString.getInstance().getEmail());
+        String purpose = attributesJson.getString(CommonString.getInstance().getPurpose());
+
+        String id = dataJson.getString(CommonString.getInstance().getId());
+
+        UserResource userResource = getUsersResource().get(id);
+
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+        userRepresentation.setFirstName(firstName);
+        userRepresentation.setLastName(lastName);
+        userRepresentation.setEmail(email);
+        userRepresentation.setUsername(email);
+
+//        List<String> purposeList = new ArrayList<>();
+//        purposeList.add(purpose); 
+//        userRepresentation.setAttributes(setUpAttributes(userRepresentation, purposeList, CommonString.getInstance().getPurpose()));
+        userRepresentation.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
+        userResource.update(userRepresentation);
+
+        return getUserByUserName(email);
+    }
+
+    /**
+     * Logout user by given id from keycloak server
+     *
+     * @param id (value = userId)
+     * @return String in JsonFormat
+     */
+    public JsonObject logout(String id) {
+        logger.info("logout : {}", id);
+
+        getDinaRealmResource().users().get(id).logout();
+        return json.successJson("User logout success");
+    }
+
+    /**
+     * Returns an user has given id
+     *
+     * @param id
+     * @return Single user in JsonObject format
+     */
+    public JsonObject getUserById(String id) {
+        logger.info("getUserById");
+         
+        return json.converterUser(getUserRepresentationById(id));
+    }
+
+    /**
+     * Returns an user has given username
+     *
+     * @param userName
+     * @return Single user in JsonObject format
+     */
+    public JsonObject getUserByUserName(String userName) {
+        return json.converterUsers(getUsersResource().search(userName));
+    }
+
+    /**
+     * Return a list of all the users registered in Keycloak
+     *
+     * @return a list of all the users in JsonObject format
+     */
+    public JsonObject getUsers() {
+        logger.info("getUsers");
+        return json.converterUsers(getUsersRepresentation(null));
+    }
+
+    /**
+     * Returns a list of logged in users
+     *
+     * @return the list of logged in users in JsonObject format
+     */
+    public JsonObject getLoggedInUser() {
+        logger.info("getLoggedInUser");
+
+        UsersResource usersResource = getUsersResource();
+        int count = usersResource.count();
+        List<UserRepresentation> userRepresentations = usersResource.search(null, 0, count);
+        List<UserRepresentation> loggedInUsers = userRepresentations.stream()
+                .parallel()
+                .filter(isLoggedIn(usersResource))
+                .collect(Collectors.toList());
+
+        return json.converterUsers(loggedInUsers);
+    }
+
+    private List<UserRepresentation> getUsersRepresentation(String email) {
+        UsersResource usersResource = getUsersResource(); 
+        return usersResource.search(email, 0, usersResource.count());
+    }
+
+    private UserRepresentation getUserRepresentationById(String id) {
+        UserResource userResource = getUsersResource().get(id);
+        
+        return userResource != null ? userResource.toRepresentation() : null;
+    }
+
+    private UsersResource getUsersResource() {
+        return getDinaRealmResource().users();
+    }
+
+    private void setClientRole(UserResource userResource, String clientId, String roleName) {
+
+        List<RoleRepresentation> newRole = getClientRolesByClientId(clientId).stream()
+                .filter(clientRole -> clientRole.getName().equals(roleName))
+                .collect(Collectors.toList());
+        userResource.roles().clientLevel(getClientIdByClientName(clientId)).add(newRole);
+    }
+
+    private void removeCientRoles(UserResource userResource, String clientId) {
+        List<RoleRepresentation> clrs = getClientRolesByClientId(clientId);
+        userResource.roles().clientLevel(getClientIdByClientName(clientId)).remove(clrs);
+    }
+
+    private List<RoleRepresentation> getClientRolesByClientId(String clientId) {
+        String cId = getClientIdByClientName(clientId);
+        return cId == null ? new ArrayList() : getClientsResource().get(cId).roles().list();
+    }
+
+    private String getClientIdByClientName(String clientName) {
+        ClientRepresentation clientRepresentation = getClientRepresentationByClientId(clientName);
+        return clientRepresentation == null ? null : clientRepresentation.getId();
+    }
+
+    private ClientRepresentation getClientRepresentationByClientId(String clientId) {
+        List<ClientRepresentation> clientRepresentation = getClientsResource().findByClientId(clientId);
+        return clientRepresentation.isEmpty() ? null : clientRepresentation.get(0);
+    }
+
+    private ClientsResource getClientsResource() {
+        return getDinaRealmResource().clients();
+    }
+
+    private void setRealmRole(UserResource userResource, String role) {
+
+        removeRealmRoles(userResource);
+        List<RoleRepresentation> dinaRealmRoles = getDinaRealmResource().roles().list();
+        List<RoleRepresentation> newRole = dinaRealmRoles.stream()
+                .filter(isNotDefaultRealmRole(CommonString.getInstance().getOfflineAccessRole()))
+                .filter(isNotDefaultRealmRole(CommonString.getInstance().getUmaAuthorizationRole()))
+                .filter(isRealmRole(role))
+                .collect(Collectors.toList());
+        userResource.roles().realmLevel().add(newRole);
+    }
+
+    private void removeRealmRoles(UserResource userResource) {
+        List<RoleRepresentation> realmRoleRepresentations = userResource.roles().realmLevel().listAll();
+        userResource.roles().realmLevel().remove(realmRoleRepresentations);
+    }
+
+    private RealmResource getDinaRealmResource() {
+        return keycloakClient.realm(CommonString.getInstance().getDinaRealm());
+    }
+
+    private static Predicate<RoleRepresentation> isRealmRole(String roleName) {
+        return role -> role.getName().equals(roleName);
+    }
+
+    private static Predicate<RoleRepresentation> isNotDefaultRealmRole(String realmRoleName) {
+        return role -> !role.getName().equals(realmRoleName);
+    }
+
+    private static Predicate<UserRepresentation> isLoggedIn(UsersResource usersResource) {
+        return u -> !usersResource.get(u.getId()).getUserSessions().isEmpty();
+    }
+
+    private void buildRealm() {
+
+        String keycloakAuthURL = System.getenv(CommonString.getInstance().getKeycloakURI());
+        logger.info("keycloakAuthURL : {}", keycloakAuthURL);
+
+        if (keycloakAuthURL.isEmpty()) {
+            keycloakAuthURL = "http://localhost:8080/auth";
+        }
+        keycloakClient = KeycloakBuilder.builder()
+                .serverUrl(keycloakAuthURL) //
+                .realm(CommonString.getInstance().getMastRealm())//
+                .username(CommonString.getInstance().getMasterAdminUsrname()) //
+                .password(CommonString.getInstance().getMasterAdminPassword()) //
+                .clientId(CommonString.getInstance().getAdminClientId())
+                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
+                .build();
+    }
+    
+    
+    
+    
+    
+    //    public JsonObject sendVerificationEmailByEmail(String email) {
+//        List<UserRepresentation> usersRepresentation = getUsersRepresentation(email);
+//
+//        if (usersRepresentation.isEmpty()) {
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("Eamil: ");
+//            sb.append(email);
+//            sb.append(" not exist.");
+//            return json.buildErrorMessages(sb.toString(), null);
+//        } else {
+//            return sendVerificationEmailById(usersRepresentation.get(0).getId());
+//        }
+//    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    //    private void resetCredential(UserResource userResource, String password) {
+////        String password = TempPasswordGenerator.generateRandomPassword();
+//        CredentialRepresentation cred = new CredentialRepresentation();
+//        cred.setType(CredentialRepresentation.PASSWORD);
+//         
+//        boolean isTempPassword = false;
+//        if(password == null) {
+//            password = TempPasswordGenerator.generateRandomPassword();
+//            isTempPassword = true;
+//        }
+//        cred.setValue(password);
+//        cred.setTemporary(isTempPassword);
+//
+//        userResource.resetPassword(cred);
+//    }
 //    public JsonObject userAction(String jsonString, boolean isNew) {
 //        logger.info("userAction");
 //        
@@ -78,320 +490,9 @@ public class UserManagement implements Serializable {
 //        
 //        return null;
 //    }
-    
-    public JsonObject createUser(String jsonString) {
-        logger.info("createuser");
-        
-        buildRealm(); 
-        
-        JsonObject dataJson = json.readInJson(jsonString).getJsonObject(CommonString.getInstance().getData());
-        JsonObject attributesJson = dataJson.getJsonObject(CommonString.getInstance().getAttributes());
-         
-        String firstName = attributesJson.getString(CommonString.getInstance().getFirstName());
-        String lastName = attributesJson.getString(CommonString.getInstance().getLastName());
-        String email = attributesJson.getString(CommonString.getInstance().getEmail()); 
-        String purpose = attributesJson.getString(CommonString.getInstance().getPurpose()); 
-//        String descriptions = attributesJson.getString(CommonString.getInstance().getDescriptions());
-
-        UserRepresentation user = new UserRepresentation();
-        user.setUsername(email);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-          
-        user.setEmail(email);
-        user.setEnabled(true); 
-        
-        Map<String, List<String>> attributes = new HashMap<>();
-        List<String> purposeList = new ArrayList<>();
-        purposeList.add(purpose);
-        attributes.put(CommonString.getInstance().getPurpose(), purposeList);
-        
-        List<String> statusList = new ArrayList<>();
-        statusList.add(AccountStatus.New.getText());
-        attributes.put(CommonString.getInstance().getStatus(), statusList);
-        
-        user.setAttributes(attributes);   
-        
-//        List<String> requirActions = new ArrayList();
-//        requirActions.add("UPDATE_PASSWORD");
-//        requirActions.add(("VERIFY_EMAIL"));
-//        
-//        user.setRequiredActions(requirActions);
-        
-  
-        Response response = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).users().create(user);
-          
-//        String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation()); 
-        response.close();
-         
-//        if (locationHeader != null) {  
-//            UserResource userResource = getUsersResource()
-//                                            .get(locationHeader
-//                                                    .replaceAll(CommonString.getInstance().getREGEX(), 
-//                                                                CommonString.getInstance().getREGEX1()));
-//            userResource.sendVerifyEmail(); 
-//        }
-  
-        UserRepresentation userRespresentation = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).users().search(email, 0, 1).get(0); 
-       
-        keycloakClient.close();
-        return json.converterUser(userRespresentation); 
-    }
-    
-    public JsonObject sendVerificationEmail(String id, String email) {
-        buildRealm(); 
-        
-        try {
-            if(id != null && !id.isEmpty()) {
-                return sendVerificationEmailById(id);
-            } else if(email != null && !email.isEmpty()) {
-                return sendVerificationByEmail(email);
-            } else { 
-                return json.buildErrorMessages("Bad request", null);
-            }
-        } catch(UserManagementException e) {
-            return json.buildErrorMessages(e.getMessage(), null);
-        } finally {
-            if(keycloakClient != null) { 
-                logger.info("keycloak client closed");
-                keycloakClient.close();
-            }  
-        }
- 
-    } 
-    
-    private JsonObject sendVerificationByEmail(String email) { 
-        List<UserRepresentation> usersRepresentation = getUsersRepresentation(email);
-         
-        if(usersRepresentation.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Eamil: ");
-            sb.append(email);
-            sb.append(" not exist.");
-            throw new UserManagementException(400, email, sb.toString()); 
-        } else {
-            sendVerificationEmailById(usersRepresentation.get(0).getId());
-        }  
-        return json.successJson("Email has been sent successfully");
-    }
-    
-    private JsonObject sendVerificationEmailById(String id) {
-    //     buildRealm(); 
-        
-        UserResource userResource = getUsersResource().get(id); 
-        userResource.sendVerifyEmail(); 
-        return getUsers(CommonString.getInstance().getDinaRealm(), null);
-    }
-    
-    public JsonObject updatePassword(String email) {
-        logger.info("updatePassword : {}", email);
-        
-        buildRealm(); 
-        List<UserRepresentation> userRepresentations = getUsersRepresentation(email);
-        
-        boolean hasError = false;
-        if(userRepresentations.isEmpty()) {
-            hasError = true; 
-        } else {
-            UserResource userResource = getUsersResource().get(userRepresentations.get(0).getId());
-            userResource.resetPasswordEmail();
-        }
-        
-        keycloakClient.close();
-        if(hasError) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Eamil: ");
-            sb.append(email);
-            sb.append(" not exist.");
-            return json.buildErrorMessages(sb.toString(), null);
-        } 
-        return json.successJson("Email sent successfully");
-    }
-    
-    public JsonObject disableUser(String id) {
-        buildRealm();
-        
-        UserResource userResource = getUsersResource().get(id); 
-        
-        removeCientRoles(userResource, CommonString.getInstance().getDinaRestClientId());
-        removeCientRoles(userResource, CommonString.getInstance().getUserManagementClientId());
-        setRealmRole(userResource, CommonString.getInstance().getDisabledUserRole());
- 
-        List<String> statusList = new ArrayList<>();
-        statusList.add("disabled");
-    
-        UserRepresentation userRepresentation = userResource.toRepresentation();
-        userRepresentation.setEnabled(Boolean.FALSE);
-        userRepresentation.setAttributes(setUpAttributes(userRepresentation, statusList, CommonString.getInstance().getStatus()));
-        userResource.update(userRepresentation);
-        
-        keycloakClient.close();
-        logger.info("is keycloakclient is null ? {}", keycloakClient);
-        return getUsers(CommonString.getInstance().getDinaRealm(), null);
-    }
-    
-    private Map<String, List<String>> setUpAttributes(UserRepresentation userRepresentation, List<String> attrList, String attrKey) {
-        
-        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
-        attributes.remove(attrKey);
-        
-        List<String> statusList = new ArrayList<>();
-        attrList.stream()
-                .forEach(s -> {
-                    statusList.add(s);
-                });
-        attributes.put(attrKey, statusList);
-        return attributes;
-    }
-    
-    
- 
-    public JsonObject enableUser(String id) {
-        buildRealm();
-        UserResource userResource = getUsersResource().get(id);
-          
-        setRealmRole(userResource, CommonString.getInstance().getUserRole());
-        setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
-        setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
- 
-//        Map<String, List<String>> attributes = userRepresentation.getAttributes(); 
-//        attributes.remove("status");
-
-        List<String> statusList = new ArrayList<>();
-        statusList.add("existing"); 
-
-        UserRepresentation userRepresentation = userResource.toRepresentation();
-        userRepresentation.setEnabled(Boolean.TRUE);
-        userRepresentation.setAttributes(setUpAttributes(userRepresentation, statusList, CommonString.getInstance().getStatus()));
-        userResource.update(userRepresentation); 
-        userResource.resetPasswordEmail();
-        keycloakClient.close();
-         
-        return getUsers(CommonString.getInstance().getDinaRealm(), null);
-    }
-
-    public JsonObject updateUser(String jsonString) {
-        buildRealm(); 
-        
-        JsonObject dataJson = json.readInJson(jsonString).getJsonObject(CommonString.getInstance().getData());
-        JsonObject attributesJson = dataJson.getJsonObject(CommonString.getInstance().getAttributes());
-         
-        String firstName = attributesJson.getString(CommonString.getInstance().getFirstName());
-        String lastName = attributesJson.getString(CommonString.getInstance().getLastName());
-        String email = attributesJson.getString(CommonString.getInstance().getEmail()); 
-        String purpose = attributesJson.getString(CommonString.getInstance().getPurpose()); 
-        
-        String id = dataJson.getString(CommonString.getInstance().getId());
-        UserResource userResource = getUsersResource().get(id);
-         
-//        String password = attributesJson.getString(CommonString.getInstance().getPassword()); 
-//        resetCredential(userResource, password);
-        
-        UserRepresentation userRepresentation = userResource.toRepresentation();
-        userRepresentation.setFirstName(firstName);
-        userRepresentation.setLastName(lastName);
-        userRepresentation.setEmail(email);
-        userRepresentation.setUsername(email);
-        
-        List<String> purposeList = new ArrayList<>();
-        purposeList.add(purpose); 
-        userRepresentation.setAttributes(setUpAttributes(userRepresentation, purposeList, CommonString.getInstance().getPurpose()));
-        userResource.update(userRepresentation);
-         
-        return getUsers(CommonString.getInstance().getDinaRealm(), email);
-    }
-    
-    public JsonObject logout(String id) {
-        logger.info("logout : {}", id);
-        
-        buildRealm();
-        getDinaRealm().users().get(id).logout(); 
-        keycloakClient.close();
-        return json.successJson("User logout success");
-    }
-    
-    private void removeCientRoles(UserResource userResource, String clientId) {
-        String cId = getClientRepresentationByClientId(clientId).getId();
-        List<RoleRepresentation> clrs = getClientsResource().get(cId).roles().list();
-        userResource.roles().clientLevel(cId).remove(clrs);
-    }
-    
-    private ClientRepresentation getClientRepresentationByClientId(String clientId) {
-        List<ClientRepresentation> crs = getClientsResource().findAll();
-        return crs.stream()
-                .filter(c -> c.getClientId().equals(clientId))
-                .findFirst().get();
-    }
-        
-    private void setClientRole(UserResource userResource, String clientId, String roleName) {
- 
-        String cId = getClientRepresentationByClientId(clientId).getId();
-
-        List<RoleRepresentation> newRole = new ArrayList<>();
-        List<RoleRepresentation> clrs = getClientsResource().get(cId).roles().list();
-        clrs.stream()
-                .forEach(rr -> {
-                    if (rr.getName().equals(roleName)) {
-                        newRole.add(rr);
-                    }
-                });
-        userResource.roles().clientLevel(cId).add(newRole);
-    }
-    
-    private void removeRealmRoles(UserResource userResource) {
-        List<RoleRepresentation> rrs = userResource.roles().realmLevel().listAll();
-        userResource.roles().realmLevel().remove(rrs);
-    }
-
-    private void setRealmRole(UserResource userResource, String role) {
-        
-        removeRealmRoles(userResource); 
-        List<RoleRepresentation> dinaRealmRoles = getDinaRealmResource().roles().list(); 
-        List<RoleRepresentation> newRole = new ArrayList<>();
-        dinaRealmRoles.stream()
-                        .filter(drr -> !drr.getName().equals(CommonString.getInstance().getOfflineAccessRole()))
-                        .filter(drr -> !drr.getName().equals(CommonString.getInstance().getUmaAuthorizationRole()))
-                        .forEach(drr -> { 
-                            if(drr.getName().equals(role)) {
-                                newRole.add(drr);
-                            } 
-                        });  
-        userResource.roles().realmLevel().add(newRole);  
-    }
-
-    private ClientsResource getClientsResource() {
-        return getDinaRealmResource().clients();
-    }
-    
-    private List<UserRepresentation> getUsersRepresentation(String email) {
-        UsersResource usersResource = getUsersResource();
-        return usersResource.search(email, 0, usersResource.count());
-    }
-
-    private UsersResource getUsersResource() {
-        return getDinaRealmResource().users();
-    }
-
-    private RealmResource getDinaRealmResource() {
-        return keycloakClient.realm(CommonString.getInstance().getDinaRealm());
-    }
-
-    private void resetCredential(UserResource userResource, String password) {
-//        String password = TempPasswordGenerator.generateRandomPassword();
-        CredentialRepresentation cred = new CredentialRepresentation();
-        cred.setType(CredentialRepresentation.PASSWORD);
-         
-        boolean isTempPassword = false;
-        if(password == null) {
-            password = TempPasswordGenerator.generateRandomPassword();
-            isTempPassword = true;
-        }
-        cred.setValue(password);
-        cred.setTemporary(isTempPassword);
-
-        userResource.resetPassword(cred);
-    }
-
+    //    private UserResource buildUserResource(UserRepresentation userRepresentation) {
+//        return getDinaRealm().users().get(userRepresentation.getId());
+//    }
 //    private String resetTempPassword(UserResource userResource) {
 //
 //        String password = TempPasswordGenerator.generateRandomPassword();
@@ -403,100 +504,13 @@ public class UserManagement implements Serializable {
 //        userResource.resetPassword(cred);
 //        return password;
 //    }
-    
-    public JsonObject getUserById(String realm, String id) {
-        logger.info("getUserById");
-        buildRealm();
-        
-        UserRepresentation userRepresentation = getUsersResource().get(id).toRepresentation();
-        keycloakClient.close();
-        return json.converterUser(userRepresentation);
-    }
-    
-    
+    @PreDestroy
+    public void preDestroy() {
+        logger.info("preDestroy");
 
-    public JsonObject getUsers(String realm, String userName) {
-        logger.info("getUsers");
-        buildRealm(); 
-        
-        UsersResource usersResource = getUsersResource();
-        List<UserRepresentation> list = usersResource.search(userName, 0, usersResource.count()); 
- 
-//        RealmRepresentation realmRepresentation = keycloakClient.realms().realm(CommonString.getInstance().getDinaRealm()).toRepresentation();
-//        String passwordPolicy = realmRepresentation.getPasswordPolicy();
-//        logger.info("password policy: {}", passwordPolicy);
- 
-//        list.stream()
-//                .forEach(u -> {
-//                    logger.info("required actions : {}", u.getRequiredActions());
-//                    u.getRequiredActions(); 
-//                }); 
-         
-        keycloakClient.close();
-        return json.converterUsers(list);
-    }
-    
-    
-    public JsonObject getLoggedInUser() {
-        logger.info("getLoggedInUser");
-        buildRealm(); 
-        UsersResource usersResource = getDinaRealm().users();
-        int count = usersResource.count();
-        List<UserRepresentation> list = usersResource.search(null, 0, count); 
-        List<UserRepresentation> loggedInUsers = new ArrayList();
-        
-        list.stream()
-            .forEach(l -> {
-                UserResource userResource = getDinaRealm().users().get(l.getId());
-                if(!userResource.getUserSessions().isEmpty()) {
-                    loggedInUsers.add(l);
-                }
-            });
-                
-        return json.converterUsers(loggedInUsers);
-    }
-    
-    private UserResource buildUserResource(UserRepresentation userRepresentation) {
-        return getDinaRealm().users().get(userRepresentation.getId());
-    }
-    
-    
-    
-    
-    private RealmResource getDinaRealm() {
-       return keycloakClient.realm(CommonString.getInstance().getDinaRealm());
-    }
-    
-
-    private void buildRealm() {
-
-        String keycloakAuthURL;
-        Properties prop = new Properties();
-        InputStream input = null;
-        try {
-            prop.load(new FileInputStream(CommonString.getInstance().getConfigProperties())); 
-            keycloakAuthURL = prop.getProperty(CommonString.getInstance().getKeycloakAuthURL());
-//            String keycloakAuthURL = Util.getInstance().getPropertyValue(CommonString.getInstance().getKeyCloakLUrl());
-            
-            logger.info("keycloak url : {}", keycloakAuthURL);
-//            realmName = prop.getProperty(CommonString.getInstance().getRealmName());
-            keycloakClient = KeycloakBuilder.builder()
-                    .serverUrl(keycloakAuthURL) //
-                    .realm(CommonString.getInstance().getMastRealm())//
-                    .username(CommonString.getInstance().getMasterAdminUsrname()) //
-                    .password(CommonString.getInstance().getMasterAdminPassword()) //
-                    .clientId(CommonString.getInstance().getAdminClientId())
-                    .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
-                    .build();
-
-        } catch (IOException ex) {
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                }
-            }
+        if (keycloakClient != null) {
+            keycloakClient.close();
+            logger.info("keycloakClient is closed");
         }
     }
 }

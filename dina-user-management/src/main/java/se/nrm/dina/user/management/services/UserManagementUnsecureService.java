@@ -6,6 +6,11 @@
 package se.nrm.dina.user.management.services;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +27,6 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.nrm.dina.user.management.logic.UserManagement;
-import se.nrm.dina.user.management.utils.CommonString;
 
 /**
  *
@@ -36,48 +40,45 @@ public class UserManagementUnsecureService implements Serializable {
 
     @Inject
     private UserManagement userManagement;
-     
-    @GET    
+
+    @GET
     @Path("/users")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
-    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email, @QueryParam("filter[login]") boolean isLogin) {
-        logger.info("getUsers : email :  {} - login: {}", email, isLogin); 
-        
-        if(isLogin) {
-            return Response.ok(userManagement.getLoggedInUser()).build();
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email) {
+        logger.info("getUsers : email :  {} ", email);
+
+        if (email == null) {
+            return Response.ok(userManagement.getUsers()).build();                      // Returns all the users
         } else {
-            if(email == null) {  
-                return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), null)).build();
-            } else { 
-                return Response.ok(userManagement.getUsers(CommonString.getInstance().getDinaRealm(), email)).build();
-            }
-        } 
+            return Response.ok(userManagement.getUserByUserName(email)).build();        // Return single user who has given username
+        }  
     }
-     
+
     @POST
     @Path("/users")
     public Response createUser(String json) {
+
         logger.info("createUser : {}", json);
-         
-        return Response.ok(userManagement.createUser(json)).build();
+  
+        return Response.ok(userManagement.createUser(json, false)).build(); 
     }
-    
+
     @POST
     @Path("/sendemail")    
-    public Response sendEmail(@QueryParam("id") String id, @QueryParam("email") String email) {
+    public Response sendEmail(@QueryParam("id") String id) {
         
-        logger.info("sendEmail : {} -- {}", id, email); 
+        logger.info("sendEmail : {}", id); 
          
-        return Response.ok(userManagement.sendVerificationEmail(id, email)).build();
+        return Response.ok(userManagement.sendVerificationEmailById(id)).build();
     }
     
     @PUT
     @Path("/recover-password")    
-    public Response updatePassword(@QueryParam("email") String email) {
+    public Response recoverPassword(@QueryParam("email") String email) {
         
-        logger.info("updatePassword : {} ", email); 
+        logger.info("recoverPassword : {} ", email); 
          
-        return Response.ok(userManagement.updatePassword(email)).build();
+        return Response.ok(userManagement.recoverPassword(email)).build();
     }
 }

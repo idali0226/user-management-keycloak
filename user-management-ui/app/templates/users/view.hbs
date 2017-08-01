@@ -5,15 +5,43 @@
             <button class="btn btn-sm btn-success" {{action 'updateUser' model}}>Update</button>
         {{/user-account-form}}   
     {{else}}
+        {{#if responseMessage}}
+            <br/>
+            <div class="alert alert-success">
+                <h4>{{t 'messages.account.create-account'}}</h4>
+                <p>{{t 'messages.account.verification-email'}} {{model.email}}. </p>
+                <p>{{t 'messages.account.email-verification-action'}}</p> 
+            </div>
+        {{/if}}
         {{#user-account account=model}}  
             {{#link-to 'users' class="btn btn-warning btn-sm"  tagName='button'}}{{t 'buttons.labels.cancel'}}{{/link-to}}   
-            {{#unless model.is_super_admin}}
-                {{#if model.show_enable_button}}
-                    <button class="btn btn-success btn-sm" {{action "enableUser" model}}>{{t 'buttons.labels.enable-user'}}</button>
+
+            {{#if model.is_disabled_user}}
+                <button class="btn btn-success btn-sm" {{action "userAction" model 'enableUser'}}>
+                    {{t 'buttons.labels.enable-user'}}
+                </button>
+            {{/if}}
+
+            {{#if model.is_enabled_user}}
+                <button class="btn btn-danger btn-sm" {{action 'userAction' model 'disableUser'}}>
+                    {{t 'buttons.labels.disable-user'}}
+                </button> 
+            {{/if}}
+
+            {{#if model.is_pending_user}}
+                <button class="btn btn-danger btn-sm" {{action 'rejectUser' model }}>
+                    {{t 'buttons.labels.reject-user'}}
+                </button> 
+                {{#if model.is_email_verified}}
+                    <button class="btn btn-success btn-sm" {{action "userAction" model 'enableUser'}}>
+                        {{t 'buttons.labels.enable-user'}}
+                    </button>
                 {{else}}
-                    <button class="btn btn-danger btn-sm" {{action 'disableUser' model}}>{{t 'buttons.labels.disable-user'}}</button> 
-                {{/if}} 
-            {{/unless}} 
+                    <button class="btn btn-success btn-sm" {{action 'sendVerifyEmail' model }}>
+                        Send verify email link
+                    </button> 
+                {{/if}}
+            {{/if}}  
             <button class="btn btn-default btn-sm" {{action 'edit' model}}>{{t 'buttons.labels.edit-user'}}</button>
         {{/user-account}}
     {{/if}}

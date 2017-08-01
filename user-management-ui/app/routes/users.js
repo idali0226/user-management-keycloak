@@ -15,25 +15,15 @@ export default Ember.Route.extend(AuthenticatedRouteMixin,{
  //	}
  
     model() {
-        return this.store.findAll('user');
+     return this.store.findAll('user');
     },
 
 
-    ajax: Ember.inject.service(),
 
-    actions: {
-        disableUser(user) { 
-            console.log("disableUser: " + user.id); 
+    beforeModel () {   
+        this.store.adapterFor('application').set('namespace', "user/api/v01/secure");  
+    },
 
-            const ajax = this.get('ajax'); 
-            ajax.request('/secure/disableUser?id=' + user.id, {
-                method: 'PUT' 
-            }).then((response) => {
-                console.log('response: ' + response);
-                this.refresh(); 
-            });
-            
-            // this.transitionTo('users');
-        } 
-    }
+
+ 
 });

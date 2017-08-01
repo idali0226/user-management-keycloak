@@ -10,7 +10,12 @@ package se.nrm.dina.user.management.utils;
  * @author idali
  */
 public enum AccountStatus {
-    New,
+    New, 
+    Pending,
+    Reject,
+    Enabled,
+    Disabled,
+    Rejected,
     Existing;
     
     public String getText() {

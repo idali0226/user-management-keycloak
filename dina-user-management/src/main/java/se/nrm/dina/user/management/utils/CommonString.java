@@ -15,6 +15,8 @@ public class CommonString {
     
     private static CommonString instance = null;
     
+    private final String KEYCLOAK_URI = "KEYCLOAK_URI";
+    
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String INITIAL_SETUP = "initialSetup";
     
@@ -40,7 +42,8 @@ public class CommonString {
     private static final String DISABLED_USER_ROLE = "disabled_user";
     
     private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can management user accounts, clients in User management application. ";
-    private static final String USER_ROLE_DESCRIPTION = "A user has usr role can only view and edit his/her own account.";
+    private static final String USER_ROLE_DESCRIPTION = "A user has user role can only view and edit his/her own account.";
+    private static final String DISABLE_ROLE_DESCRIPTION = "A user has disabled role can not access any resource in DINA";
     
     private static final String REALM_ROLE = "realm_role";
     
@@ -172,6 +175,10 @@ public class CommonString {
             instance = new CommonString();
         }
         return instance;
+    }
+    
+    public String getKeycloakURI() {
+        return KEYCLOAK_URI;
     }
     
     public String getInitialSetup() {
@@ -456,6 +463,10 @@ public class CommonString {
     
     public String getUserRoleDescription() {
         return USER_ROLE_DESCRIPTION;
+    }
+    
+    public String getDisabledRoleDescription() {
+        return DISABLED_USER_ROLE;
     }
     
     public String getCallEndPoint() {

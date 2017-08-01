@@ -4,10 +4,7 @@
  * and open the template in the editor.
  */
 package se.nrm.dina.user.management.utils;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+ 
 import java.text.SimpleDateFormat;
 import java.time.Instant; 
 import java.time.LocalDateTime;
@@ -25,13 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author idali
  */
 public class Util {
-    
-    private String mailHost;
-    private String mailPort;
-    private String mailFrom;
-    private String emailUserName;
-    private String emailPassword;
-    
+      
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private static Util instance = null;
@@ -43,7 +34,7 @@ public class Util {
     public static synchronized Util getInstance() {
         if (instance == null) { 
             instance = new Util();
-            instance.uploadProperties();
+//            instance.uploadProperties();
         }
         return instance;
     }
@@ -78,31 +69,31 @@ public class Util {
         return strDate;
     } 
     
-    public boolean initialSetup() { 
-        return Boolean.valueOf(prop.getProperty(CommonString.getInstance().getInitialSetup()));
-    }
+//    public boolean initialSetup() { 
+//        return Boolean.valueOf(prop.getProperty(CommonString.getInstance().getInitialSetup()));
+//    }
+//    
+//    public String getPropertyValue(String key) {
+//        return prop.getProperty(key);
+//    }
     
-    public String getPropertyValue(String key) {
-        return prop.getProperty(key);
-    }
-    
-    private void uploadProperties() {
-        
-        logger.info("uploadProperties");
-        
-        prop = new Properties();
-        InputStream input = null; 
-        try {  
-            input = new FileInputStream(CommonString.getInstance().getConfigProperties());
-            prop.load(input); 
-        } catch (IOException ex) { 
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) { 
-                }
-            }
-        }
-    }
+//    private void uploadProperties() {
+//        
+//        logger.info("uploadProperties");
+//        
+//        prop = new Properties();
+//        InputStream input = null; 
+//        try {  
+//            input = new FileInputStream(CommonString.getInstance().getConfigProperties());
+//            prop.load(input); 
+//        } catch (IOException ex) { 
+//        } finally {
+//            if (input != null) {
+//                try {
+//                    input.close();
+//                } catch (IOException e) { 
+//                }
+//            }
+//        }
+//    }
 }

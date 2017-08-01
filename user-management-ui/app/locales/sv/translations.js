@@ -77,6 +77,7 @@ export default {
                 name: 'Namn',
                 email: 'e-post',
                 username: 'Användarnamn', 
+                'username-email': 'Användarnamn',
                 purpose: 'Syfte',
                 'created-date': 'Skapad datum',
                 'user-enabled': 'Aktiverad',
@@ -92,6 +93,7 @@ export default {
         labels: {
             'enable-user': 'Enable user',
             'disable-user': 'Disable user',
+            'reject-user': 'Reject user',
             'view': 'View',
             'edit-user': 'Edit user',
             'cancel': 'Cancel',

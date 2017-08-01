@@ -34,21 +34,22 @@ export default Ember.Component.extend(Validations, {
             this.set('invalidCredentials', null);
             this.set('isValidating', true);
 
-            this.validate({}, true).then(({model, validations}) => { 
-                if (validations.get('isValid')) { 
-                    this.get('session').authenticate(
-                        'authenticator:oauth',
-                        this.get('username'), this.get('password')
-                    ).catch(() => { 
-                        this.set('invalidCredentials', true);
+            this.validate({}, true)
+                .then(({model, validations}) => { 
+                    if (validations.get('isValid')) { 
+                        this.get('session').authenticate(
+                            'authenticator:oauth',
+                            this.get('username'), this.get('password')
+                        ).catch(() => { 
+                            this.set('invalidCredentials', true);
+                            this.set('validation.isHidden', false);
+                            this.set('isValidating', false);
+                        });   
+                    } else {
                         this.set('validation.isHidden', false);
                         this.set('isValidating', false);
-                    });   
-                } else {
-                    this.set('validation.isHidden', false);
-                    this.set('isValidating', false);
-                } 
-            }); 
+                    } 
+                }); 
         }
     }
 });

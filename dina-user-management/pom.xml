@@ -62,19 +62,19 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>  
-            <version>3.0.0.Final</version> 
+            <version>3.2.0.Final</version> 
         </dependency>
         
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-authz-client</artifactId>
-            <version>3.0.0.Final</version>
+            <version>3.2.0.Final</version>
         </dependency>
         
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>3.0.0.Final</version>
+            <version>3.2.0.Final</version>
         </dependency>
         
         <dependency>
@@ -105,13 +105,13 @@
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>management-console</artifactId>
-            <version>2017.4.0</version> 
+            <version>2017.7.0</version> 
         </dependency>
         
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
             <artifactId>management</artifactId>  
-        </dependency>  
+        </dependency>   
     </dependencies>
 
     <build>
@@ -136,10 +136,30 @@
                     <jvmArguments>
                         <jvmArgument>-Xmx2048m</jvmArgument>
                     </jvmArguments>
+                    <environment>
+                        <KEYCLOAK_URI>${KEYCLOAK_URI}</KEYCLOAK_URI>
+                        <MAIL_HOST>${MAIL_HOST}</MAIL_HOST>
+                        <MAIL_PORT>${MAIL_PORT}</MAIL_PORT>
+                        <MAIL_USERNAME>${MAIL_USERNAME}</MAIL_USERNAME>
+                        <MAIL_PASSWORD>${MAIL_PASSWORD}</MAIL_PASSWORD>
+                        <MAIL_FROM>${MAIL_FROM}</MAIL_FROM> 
+                        <SUPER_USERNAME>${SUPER_USERNAME}</SUPER_USERNAME>
+                        <SUPER_PASSWORD>${SUPER_PASSWORD}</SUPER_PASSWORD> 
+                    </environment>
                     <mainClass>se.nrm.dina.user.management.Main</mainClass>
-                </configuration>
+                    <properties>
+                        <swarm.bind.address>127.0.0.1</swarm.bind.address>
+                        <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack> 
+                    </properties> 
+                </configuration>  
             </plugin> 
-<!--            <plugin>
+<!--            <plugin> 
+                <groupId>org.jolokia</groupId> 
+                <artifactId>docker-maven-plugin</artifactId> 
+                <version>0.13.9</version>
+                <version>${docker.maven.plugin.version}</version> 
+            </plugin>-->
+            <!--            <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.4.13</version>
