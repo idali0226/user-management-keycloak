@@ -9,13 +9,20 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
     model () { 
         return this.store.createRecord('user');
     },
- 
+
+    activate () { 
+        console.log("activate");
+        this.controllerFor('users').set('isList', false); 
+        this.controllerFor('users').set('status', null); 
+    },
+  
     deactivate () { 
         console.log("deactivate");
         let model = this.controllerFor('users.new').get('model'); 
         // TODO: Create a mixin to override `rollbackAttributes` and
         // apply `rollbackAttributes` to any dirty relationship as well.
         model.rollbackAttributes();   
+        this.controllerFor('users').set('isList', true); 
     },
  
  
@@ -32,9 +39,14 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
 
     /** Transition to users View route. */
-    transitionToUser () {
-        console.log('transitionToUser');
-        this.transitionTo('users');
+    transitionToUser (user) {
+        console.log('transitionToUser : ' + user.id);
+        this.transitionTo('users', {
+            queryParams: {
+              status, null
+            }
+        });
+       // this.transitionTo('users.view', user);
     },
 
 
@@ -62,11 +74,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                             .then((record) => {   
                                 console.log(record.id);
                                 this.set('showSaved', true);  
-                            //    this.sendInvitation(record);
-                                this.transitionToUser();  
-                                console.log('done');
+                                this.sendInvitation(record);
+                                this.refresh();  
+                                this.transitionToUser(record);   
                             }).finally(()=>{
-                                controller.set('isSaving', false);
+                                controller.set('isSaving', false); 
                             });
                     } else {
                         console.log('invalid');   

@@ -8,10 +8,13 @@ export default Ember.Controller.extend({
         { status: 'Pending' }
     ],
 
-    queryParams: ['status'],
+    queryParams:{
+        status: {
+            refreshModel:true
+        }
+    },
     status: null,
 
-    isList: true,
 
     filteredUsers: Ember.computed('status', 'model', function() {
         var status = this.get('status');
@@ -34,14 +37,13 @@ export default Ember.Controller.extend({
             if(filter !== null) {
                 status = filter.status;  
             } 
+  
             this.set('status', status);   
-        },
 
-            viewUserDetail() {
-      console.log('viewUserDetail');
-
-      let controller = this.ControllerFor('users');
-      controller.set("isList", false);
-    },
+          //  let controller = this.controllerFor('user.status');
+          //  controller.set("status", status);
+         //   this.send("statusChange");
+          //  this.transitionToRoute('users.status');
+        }, 
     }
 });

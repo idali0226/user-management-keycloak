@@ -14,9 +14,7 @@ export default Ember.Route.extend({
     deactivate () { 
         console.log("deactivate");
         this.controllerFor('register').set('responseMessage', false);
-        let model = this.controllerFor('register').get('model'); 
-        // TODO: Create a mixin to override `rollbackAttributes` and
-        // apply `rollbackAttributes` to any dirty relationship as well.
+        let model = this.controllerFor('register').get('model');  
         model.rollbackAttributes();   
     },
  
@@ -54,7 +52,7 @@ export default Ember.Route.extend({
                                 controller.set('showSaved', true); 
                              //   this.sendInvitation(record);
                              // this.transitionTo('index');
-                             //   this.sendEmail(record); 
+                                this.sendEmail(record); 
                                 controller.set('responseMessage', true);
 
                             }).finally(()=>{

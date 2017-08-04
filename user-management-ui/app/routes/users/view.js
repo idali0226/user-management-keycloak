@@ -15,19 +15,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
         console.log("model");
  		return this.store.findRecord('user', params.id );
   	},
-
-    afterModel: function(){
-        console.log("after model");
-     //   return this.store.findAll('client');
-    },
-
- //   deactivate () { 
- //       console.log("deactivate");
- //       let model = this.controllerFor('users.view').get('model'); 
-        // TODO: Create a mixin to override `rollbackAttributes` and
-        // apply `rollbackAttributes` to any dirty relationship as well.
- //       model.rollbackAttributes();   
- //   },
+ 
     activate () { 
         console.log("activate");
         this.controllerFor('users').set('isList', false); 
@@ -142,16 +130,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
 
 
 
-
-
-
-
-
-
-
-
-
-
+ 
 
  
  /**

@@ -107,8 +107,7 @@ public class UserManagementServices implements Serializable {
         if(isLogin) {
             return Response.ok(userManagement.getLoggedInUser()).build();                   // Returns a list of logged in users
         } else {
-            if(email == null) {
-//                getInfoFromToken(req); 
+            if(email == null) { 
                 return Response.ok(userManagement.getUsers()).build();
             } else { 
                 return Response.ok(userManagement.getUserByUserName(email)).build();
@@ -123,24 +122,26 @@ public class UserManagementServices implements Serializable {
     public Response searchUsers(@Context HttpServletRequest req,  @Context UriInfo info ) {
         logger.info("searchUsers");  
          
-        MultivaluedMap<String, String> map = info.getQueryParameters();
-        String status = map.getFirst("filter[status]");
-        String username = map.getFirst("filter[email]");
-        
-        logger.info("status : {}", status);
-        if(username != null) {
-            return Response.ok(userManagement.getUserByUserName(username)).build();
-        } else if(status != null && !status.isEmpty()) {
-            StringBuilder sb=new StringBuilder(status);
-            sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
-            status = sb.toString();
-             
-            return Response.ok(userManagement.getUserByAccountStatus(status)).build();
-        } else {
-            return Response.ok(userManagement.getUsers()).build();
+        if(isAdminRole(req)) {
+            MultivaluedMap<String, String> map = info.getQueryParameters();
+            String status = map.getFirst("filter[status]");
+            String username = map.getFirst("filter[email]");
+
+            logger.info("status : {}", status);
+            if(username != null) {
+                return Response.ok(userManagement.getUserByUserName(username)).build();
+            } else if(status != null && !status.isEmpty()) {
+                StringBuilder sb=new StringBuilder(status);
+                sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+                status = sb.toString();
+
+                return Response.ok(userManagement.getUserByAccountStatus(status)).build();
+            } else {
+                return Response.ok(userManagement.getUsers()).build();
+            } 
         }
         
-        
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }   
     
     @GET    
@@ -169,6 +170,18 @@ public class UserManagementServices implements Serializable {
         logger.info("getRealmsByName: {}", realm); 
         
         return Response.ok("ok").build();
+    }
+    
+    private boolean isAdminRole(HttpServletRequest req) { 
+        Principal userPrincipal = req.getUserPrincipal();        
+        if (userPrincipal instanceof KeycloakPrincipal) {   
+            KeycloakPrincipal<KeycloakSecurityContext> kp = (KeycloakPrincipal<KeycloakSecurityContext>) userPrincipal;
+            AccessToken token = kp.getKeycloakSecurityContext().getToken();        
+            Map<String, Access> accessMap = token.getResourceAccess();
+            Access access = accessMap.get("user-management");
+            return access.getRoles().toString().equals("[admin]"); 
+        }
+        return false;
     }
      
     private void getInfoFromToken(HttpServletRequest req) {        
@@ -200,10 +213,13 @@ public class UserManagementServices implements Serializable {
  
     @POST
     @Path("/users")
-    public Response createUser(String json) {
+    public Response createUser(@Context HttpServletRequest req, String json) {
         logger.info("createUser : {}", json);
           
-        return Response.ok(userManagement.createUser(json, true)).build();
+        if(isAdminRole(req)) {
+            return Response.ok(userManagement.createUser(json, true)).build();
+        } 
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     
     @POST
@@ -226,22 +242,26 @@ public class UserManagementServices implements Serializable {
     
     @POST
     @Path("/sendemail")    
-    public Response sendEmail(@QueryParam("id") String id) { 
+    public Response sendEmail(@Context HttpServletRequest req, @QueryParam("id") String id) { 
         logger.info("sendEmail : {}", id); 
         
-        return Response.ok(userManagement.sendVerificationEmailById(id)).build();
+        if(isAdminRole(req)) {
+            return Response.ok(userManagement.sendVerificationEmailById(id)).build();
+        } 
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     
     
     
     @PUT
     @Path("/enableDisableUser")
-    public Response userActions(@QueryParam("id") String id, @QueryParam("action") String action) {
+    public Response userActions(@Context HttpServletRequest req, @QueryParam("id") String id, @QueryParam("action") String action) {
         logger.info("userActions : {} -- {}", id, action); 
         
-        return Response.ok(action.equals("enableUser") ? userManagement.enableUser(id) : userManagement.disableUser(id)).build();
-
-    //   return action.equals("enableUser") ? Response.ok(userManagement.enableUser(id)).build() : Response.ok(userManagement.disableUser(id)).build();
+        if(isAdminRole(req)) {
+            return Response.ok(action.equals("enableUser") ? userManagement.enableUser(id) : userManagement.disableUser(id)).build();
+        } 
+        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     
     
@@ -263,25 +283,31 @@ public class UserManagementServices implements Serializable {
     
     @PATCH
     @Path("/users/{id}")
-    public Response updateUser(String json, @PathParam("id") String id) {
+    public Response updateUser(@Context HttpServletRequest req, String json, @PathParam("id") String id) {
         logger.info("updateUser : {}  --  {}", json, id);
          
-        return Response.ok(userManagement.updateUser(json)).build();
+        if(isAdminRole(req)) {
+            return Response.ok(userManagement.updateUser(json)).build();
+        } 
+        return Response.status(Response.Status.UNAUTHORIZED).build(); 
     }
     
     @PUT
     @Path("/logout")
     public Response logout(@QueryParam("id") String id) {
-        logger.info("logout : {}", id); 
+        logger.info("logout : {}", id);  
         return Response.ok(userManagement.logout(id)).build();
     } 
     
     @DELETE
     @Path("/users/{id}") 
-    public Response delete(@PathParam("id") String id) {
+    public Response delete(@Context HttpServletRequest req, @PathParam("id") String id) {
         logger.info("delete : {}", id);
-        userManagement.deleteUser(id);
         
-        return Response.noContent().build();
+         if(isAdminRole(req)) {
+            userManagement.deleteUser(id);
+            return Response.noContent().build();
+        } 
+        return Response.status(Response.Status.UNAUTHORIZED).build();  
     }
 }

@@ -94,9 +94,9 @@ public class UserManagement implements Serializable {
                 setRealmRole(userResource, CommonString.getInstance().getUserRole());
                 setClientRole(userResource, CommonString.getInstance().getDinaRestClientId(), CommonString.getInstance().getUserRole());
                 setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
-                userResource.resetPasswordEmail();
+//                 userResource.resetPasswordEmail();
             } else {
-                userResource.sendVerifyEmail();
+//                 userResource.sendVerifyEmail();
             }
             userRespresentation = userResource.toRepresentation();
         }
