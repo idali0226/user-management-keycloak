@@ -1,4 +1,8 @@
 <div class="container users-view {{if validationError 'validation-visible' ''}}">  
+ 
+    {{#if isSaving}}
+        {{notification-container position="middle" }}
+    {{/if}}
     {{#if responseMessage}} 
         <br/>
         <div class="alert alert-success">
@@ -6,7 +10,7 @@
             <p>{{t 'messages.account.verification-email'}} {{model.email}}. </p>
             <p>{{t 'messages.account.email-verification-action'}}</p> 
         </div>
-    {{else}} 
+    {{else}}  
         {{#user-account-form account=model title='sign-up' isNew = true}}   
             <button
                 class="btn btn-success btn-sm"
@@ -20,8 +24,8 @@
                 {{else}}
                     {{t 'user.new.toolbar.save'}}
                 {{/if}}
-            </button>
-        {{/user-account-form}} 
+                </button>
+            {{/user-account-form}}  
     {{/if}}
 </div>
  

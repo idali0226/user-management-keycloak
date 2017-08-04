@@ -65,6 +65,7 @@ export default {
                 duplicate: 'Duplicate',
             },
         },
+        'user-account-filter': 'Filter by user account status: ',
     }, 
     'user-profile': 'User profile',
     'sign-up': "Sign up",
@@ -101,6 +102,17 @@ export default {
             'cancel': 'Cancel', 
         }
     },
+    'sweetalert': {
+        'are-you-sure': 'Are you sure?',
+        'reject-text': 'Are you sure that you want to reject this user?',
+        'reject-text-success': 'User was successfully rejected!',
+        'verification-email-text': 'Are you sure that you want to send verification email to this user?',
+        'verification-email-success': 'Verification email has been sent to user',
+        'email-sent': 'Email sent!',
+        'rejected': 'Rejected!',
+        'yes-button': 'Yes',
+        'cancel-button': 'Cancel',
+    },
     client: { 
         list: {
             header: 'List and search for clients',
@@ -126,7 +138,7 @@ export default {
             'password-recover': 'Recovery link has been sent to your email address: ', 
             'update-email-action': 'Please click the recovery link to change password within 24 hours.',
         },
-        
+        'saving-account-inprocess': 'Registering user account, please wait!',
 
     },
     beta: {

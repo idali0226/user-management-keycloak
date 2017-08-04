@@ -1,6 +1,32 @@
+<div class="container"> 
+  <div class="page-header">
+    {{#if isList}}
+      <h1>{{t 'user.list.header'}}</h1>
+      <hr>
+      <div class="row">
+        <div class="col-xs-4">
+          {{t 'user.user-account-filter'}}
+        </div>
+        <div class="col-xs-5"> 
+          {{#power-select 
+              options=statusFilterOptions 
+              placeholder="Select a status filter"
+              selected=selectedFilter
+              searchEnabled=false
+              allowClear=true
+              onchange=(action "statusChange"  ) as |filter| }}
+            {{filter.status}}
+          {{/power-select}} 
+        </div>
+        <div class="col-xs-3">
+        </div> 
+      </div> 
+    {{else}}
+      <h1>User account detail</h1>
+    {{/if}}
+  </div>
 
- 
 
 
-
-{{outlet}}
+  {{outlet}}
+</div>

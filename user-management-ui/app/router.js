@@ -3,7 +3,7 @@ import config from './config/environment';
 
 const Router = Ember.Router.extend({
   location: config.locationType,
-  rootURL: config.rootURL
+  rootURL: config.rootURL 
 });
 
 Router.map(function() {
@@ -12,11 +12,12 @@ Router.map(function() {
  
   this.route('password-recover');
 
+
   this.route('users', function() {
     this.route('new');
     this.route('view', {path: '/:id'});
     this.route('profile', {path: '/profile/:user_id'});
-    this.route('edit', {path: ':id/edit'});
+    this.route('edit', {path: ':id/edit'});  
   //  this.route('account');
   });
 

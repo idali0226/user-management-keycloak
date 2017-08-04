@@ -42,25 +42,18 @@ public class UserManagementUnsecureService implements Serializable {
     private UserManagement userManagement;
 
     @GET
-    @Path("/users")
+    @Path("/users/search")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    public Response getUsers(@Context HttpServletRequest req, @QueryParam("filter[email]") String email) {
+    public Response getUsers(@QueryParam("filter[email]") String email) {
         logger.info("getUsers : email :  {} ", email);
-
-        if (email == null) {
-            return Response.ok(userManagement.getUsers()).build();                      // Returns all the users
-        } else {
-            return Response.ok(userManagement.getUserByUserName(email)).build();        // Return single user who has given username
-        }  
+        return Response.ok(userManagement.getUserByUserName(email)).build();    
     }
 
     @POST
     @Path("/users")
-    public Response createUser(String json) {
-
-        logger.info("createUser : {}", json);
-  
+    public Response createUser(String json) { 
+        logger.info("createUser : {}", json); 
         return Response.ok(userManagement.createUser(json, false)).build(); 
     }
 

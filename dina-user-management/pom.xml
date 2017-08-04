@@ -104,8 +104,7 @@
  
         <dependency>
             <groupId>org.wildfly.swarm</groupId>
-            <artifactId>management-console</artifactId>
-            <version>2017.7.0</version> 
+            <artifactId>management-console</artifactId> 
         </dependency>
         
         <dependency>

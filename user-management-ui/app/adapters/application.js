@@ -27,18 +27,24 @@ export default DS.JSONAPIAdapter.extend(DataAdapterMixin, {
      * Override method to be able to append eg. "search"
      * to the url.
      */
+ 
+
+
 
     urlForQuery (query, modelName) {
         var url = this._super(query, modelName);
         console.log(url);
-   
+
+        console.log("model name : " + modelName);
+        console.log("query : " + query);
+
+        if (query) {
+            url = url + '/search';
+            delete query.search; 
+        }
+        console.log("url for query : " + url);
         return url;
     },
-
-
-
-
-
 
 
 

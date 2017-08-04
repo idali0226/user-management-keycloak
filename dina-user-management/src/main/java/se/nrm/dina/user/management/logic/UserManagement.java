@@ -297,7 +297,18 @@ public class UserManagement implements Serializable {
      * @return Single user in JsonObject format
      */
     public JsonObject getUserByUserName(String userName) {
+     
         return json.converterUsers(getUsersResource().search(userName));
+    }
+    
+    public JsonObject getUserByAccountStatus(String status) {
+        logger.info("getUserByAccountStatus : {}", status);
+        List<UserRepresentation> list = getUsersRepresentation(null);
+        
+        List<UserRepresentation> matchList = list.stream()
+                                                  .filter(u -> u.getAttributes().get("status").get(0).equals(status))
+                                                  .collect(Collectors.toList());
+        return json.converterUsers(matchList);
     }
 
     /**

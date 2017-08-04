@@ -3,8 +3,10 @@ import Ember from 'ember';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
+    i18n: Ember.inject.service(),
+    notifications: Ember.inject.service('notification-messages'), 
 
-    model () {
+    model () { 
         return this.store.createRecord('user');
     },
  
@@ -15,6 +17,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         // apply `rollbackAttributes` to any dirty relationship as well.
         model.rollbackAttributes();   
     },
+ 
  
  
     ajax: Ember.inject.service(), 
@@ -34,29 +37,31 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         this.transitionTo('users');
     },
 
+
     actions: {   
 
         /** Handle form submit and validation. */
         submitForm () { 
-            let controller = this;
+            let controller = this.controller;
 
             console.log('submitForm');
             if (controller.get('isSaving')) {
                 return;
             }   
- 
-
-            var user = this.controller.get('model');   
+  
+         //   var user = this.controller.get('model');   
+            var user = controller.get('model');
             user.validate() 
                 .then(({ validations }) => {
-                    if (validations.get('isValid')) {  
-                        console.log("valid");
-                        controller.set('isSaving', true);
-                        console.log(controller.get('isSaving'));
+                    if (validations.get('isValid')) {   
+                        controller.set('isSaving', true); 
+                        this.get('notifications').warning(this.get('i18n').t('messages.saving-account-inprocess'), {
+                          autoClear: true
+                        }); 
                         user.save()
                             .then((record) => {   
-                                this.set('showSaved', true); 
-                                console.log('save: ' + record.id); 
+                                console.log(record.id);
+                                this.set('showSaved', true);  
                             //    this.sendInvitation(record);
                                 this.transitionToUser();  
                                 console.log('done');

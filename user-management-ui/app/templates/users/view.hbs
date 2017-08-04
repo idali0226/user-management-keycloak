@@ -1,4 +1,6 @@
 <div class="container users-view  ">
+
+     
     {{#if model.isEditing }} 
         {{#user-account-form account=model title='edit-user'}} 
             <button class="btn btn-sm btn-warning" {{action 'cancelEdit' model}}>{{t 'buttons.labels.cancel'}}</button> 

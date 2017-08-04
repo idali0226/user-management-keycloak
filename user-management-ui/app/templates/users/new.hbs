@@ -1,4 +1,9 @@
 <div class="container users-view  ">
+
+    {{#if isSaving}}
+        {{notification-container position="middle" }}
+    {{/if}}
+
     {{#user-account-form account=model title="register-new-account" isNew=true}} 
         <button
             class="btn btn-success btn-sm" 

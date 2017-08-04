@@ -9,6 +9,7 @@ module.exports = function(environment) {
 
     i18n: {
       defaultLocale: 'en',
+      allowedLocales: ['en', 'sv']
     },
 
     EmberENV: {

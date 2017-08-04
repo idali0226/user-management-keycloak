@@ -2,6 +2,10 @@ import Ember from 'ember';
   
 export default Ember.Route.extend({
      
+    i18n: Ember.inject.service(),
+    notifications: Ember.inject.service('notification-messages'),
+    ajax: Ember.inject.service(), 
+
     model () {
         this.store.adapterFor('application').set('namespace', "user/api/v01"); 
         return this.store.createRecord('user');
@@ -16,7 +20,7 @@ export default Ember.Route.extend({
         model.rollbackAttributes();   
     },
  
-    ajax: Ember.inject.service(), 
+    
     sendEmail(user) {
         console.log("sendEmail: " + user.id);
     
@@ -25,20 +29,25 @@ export default Ember.Route.extend({
             method: 'POST' 
         });
     },
-  
+    
     actions: { 
-        submitForm () { 
+        submitForm () {  
             let controller = this.controller;
 
             console.log('submitForm');
             if (controller.get('isSaving')) {
+                console.log("now saving.....");
                 return;
             }   
- 
-            var user = this.controller.get('model');     
+  
+            var user = controller.get('model');     
             user.validate() 
                 .then(({ validations }) => {
                     if (validations.get('isValid')) { 
+                        controller.set('isSaving', true);   
+                        this.get('notifications').warning(this.get('i18n').t('messages.saving-account-inprocess'), {
+                          autoClear: true
+                        }); 
                         user.save()
                             .then((record) => {   
                                 console.log("record : " + record);

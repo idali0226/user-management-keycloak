@@ -89,21 +89,21 @@ public class UserManagementServices implements Serializable {
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
     public Response getUsers(   @Context HttpServletRequest req, 
                                 @QueryParam("filter[email]") String email, 
+                                @QueryParam("filter[status]") String status, 
                                 @QueryParam("filter[login]") boolean isLogin,
                                 @Context UriInfo info) {
-        logger.info("getUsers : email :  {} -- {}", email, isLogin); 
-        
+        logger.info("getUsers : email :  {} -- {}", email, isLogin + " " + status);  
         
         MultivaluedMap<String, String> map = info.getQueryParameters();
-        logger.info("map : {}", map );
         
+        logger.info("Map : {}", map);
         map.entrySet().stream()
-                .forEach(m -> { 
-                    
+                .forEach(m -> {
                     logger.info("key : {}", m.getKey());
-                    logger.info("value : {}", m.getValue());
+                    logger.info("value: {}", m.getValue());
                 });
-         
+        
+ 
         if(isLogin) {
             return Response.ok(userManagement.getLoggedInUser()).build();                   // Returns a list of logged in users
         } else {
@@ -116,6 +116,33 @@ public class UserManagementServices implements Serializable {
         }
     }
       
+    @GET    
+    @Path("/users/search")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
+    public Response searchUsers(@Context HttpServletRequest req,  @Context UriInfo info ) {
+        logger.info("searchUsers");  
+         
+        MultivaluedMap<String, String> map = info.getQueryParameters();
+        String status = map.getFirst("filter[status]");
+        String username = map.getFirst("filter[email]");
+        
+        logger.info("status : {}", status);
+        if(username != null) {
+            return Response.ok(userManagement.getUserByUserName(username)).build();
+        } else if(status != null && !status.isEmpty()) {
+            StringBuilder sb=new StringBuilder(status);
+            sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+            status = sb.toString();
+             
+            return Response.ok(userManagement.getUserByAccountStatus(status)).build();
+        } else {
+            return Response.ok(userManagement.getUsers()).build();
+        }
+        
+        
+    }   
+    
     @GET    
     @Path("/clients")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})

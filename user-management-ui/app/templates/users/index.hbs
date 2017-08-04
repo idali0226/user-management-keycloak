@@ -1,29 +1,28 @@
-<div class="container">
-  <div class="page-header">
-    <h1>
-      {{t 'user.list.header'}}
-    </h1>
-  </div>
-
+<div class="row">  
+  {{#each model as |user|}}
+    {{#user-account account=user}}
+      {{#link-to 'users.view' user class='btn btn-success btn-sm' disabled=user.is_super_admin }}
+        {{t 'buttons.labels.view'}}   
+      {{/link-to}}
+    {{/user-account}}
+  {{/each}} 
+</div> 
  
-
-  <div class="row">
-    {{#users-filter filter=(action 'filterByUsername') as |users|}}
-
-      <hr >
-      <ul class="results">
-        {{#each users as |user|}}
-          {{#user-account account=user}}
-            {{#link-to 'users.view' user class='btn btn-success btn-sm' disabled=user.is_super_admin}}
-              {{t 'buttons.labels.view'}}   
-            {{/link-to}}
-          {{/user-account}}
-        {{/each}}
-      </ul>
-  {{/users-filter}}
-
-
 <!--
+
+   {{#users-filter filter=(action 'filterByUsername') as |users|}} 
+      <hr >
+
+      {{#each users as |user|}}
+        {{#user-account account=user}}
+          {{#link-to 'users.view' user class='btn btn-success btn-sm' disabled=user.is_super_admin}}
+            {{t 'buttons.labels.view'}}   
+          {{/link-to}}
+        {{/user-account}}
+      {{/each}} 
+    {{/users-filter}}
+
+
     {{#each model as |user|}}  
       <div class="col-md-12">
         {{#user-account account=user}}
@@ -46,6 +45,4 @@
     -->
 
 
-  </div>
-</div>
  

@@ -9,6 +9,7 @@ import SweetAlertMixin from 'ember-sweetalert/mixins/sweetalert-mixin';
 export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
 
     ajax: Ember.inject.service(), 
+    i18n: Ember.inject.service(),
  
  	model(params) { 
         console.log("model");
@@ -20,12 +21,21 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
      //   return this.store.findAll('client');
     },
 
-    deactivate () { 
-        console.log("deactivate");
-        let model = this.controllerFor('users.view').get('model'); 
+ //   deactivate () { 
+ //       console.log("deactivate");
+ //       let model = this.controllerFor('users.view').get('model'); 
         // TODO: Create a mixin to override `rollbackAttributes` and
         // apply `rollbackAttributes` to any dirty relationship as well.
-        model.rollbackAttributes();   
+ //       model.rollbackAttributes();   
+ //   },
+    activate () { 
+        console.log("activate");
+        this.controllerFor('users').set('isList', false); 
+    },
+
+    deactivate () { 
+        console.log("deactivate");
+        this.controllerFor('users').set('isList', true); 
     },
 
     transitionToUser () {
@@ -61,9 +71,11 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
         rejectUser(user) {
             console.log('rejectUser');
         
+        //    let areYouSure = this.get('i18n').t('sweetalert.are-you-sure'); 
+        //    let text = this.get('i18n').t('sweetalert.reject-text');
             let sweetAlert = this.get('sweetAlert');
-            sweetAlert({
-                title: "Are you sure!", 
+            sweetAlert({ 
+                title: "Are you sure?", 
                 text: "Are you sure that you want to reject this user?", 
                 type: "warning",
                 showCancelButton: true,
@@ -171,19 +183,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
                 this.refresh(); 
             });
         }, 
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
             user.validate() 

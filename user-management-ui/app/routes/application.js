@@ -30,6 +30,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     },
 
     actions: { 
+
+
         signout (id) { 
             console.log("signout " + id); 
 

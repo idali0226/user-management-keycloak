@@ -10,12 +10,12 @@
               class="form-control" 
               autofocus="autofocus" 
               focus-out=(action (mut showEmailError) true) }} 
-
-            {{#if showEmailError}} 
-              <div class="error"> 
-                {{v-get account 'email' 'message'}}
-              </div> 
-            {{/if}} 
+ 
+              {{#if showEmailError}} 
+                <div class="error"> 
+                  {{v-get account 'email' 'message'}}
+                </div> 
+              {{/if}}  
           {{else}}
             {{account.email}}
           {{/if}}
