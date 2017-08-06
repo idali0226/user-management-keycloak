@@ -52,7 +52,7 @@ public class KeycloakSetup implements Serializable {
     
     private String keycloakAuthURL; 
     private String dinaRealm;
-    private final String PASSWORD_POLICIES = "hashIterations and specialChars and length and notUsername";
+    private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
  
     private final String KEYCLOAK_URI = "KEYCLOAK_URI";
     private final String MAIL_HOST = "MAIL_HOST";

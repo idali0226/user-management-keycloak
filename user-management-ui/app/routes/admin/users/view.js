@@ -11,10 +11,10 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
     ajax: Ember.inject.service(), 
     i18n: Ember.inject.service(),
  
- 	model(params) { 
+    model(params) { 
         console.log("model");
- 		return this.store.findRecord('user', params.id );
-  	},
+        return this.store.findRecord('user', params.id );
+    },
 
     beforeModel () {   
         console.log("beforeModel");
@@ -131,61 +131,6 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
             }).finally(()=>{  
                 user.set('isEditing', false);     
             });
-        },
-
-
-
-
- 
-
- 
- /**
-
-
-
-        enableUser(user) { 
-
-            console.log("enableUser: " + user.id);
-    
-            const ajax = this.get('ajax'); 
-            ajax.request('/secure/enableUser?id=' + user.id, {
-                method: 'PUT' 
-            }).then((response) => {
-                console.log('response: ' + response);
-                this.refresh(); 
-             //   this.transitionTo('users');
-            }); 
-        },
-
-        disableUser(user) { 
-            console.log("disableUser: " + user.id); 
-
-            const ajax = this.get('ajax'); 
-            ajax.request('/secure/disableUser?id=' + user.id, {
-                method: 'PUT' 
-            }).then((response) => {
-                console.log('response: ' + response);
-                this.refresh(); 
-            });
         }, 
- 
-
-
-            user.validate() 
-                .then(({ validations }) => {
-                    if (validations.get('isValid')) { 
-                        user.save()
-                            .then((record) => {   
-                                console.log("record : " + record);
-                                this.set('showSaved', true);   
-                            }).finally(()=>{ 
-                                
-                            });
-                    } else {
-                        console.log('invalid');  
-                    } 
-                });    
-            user.set('isEditing', false);
-        }, */
     } 
 });

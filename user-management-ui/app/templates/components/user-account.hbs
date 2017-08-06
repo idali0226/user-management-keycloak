@@ -10,7 +10,7 @@
                         <span>{{t 'fields.labels.user.username-email'}}:</span>  
                     </div>
                     <div class="col-xs-8">
-                        {{account.email}}
+                        {{account.username}}
                     </div>
                 </div>
         	 		
@@ -42,7 +42,42 @@
     		            </div>
     	            </div> 
         	    {{/if}} 
+
+               
+
+                {{#if account.changePassword}}
+                    <hr>
+                    Change password
+
+                    {{input 
+                        value=account.password
+                        placeholder=(t 'definitions.password')
+                        type="password"
+                        autofocus = true
+                        class="form-control" 
+                        focus-out=(action (mut showPasswordError) true) }} 
+
+                        {{#if showPasswordError}}
+                          <div class="error">
+                            {{v-get account 'password' 'message'}}
+                          </div>
+                        {{/if}}
+                        
+                    {{input 
+                        value=account.passwordConfirmation
+                        placeholder="Confirm password" 
+                        class="form-control" 
+                        type="password"
+                        focus-out=(action (mut showPasswordConfirmationError) true) }} 
+
+                        {{#if showPasswordConfirmationError}}
+                          <div class="error"> 
+                            {{v-get account 'passwordConfirmation' 'message'}}
+                          </div>
+                        {{/if}} 
+                {{/if}}
         	</div>  
+
         </div> 
     </div> 
     <div class="panel-footer text-right">

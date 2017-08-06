@@ -17,6 +17,7 @@ export default {
         'username-email': 'Username/email',
         email: 'Email',
         password: 'Lösenord',
+        confirmpassword: 'Confirm password',
         usernameOrPassword: 'Användarnamn eller lösenord',
         'sign-out': 'Logga ut',
         'sign-in': 'Logga in',
@@ -63,12 +64,12 @@ export default {
                 close: 'Stäng',
                 duplicate: 'Duplicera',
             },
-        },
+        }, 
         'user-account-filter': 'Filter by user account status: ',
     },
     'user-profile': 'Användarprofil',
     'sign-up': "Registrera dig",
-    'edit-user': "Edit user",
+    'edit-user': "Edit user account",
     'register-new-account': 'Register new account',
     fields: {
         labels: {

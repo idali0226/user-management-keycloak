@@ -17,6 +17,7 @@ export default {
         'username-email': 'Username/email',
         email: 'Email',
         password: 'Password',
+        confirmpassword: 'Confirm password',
         usernameOrPassword: 'Username or password',
         'sign-out': 'Sign out',
         'sign-in': 'Sign in',
@@ -64,12 +65,12 @@ export default {
                 close: 'Close',
                 duplicate: 'Duplicate',
             },
-        },
+        }, 
         'user-account-filter': 'Filter by user account status: ',
     }, 
     'user-profile': 'User profile',
     'sign-up': "Sign up",
-    'edit-user': "Edit user",
+    'edit-user': "Edit user account",
     'register-new-account': 'Register new account',
     fields: {
         labels: {

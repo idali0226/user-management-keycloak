@@ -8,12 +8,13 @@ const UsernameAvaliable = BaseValidator.extend({
     return this.get('store').query('user', { 
       filter: { email: value }
     })
-    .then((result) => { 
-      if(result.get('length') === 0) {
-        return true;
-      } else {
-        return "The username is already in use";
-      }
+    .then((result) => {  
+      return Ember.isEmpty(result) ? true : `The username ${value} already exists`; 
+  //   if(result.get('length') === 0) {
+  //     return true;
+   //   } else {
+  //      return "The username is already in use";
+  //    }
     });
   }
 });

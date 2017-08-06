@@ -23,8 +23,7 @@ const Validations = buildValidations({
 export default Ember.Component.extend(Validations, {
 
     session: Ember.inject.service('session'),
-    validation: Ember.inject.service(), 
- 
+    validation: Ember.inject.service(),  
 
     actions: {
   

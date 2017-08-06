@@ -9,6 +9,14 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     i18n: Ember.inject.service(),
     moment: Ember.inject.service(),
     ajax: Ember.inject.service(),
+
+    // Don't know if this will resolve refresh token.
+     _networkBecomesAvailable() {
+        if (this.get('session.isAuthenticated')) {
+          let authenticator = this.get('session.authenticator');
+         authenticator._refreshAccessToken(); 
+        }
+      },
   
     /** Override before model and setup localization. */
     beforeModel () {

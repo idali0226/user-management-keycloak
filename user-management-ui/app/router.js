@@ -13,16 +13,26 @@ Router.map(function() {
   this.route('password-recover');
 
 
-  this.route('users', function() {
-    this.route('new');
-    this.route('view', {path: '/:id'});
-    this.route('profile', {path: '/profile/:user_id'});
-    this.route('edit', {path: ':id/edit'});
-    this.route('status', {path: '/status'});
+//  this.route('users', function() {
+//    this.route('new');
+//    this.route('view', {path: '/:id'}); 
+//    this.route('edit', {path: ':id/edit'});
+ //   this.route('status', {path: '/status'});
+//  });
+
+  this.route('admin', function() {
+    this.route('users', function() {
+      this.route('new');
+      this.route('view', {path: '/:id'});
+      this.route('edit', {path: '/:id/edit'});
+    });
   });
+
+  this.route('users', function() {
+    this.route('profile', {path: '/:id'});
+  });
+
  
-
-
   this.route('clients', function() {
     this.route('new');
     this.route('view', {path: ':id'});

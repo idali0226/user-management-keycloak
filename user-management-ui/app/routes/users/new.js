@@ -28,19 +28,19 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
  
  
     ajax: Ember.inject.service(), 
-    sendInvitation(user) {
+    sendEmail(user) {
         console.log("sendInvitation: " + user.id);
     
         const ajax = this.get('ajax'); 
-        return ajax.request('/secure/sendemail?id=' + user.id, {
+        return ajax.request('/secure/sendemail?id=' + user.id + '&isPendingUser=' + false, { 
             method: 'POST' 
         });
     },
 
 
     /** Transition to users View route. */
-    transitionToUser (user) {
-        console.log('transitionToUser : ' + user.id);
+    transitionToUser () {
+        console.log('transitionToUser' );
         this.transitionTo('users', {
             queryParams: {
               status, null
@@ -74,9 +74,9 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                             .then((record) => {   
                                 console.log(record.id);
                                 this.set('showSaved', true);  
-                                this.sendInvitation(record);
+                                this.sendEmail(record);
                                 this.refresh();  
-                                this.transitionToUser(record);   
+                                this.transitionToUser();   
                             }).finally(()=>{
                                 controller.set('isSaving', false); 
                             });

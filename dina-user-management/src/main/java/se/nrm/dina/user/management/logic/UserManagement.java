@@ -15,6 +15,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.json.JsonObject;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import javax.ws.rs.core.Response;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;
@@ -24,6 +26,7 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -103,13 +106,15 @@ public class UserManagement implements Serializable {
         return json.converterUser(userRespresentation);
     }
 
-
-
-    public JsonObject sendVerificationEmailById(String id) {
-        logger.info("sendVerificationEmailById : {}", id);
+    public JsonObject sendEmail(String id, boolean isPendingUser) {
+        logger.info("sendEmail : {}", id);
 
         UserResource userResource = getUsersResource().get(id); 
-        userResource.sendVerifyEmail();
+        if(isPendingUser) {
+            userResource.sendVerifyEmail();
+        } else {
+            userResource.resetPasswordEmail();
+        } 
         return json.converterUser(userResource.toRepresentation());
     }
 
@@ -236,33 +241,39 @@ public class UserManagement implements Serializable {
     }
 
     public JsonObject updateUser(String jsonString) {
-        buildRealm();
-
+        logger.info("updateUser");
         JsonObject dataJson = json.readInJson(jsonString).getJsonObject(CommonString.getInstance().getData());
         JsonObject attributesJson = dataJson.getJsonObject(CommonString.getInstance().getAttributes());
 
         String firstName = attributesJson.getString(CommonString.getInstance().getFirstName());
         String lastName = attributesJson.getString(CommonString.getInstance().getLastName());
-        String email = attributesJson.getString(CommonString.getInstance().getEmail());
+    //    String email = attributesJson.getString(CommonString.getInstance().getEmail());
         String purpose = attributesJson.getString(CommonString.getInstance().getPurpose());
-
+         
         String id = dataJson.getString(CommonString.getInstance().getId());
 
         UserResource userResource = getUsersResource().get(id);
-
+        
+        if(!attributesJson.get(CommonString.getInstance().getPassword()).toString().equals("null")) {
+            String password = attributesJson.getString(CommonString.getInstance().getPassword());
+            resetCredential(userResource, password);   
+        }
+        
         UserRepresentation userRepresentation = userResource.toRepresentation();
         userRepresentation.setFirstName(firstName);
         userRepresentation.setLastName(lastName);
-        userRepresentation.setEmail(email);
-        userRepresentation.setUsername(email);
-
-//        List<String> purposeList = new ArrayList<>();
-//        purposeList.add(purpose); 
-//        userRepresentation.setAttributes(setUpAttributes(userRepresentation, purposeList, CommonString.getInstance().getPurpose()));
+  //      userRepresentation.setEmail(email);
+  //      userRepresentation.setUsername(email);
+ 
         userRepresentation.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
         userResource.update(userRepresentation);
+        
+//        String password = attributesJson.get(CommonString.getInstance().getPassword()).toString();  
+//        if(password != null && !password.isEmpty() && !password.equals("null")) {  
+//            resetCredential(userResource, password); 
+//        } 
 
-        return getUserByUserName(email);
+        return json.converterUser(userRepresentation);
     }
 
     /**
@@ -339,7 +350,19 @@ public class UserManagement implements Serializable {
 
         return json.converterUsers(loggedInUsers);
     }
-
+    
+    private void resetCredential(UserResource userResource, String password) { 
+        logger.info("resetCredential : {}", password);
+        
+        logger.info("user resource : {}", userResource.toRepresentation().getEmail() );
+         
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(password);
+        credential.setTemporary(false);
+        userResource.resetPassword(credential); 
+    }
+ 
     private List<UserRepresentation> getUsersRepresentation(String email) {
         UsersResource usersResource = getUsersResource(); 
         return usersResource.search(email, 0, usersResource.count());
@@ -461,25 +484,19 @@ public class UserManagement implements Serializable {
     
     
     
+//    public JsonObject sendVerificationEmailById(String id) {
+//        logger.info("sendVerificationEmailById : {}", id);
+//
+//        UserResource userResource = getUsersResource().get(id); 
+//        userResource.sendVerifyEmail();
+//        return json.converterUser(userResource.toRepresentation());
+//    }
+
     
     
     
 
-    //    private void resetCredential(UserResource userResource, String password) {
-////        String password = TempPasswordGenerator.generateRandomPassword();
-//        CredentialRepresentation cred = new CredentialRepresentation();
-//        cred.setType(CredentialRepresentation.PASSWORD);
-//         
-//        boolean isTempPassword = false;
-//        if(password == null) {
-//            password = TempPasswordGenerator.generateRandomPassword();
-//            isTempPassword = true;
-//        }
-//        cred.setValue(password);
-//        cred.setTemporary(isTempPassword);
-//
-//        userResource.resetPassword(cred);
-//    }
+
 //    public JsonObject userAction(String jsonString, boolean isNew) {
 //        logger.info("userAction");
 //        

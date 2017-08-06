@@ -18,6 +18,11 @@ export default Ember.Route.extend({
         model.rollbackAttributes();   
     },
  
+
+    beforeModel () {   
+      //  model.set('required', false)
+    },
+ 
     
     sendEmail(user) {
         console.log("sendEmail: " + user.id);

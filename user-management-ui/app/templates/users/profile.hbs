@@ -2,56 +2,18 @@
     
     {{#if model.isEditing }} 
         {{#user-account-form account=model title='edit-user'}} 
-            <button class="btn btn-success btn-sm" {{action 'updateUser' model}}>Update</button>
+            <button class="btn btn-success btn-sm" {{action 'cancelEditUser' model}}>Cancel</button>
+            <button class="btn btn-success btn-sm"  disabled={{disableUpdateButton}} {{action 'updateUser' model}}>Update</button>
         {{/user-account-form}}   
-    {{else}}
+    {{else}} 
         {{#user-account account=model}} 
-            {{#if model.changePassword}}
-                <button class="btn btn-success btn-sm" {{action 'cancel' model}}>Cancel</button>
+            {{#if model.changePassword}} 
+                <button class="btn btn-success btn-sm" {{action 'cancelUpdatePassword' model}}>Cancel</button>
                 <button class="btn btn-success btn-sm" {{action 'updatePassword' model}}>Update password</button>
             {{else}}
                 <button class="btn btn-success btn-sm" {{action 'changePassword' model}}>Change password</button>
                 <button class="btn btn-success btn-sm" {{action 'editUser' model}}>Edit</button>
             {{/if}} 
-        {{/user-account}} 
+        {{/user-account}}  
     {{/if}} 
-</div>
-
-
-
-<!--
-<div class="container users-view">
- 
-    <div class="row">
-        <div class="col-xs-12">
-            {{#field-group title='user-profile' collapsable=false as |fg|}}
-                {{#fg.content}}
-                    <ul>
-                        <li>
-                            <span>{{t 'fields.labels.user.first_name'}}:</span> {{model.first_name}}
-                        </li>
-                        <li>
-                            <span>{{t 'fields.labels.user.last_name'}}:</span> {{model.last_name}}
-                        </li>
-                        <li>
-                            <span>{{t 'fields.labels.user.email'}}:</span> {{model.email}}
-                        </li>
-                        <li>
-                            <span>{{t 'fields.labels.user.purpose'}}:</span>  {{model.purpose}}
-                        </li> 
-                        <li>
-                            <span>{{t 'fields.labels.user.descriptions'}}:</span>  {{model.descriptions}}
-                        </li> 
-                    </ul>
-
-                    {{#if model.new_account}}
-                        {{#if model.is_email_verified}}  
-                            <button type="button" {{action "enableUser" model}}>Enable</button> 
-                        {{/if}}
-                    {{/if}}
-                {{/fg.content}}
-            {{/field-group}}
-        </div>
-    </div>
-</div>
--->
+</div> 

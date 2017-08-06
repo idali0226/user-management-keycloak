@@ -4,54 +4,72 @@ import moment from 'moment';
 
 import { buildValidations, validator } from 'ember-cp-validations';
 
-const Validations = buildValidations({
-	first_name: validator('presence', {
- 		presence: true,
-		descriptionKey: 'fields.labels.user.first-name'
-    }), 
-	last_name: validator('presence', {
-        presence: true,
-        descriptionKey: 'fields.labels.user.last-name'
-    }), 
- 	purpose: validator('presence', {
-        presence: true,
-        descriptionKey: 'fields.labels.user.purpose'
-    }), 
+const { attr } = DS;
 
+const Validations = buildValidations({
+	first_name: [
+        validator('presence', {
+     		presence: true, 
+    		descriptionKey: 'fields.labels.user.first-name'
+        }), 
+        validator('length', {
+            min: 2,
+            descriptionKey: 'fields.labels.user.first-name'
+        }),
+    ],
+	last_name: [
+        validator('presence', {
+            presence: true,
+            descriptionKey: 'fields.labels.user.last-name'
+        }), 
+        validator('length', {
+            min: 2,
+            descriptionKey: 'fields.labels.user.last-name'
+        }),
+    ],
+ 	purpose: [
+        validator('presence', {
+            presence: true,
+            descriptionKey: 'fields.labels.user.purpose'
+        }), validator('length', {
+            min: 2,
+            descriptionKey: 'fields.labels.user.purpose'
+        }),
+    ],
 	email: [
-		validator('presence', {
+        validator('presence', {
             presence: true,
             descriptionKey: 'fields.labels.user.username-email'
         }),
 		validator('format', { type: 'email' }),
-	 	validator('username-available', { debounce: 300 })
+ 	    validator('username-available', { debounce: 300 })
 	],
 
-//	password: [
-//	 	validator('presence', true),
-//		validator('length', {
-//			min: 4
-//		})
-//	],
-//	passwordConfirmation: [
-//		validator('presence', true),
-//		validator('confirmation', {
-//			on: 'password',
-//			message: '{description} do not match',
-//			description: 'Password'
-//		})
-//	]
+  	password: [ 
+        validator('format', { 
+            disabled: Ember.computed.not('model.validationRequired'),
+            regex: /^(?=.*?[#?!@$%^&*-]).{8,}$/,
+            message: 'Password must has minimum 8 charaters and include at least one Special Characters',
+  
+        }), 
+ 	],
+
+    passwordConfirmation: validator('confirmation', {
+        on: 'password',
+        message: 'Password do not match'
+    }), 
 });
  
 
 export default DS.Model.extend(Validations, {
 
- 	first_name: DS.attr('string'),
- 	last_name:  DS.attr('string'),
- 	email: DS.attr('string'),
- 	purpose: DS.attr('string'), 
- 	password: DS.attr('string'),
-	timestamp_created: DS.attr('number'),
+    username: attr('string'),
+ 	first_name: attr('string'),
+ 	last_name: attr('string'),
+ 	email: attr('string'),
+ 	purpose: attr('string'), 
+ 	password: attr('string'),
+	timestamp_created: attr('number'),
 // 	is_enabled: DS.attr('boolean'),
  	is_email_verified: DS.attr('boolean'),
  	status: DS.attr('string'),
@@ -71,25 +89,7 @@ export default DS.Model.extend(Validations, {
     is_enabled_user: Ember.computed.equal('status', 'Enabled'),
     is_pending_user: Ember.computed.equal('status', 'Pending'), 
     is_super_admin:  Ember.computed.equal('purpose', 'Super admin'),
-
-
-
-
- //   is_disabled: Ember.computed.equal('status', 'Disabled'),
- //   is_enabled: Ember.computed.equal('status', 'Enabled'),
- //   is_new_accoun: Ember.computed.equal('status', 'Pending'), 
- //   is_super_admin:  Ember.computed.equal('purpose', 'Super admin'),
- //   is_email_not_verified: Ember.computed.not('is_email_verified'),
-
- //   is_new_and_email_verified: Ember.computed.and('is_new_accoun', 'is_email_verified'),
- //   show_enable_button: Ember.computed.or('is_disabled', 'is_new_and_email_verified'),
- //   show_disable_button: Ember.computed.equal('status', 'Enabled'),
- //   show_resending_email_button: Ember.computed.and('is_new_accoun', 'is_email_not_verified'),
-
-
-  //  show_reject_button: Ember.computed.equal('status', 'Pending'),
-
-
+  
     view_color: Ember.computed('status', function() {
 
         let disabled = Ember.computed.equal('status', 'Disabled');
@@ -103,7 +103,9 @@ export default DS.Model.extend(Validations, {
         }
     }),
 
- 
+    validationRequired: Ember.computed('username', function() {  
+        return this.get('username') ;
+    }),
 
 //    show_disable_button: Ember.computed('status', 'email', function() { 
 //        return this.get('status') !== 'disabled'  & this.get('email') !== 'admin@nrm.se';

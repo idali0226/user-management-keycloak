@@ -40,7 +40,9 @@ export default SessionService.extend({
 
                 
             }); 
-        } else {
+        } else {  
+          //  console.log("inspect " + Ember.inspect(this ));
+            
             this.set('userProfile', undefined);
         } 
     }),
