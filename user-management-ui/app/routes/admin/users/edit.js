@@ -7,53 +7,34 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         return this.store.findRecord('user', params.id);
     },
 
-    actions: {  
-        updateUser(user) {
-            console.log("update user : " + user.id);
-
-            let controller = this.controller;
- 
-
-            if (controller.get('isSaving')) {
-                return;
-            }   
-
-
-            user.validate() 
-                .then(({ validations }) => {
+    actions: {   
+        updateUser(user) {  
+            console.log("update user : " + user.id); 
+            user.validate({ on: ['first_name', 'last_name', 'purpose' ] }) 
+                .then(({  validations }) => {
+                    console.log("is valid !" + validations.get('isValid'));
                     if (validations.get('isValid')) { 
+                        console.log("valid"); 
                         user.save()
                             .then((record) => {   
                                 console.log("record : " + record);
                                 this.set('showSaved', true);   
-                            }).finally(()=>{ 
-                                
+                            }).catch((msg) => {
+                                 console.log("error : " + msg.toString());
+                                 if(msg.toString() === 'Error: The adapter operation was aborted') { 
+                                    this.controller.get('model').rollbackAttributes();
+                                 }
+                            }).finally((response) => {  
+                                console.log("finally response : " + response);
                             });
                     } else {
                         console.log('invalid');  
+                        user.set('isEditing', true); 
+                        this.controller.get('model').rollbackAttributes();
+                      // this.controller.get('model').rollbackAttributes();
                     } 
-                });     
-/**
-            user.validate() 
-                .then(({ validations }) => {
-                    if (validations.get('isValid')) {   
-                        controller.set('isSaving', true); 
-                     
-                        user.save()
-                            .then((record) => {   
-                                console.log(record.id);
-                                this.set('showSaved', true);   
-                                this.refresh();   
-                            }).finally(()=>{
-                                controller.set('isSaving', false); 
-                            });
-                    } else {
-                        console.log('invalid');   
-                    } 
-            }); 
-
-*/
- 
-        }
+                });  
+            user.set('isEditing', false);
+        }, 
     }
 });

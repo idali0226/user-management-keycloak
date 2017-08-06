@@ -58,8 +58,7 @@ export default Ember.Route.extend({
                              //   this.sendInvitation(record);
                              // this.transitionTo('index');
                                 this.sendEmail(record); 
-                                controller.set('responseMessage', true);
-
+                                controller.set('responseMessage', true); 
                             }).finally(()=>{
                                 controller.set('isSaving', false);
                             });

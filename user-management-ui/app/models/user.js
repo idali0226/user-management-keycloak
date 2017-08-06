@@ -28,7 +28,7 @@ const Validations = buildValidations({
         }),
     ],
  	purpose: [
-        validator('presence', {
+        validator('presence', { 
             presence: true,
             descriptionKey: 'fields.labels.user.purpose'
         }), validator('length', {
@@ -37,12 +37,15 @@ const Validations = buildValidations({
         }),
     ],
 	email: [
-        validator('presence', {
+        validator('presence', { 
             presence: true,
             descriptionKey: 'fields.labels.user.username-email'
         }),
 		validator('format', { type: 'email' }),
- 	    validator('username-available', { debounce: 300 })
+ 	    validator('username-available', {  
+            disabled: Ember.computed.not('model.validationRequired'),
+            debounce: 300 
+        })
 	],
 
   	password: [ 

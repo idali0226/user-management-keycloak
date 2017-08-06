@@ -44,7 +44,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                     } else {
                         console.log('invalid');  
                         user.set('isEditing', true); 
-                        this.controller.get('model').rollbackAttributes();
+                     //   this.controller.get('model').rollbackAttributes();
                       // this.controller.get('model').rollbackAttributes();
                     } 
                 });  

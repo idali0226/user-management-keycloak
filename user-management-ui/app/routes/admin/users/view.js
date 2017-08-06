@@ -23,18 +23,18 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
  
     activate () { 
         console.log("activate");
-        this.controllerFor('users').set('isList', false); 
-        this.controllerFor('users').set('status', null); 
+        this.controllerFor('admin.users').set('isList', false); 
+        this.controllerFor('admin.users').set('status', null); 
     },
 
     deactivate () { 
         console.log("deactivate");
-        this.controllerFor('users').set('isList', true); 
+        this.controllerFor('admin.users').set('isList', true); 
     },
 
     transitionToUser () {
         console.log('transitionToUser');
-        this.transitionTo('users');
+        this.transitionTo('admin.users');
     },
   
     
@@ -55,8 +55,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
             ajax.request('/secure/enableDisableUser?id=' + user.id + '&action=' + action, {
                 method: 'PUT' 
             }).then((response) => {
-                console.log('response: ' + response);
-
+                console.log('response: ' + response); 
                 this.refresh();  
              //   this.transitionTo('users');
             }); 
@@ -80,7 +79,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
                 console.log(confirm);
                 user.destroyRecord(); 
                 sweetAlert("Rejected!", "User was successfully rejected!", "success");
-                this.transitionTo('users');    
+                this.transitionTo('admin.users');    
             }).catch(e => {
                 console.log(e);
             });
@@ -119,18 +118,36 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
 
         cancelEdit(user) {
             user.set('isEditing', false);
+            this.controller.get('model').rollbackAttributes();
         },
 
         updateUser(user) {  
-            console.log("update user : " + user.id);
-
-            user.save().then(() => {    
-                this.set('showSaved', true);     
-            }).catch((msg) => { 
-                console.log("error : " + msg);
-            }).finally(()=>{  
-                user.set('isEditing', false);     
-            });
+            console.log("update user : " + user.id); 
+            user.validate({ on: ['first_name', 'last_name', 'purpose' ] }) 
+                .then(({  validations }) => {
+                    console.log("is valid !" + validations.get('isValid'));
+                    if (validations.get('isValid')) { 
+                        console.log("valid"); 
+                        user.save()
+                            .then((record) => {   
+                                console.log("record : " + record);
+                                this.set('showSaved', true);   
+                            }).catch((msg) => {
+                                 console.log("error : " + msg.toString());
+                                 if(msg.toString() === 'Error: The adapter operation was aborted') { 
+                                    this.controller.get('model').rollbackAttributes();
+                                 }
+                            }).finally((response) => {  
+                                console.log("finally response : " + response);
+                            });
+                    } else {
+                        console.log('invalid');  
+                        user.set('isEditing', true); 
+                     //   this.controller.get('model').rollbackAttributes();
+                      // this.controller.get('model').rollbackAttributes();
+                    } 
+                });  
+            user.set('isEditing', false);
         }, 
     } 
 });

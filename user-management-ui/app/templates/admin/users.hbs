@@ -1,10 +1,7 @@
 <div class="container"> 
   <div class="page-header">
     {{#if isList}}
-      
-    {{/if}}
-
-    <h1>{{t 'user.list.header'}}</h1>
+      <h1>{{t 'user.list.header'}}</h1>
       <hr>
       <div class="row">
         <div class="col-xs-4">
@@ -16,14 +13,15 @@
               placeholder="Select a status filter"
               selected=selectedFilter
               searchEnabled=false
-              allowClear=true 
-              onchange=(action "statusChange" ) as |filter| }}
+              allowClear=true
+              onchange=(action "statusChange"  ) as |filter| }}
             {{filter.status}}
           {{/power-select}} 
         </div>
         <div class="col-xs-3">
         </div> 
       </div>  
+    {{/if}}
   </div>
  
   {{outlet}}

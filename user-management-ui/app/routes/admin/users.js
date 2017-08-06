@@ -25,7 +25,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin,{
  
     activate () { 
         console.log("activate");
-        this.controllerFor('users').set('isList', true); 
+        this.controllerFor('admin.users').set('isList', true);   
     },
 
     beforeModel () {   
