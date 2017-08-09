@@ -7,6 +7,8 @@ package se.nrm.dina.user.management.logic;
 
 import java.io.Serializable;  
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject; 
@@ -121,7 +123,10 @@ public class RealmManagement implements Serializable {
     public JsonObject getRealmByRealmName(String realmName) { 
         RealmResource realmResource = keycloakClient.realm(realmName);
          
-        List<RoleRepresentation> roleRepresentations = realmResource.roles().list();
+        List<RoleRepresentation> roleRepresentations = realmResource.roles().list().stream()
+                                                                        .filter(filterDefaultRealmRoles())
+                                                                        .collect(Collectors.toList());
+         
         return json.converterRealm(realmResource.toRepresentation(), roleRepresentations);  
     }
     
@@ -162,9 +167,9 @@ public class RealmManagement implements Serializable {
 //                                    .get();
 //    }
 //    
-//    private static Predicate<RoleRepresentation> filterDefaultRealmRoles() {
-//        return r -> !r.getName().equals("uma_authorization") && !r.getName().equals("offline_access");
-//    }
+    private static Predicate<RoleRepresentation> filterDefaultRealmRoles() {
+        return r -> !(r.getName().equals("uma_authorization") || r.getName().equals("offline_access") || r.getName().equals("disabled_user"));
+    }
 //    
 //    private static Predicate<ClientRepresentation> clientRepresentationPredicate(String clientId) {
 //        return c -> c.getClientId().equals(clientId);

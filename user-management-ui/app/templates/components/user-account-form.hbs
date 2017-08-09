@@ -56,17 +56,20 @@
               </div> 
             {{/if}}  
 
-            {{#if isAdmin}} 
-              <br>
-              {{t 'user.edit.resign-roles'}}
-              <hr>
-               {{account.realm.realm_name}}
-
-               <br>
-               {{#each account.realm.roles as |role|}}
-                {{role.role_name}}
-               {{/each}}
-            {{/if}}
+            {{#unless isNew}}
+              {{#if isAdmin}} 
+                <hr>
+                {{t 'user.edit.resign-roles'}}
+                <br>
+                Realm name: {{realm.realm_name}}
+                <br>
+                Available realm roles:
+                <br>
+                {{#each realm.roles as |role|}}
+                  {{role.role_name}} -- Desicption: {{role.description}} <br>
+                 {{/each}}
+                {{/if}}
+              {{/unless}}
           {{/fg.content}}  
     		{{/field-group}} 
 
