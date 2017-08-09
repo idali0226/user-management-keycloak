@@ -3,7 +3,7 @@
 		<div class="col-xs-12"> 
       {{#field-group title=title collapsable=false as |fg|}}
         {{#fg.content}}  
-          {{#if isNew}}
+          {{#if isNew}} 
             {{input 
               value=account.email 
               placeholder=(t 'fields.labels.user.username-email')
@@ -55,8 +55,21 @@
                 {{v-get account 'purpose' 'message'}}
               </div> 
             {{/if}}  
+
+            {{#if isAdmin}} 
+              <br>
+              {{t 'user.edit.resign-roles'}}
+              <hr>
+               {{account.realm.realm_name}}
+
+               <br>
+               {{#each account.realm.roles as |role|}}
+                {{role.role_name}}
+               {{/each}}
+            {{/if}}
           {{/fg.content}}  
     		{{/field-group}} 
+
      	</div>
       <div class="panel-footer text-right">
         {{yield}}

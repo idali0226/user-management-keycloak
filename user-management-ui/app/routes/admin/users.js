@@ -15,12 +15,12 @@ export default Ember.Route.extend(AuthenticatedRouteMixin,{
     isList: true,
 
     model(params) {
-        console.log("params : " + params); 
-//    return this.store.findAll('user');
+        console.log("params : " + params);  
         if(params === null) {
-        return this.store.findAll('user');
+            return this.store.findAll('user');
         }
-        return  this.store.query('user', { filter: { status: params.status}, reload: true });
+        return  this.store.query('user', { filter: { status: params.status}  });
+   //     return  this.store.query('user', { filter: { status: params.status}, reload: true });
     },
  
     activate () { 

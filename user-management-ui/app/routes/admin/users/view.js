@@ -10,17 +10,38 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
 
     ajax: Ember.inject.service(), 
     i18n: Ember.inject.service(),
- 
-    model(params) { 
-        console.log("model");
-        return this.store.findRecord('user', params.id );
+    session: Ember.inject.service(),  
+    
+    model(params) {
+        return Ember.RSVP.hash({
+            user: this.store.findRecord('user', params.id ), 
+            realm: this.store.queryRecord('realm',  { realm: 'myrealm'} )
+        });
     },
+ 
+  //  model(params) { 
+   //     console.log("model");
+   //     return this.store.findRecord('user', params.id );
+   //},
 
     beforeModel () {   
         console.log("beforeModel");
         this.store.adapterFor('application').set('namespace', "user/api/v01/secure");   
     },  
  
+
+ //   afterModel: function(model){
+ //       console.log("afterModel");
+ //       return Ember.RSVP.all([
+ //           model.get('realm') 
+ //       ]);
+ //   },
+    afterModel () {   
+        console.log("afterModel");
+        return  this.store.queryRecord('realm',  { realm: 'myrealm'} );
+    },  
+
+
     activate () { 
         console.log("activate");
         this.controllerFor('admin.users').set('isList', false); 
@@ -143,8 +164,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
                     } else {
                         console.log('invalid');  
                         user.set('isEditing', true); 
-                     //   this.controller.get('model').rollbackAttributes();
-                      // this.controller.get('model').rollbackAttributes();
+                     //   this.controller.get('model').rollbackAttributes(); 
                     } 
                 });  
             user.set('isEditing', false);

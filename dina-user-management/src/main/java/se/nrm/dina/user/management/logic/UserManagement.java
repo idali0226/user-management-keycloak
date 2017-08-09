@@ -7,6 +7,7 @@ package se.nrm.dina.user.management.logic;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.nrm.dina.user.management.json.JsonConverter;
 import se.nrm.dina.user.management.logic.email.MailHandler;
+import se.nrm.dina.user.management.logic.helpers.KeycloakClientHelper;
 import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString;
 
@@ -42,6 +44,7 @@ public class UserManagement implements Serializable {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Keycloak keycloakClient;
+    private String realmName;
 
     @Inject
     public MailHandler mail;
@@ -55,7 +58,9 @@ public class UserManagement implements Serializable {
     @PostConstruct
     public void init() {
         logger.info("init");
-        buildRealm();
+        keycloakClient = KeycloakClientHelper.getInstance().buildKeycloakClient();
+        realmName = System.getenv(CommonString.getInstance().getEnvRealmName()); 
+//        buildRealm();
     }
 
     public JsonObject createUser(String jsonString, boolean createdByAdmin) {
@@ -97,11 +102,12 @@ public class UserManagement implements Serializable {
                 setClientRole(userResource, CommonString.getInstance().getUserManagementClientId(), CommonString.getInstance().getUserRole());
 //                 userResource.resetPasswordEmail();
             } else {
+                removeRealmRoles(userResource);
 //                 userResource.sendVerifyEmail();
             }
             userRespresentation = userResource.toRepresentation();
         }
-        return json.converterUser(userRespresentation);
+        return json.converterUser(userRespresentation, null, null);
     }
 
     public JsonObject sendEmail(String id, boolean isPendingUser) {
@@ -113,7 +119,7 @@ public class UserManagement implements Serializable {
         } else {
             userResource.resetPasswordEmail();
         } 
-        return json.converterUser(userResource.toRepresentation());
+        return json.converterUser(userResource.toRepresentation(), null, null);
     }
 
     public JsonObject recoverPassword(String email) {
@@ -259,19 +265,12 @@ public class UserManagement implements Serializable {
         
         UserRepresentation userRepresentation = userResource.toRepresentation();
         userRepresentation.setFirstName(firstName);
-        userRepresentation.setLastName(lastName);
-  //      userRepresentation.setEmail(email);
-  //      userRepresentation.setUsername(email);
+        userRepresentation.setLastName(lastName); 
  
         userRepresentation.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
-        userResource.update(userRepresentation);
-        
-//        String password = attributesJson.get(CommonString.getInstance().getPassword()).toString();  
-//        if(password != null && !password.isEmpty() && !password.equals("null")) {  
-//            resetCredential(userResource, password); 
-//        } 
+        userResource.update(userRepresentation); 
 
-        return json.converterUser(userRepresentation);
+        return json.converterUser(userRepresentation, null, null);
     }
 
     /**
@@ -296,7 +295,27 @@ public class UserManagement implements Serializable {
     public JsonObject getUserById(String id) {
         logger.info("getUserById");
          
-        return json.converterUser(getUserRepresentationById(id));
+        UserResource userResource = getUserResourceById(id); 
+        List<RoleRepresentation> effictiveRealmRepresentation = userResource.roles().realmLevel().listEffective();
+   
+        List<RoleRepresentation> userManagementClient = userResource.roles()
+                                                    .clientLevel(getClientIdByClientName(CommonString.getInstance()
+                                                            .getUserManagementClientId()))
+                                                    .listEffective();
+        List<RoleRepresentation> restServiceClient = userResource.roles()
+                                                    .clientLevel(getClientIdByClientName( CommonString.getInstance()
+                                                            .getDinaRestClientId()))
+                                                    .listEffective();
+     
+        userManagementClient.stream()
+                            .forEach(r -> {
+                                logger.info("roles : {}", r.getName());
+                            }); 
+        
+        Map<String, List<RoleRepresentation>> clientRoles = new HashMap<>();
+        clientRoles.put(CommonString.getInstance().getUserManagementClientId(), userManagementClient);
+        clientRoles.put(CommonString.getInstance().getDinaRestClientId(), restServiceClient);
+        return json.converterUser(userResource.toRepresentation(), effictiveRealmRepresentation, clientRoles);
     }
 
     /**
@@ -351,9 +370,7 @@ public class UserManagement implements Serializable {
     
     private void resetCredential(UserResource userResource, String password) { 
         logger.info("resetCredential : {}", password);
-        
-        logger.info("user resource : {}", userResource.toRepresentation().getEmail() );
-         
+          
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setValue(password);
@@ -367,11 +384,15 @@ public class UserManagement implements Serializable {
     }
 
     private UserRepresentation getUserRepresentationById(String id) {
-        UserResource userResource = getUsersResource().get(id);
+        UserResource userResource = getUserResourceById(id);
         
         return userResource != null ? userResource.toRepresentation() : null;
     }
 
+    private UserResource getUserResourceById(String id) {
+        return getUsersResource().get(id);
+    }
+    
     private UsersResource getUsersResource() {
         return getDinaRealmResource().users();
     }
@@ -441,23 +462,23 @@ public class UserManagement implements Serializable {
         return u -> !usersResource.get(u.getId()).getUserSessions().isEmpty();
     }
 
-    private void buildRealm() {
-
-        String keycloakAuthURL = System.getenv(CommonString.getInstance().getKeycloakURI());
-        logger.info("keycloakAuthURL : {}", keycloakAuthURL);
-
-        if (keycloakAuthURL.isEmpty()) {
-            keycloakAuthURL = "http://localhost:8080/auth";
-        }
-        keycloakClient = KeycloakBuilder.builder()
-                .serverUrl(keycloakAuthURL) //
-                .realm(CommonString.getInstance().getMastRealm())//
-                .username(CommonString.getInstance().getMasterAdminUsrname()) //
-                .password(CommonString.getInstance().getMasterAdminPassword()) //
-                .clientId(CommonString.getInstance().getAdminClientId())
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
-                .build();
-    }
+//    private void buildRealm() {
+//
+//        String keycloakAuthURL = System.getenv(CommonString.getInstance().getEnvKeycloakURI());
+//        logger.info("keycloakAuthURL : {}", keycloakAuthURL);
+//
+//        if (keycloakAuthURL.isEmpty()) {
+//            keycloakAuthURL = "http://localhost:8080/auth";
+//        }
+//        keycloakClient = KeycloakBuilder.builder()
+//                .serverUrl(keycloakAuthURL) //
+//                .realm(CommonString.getInstance().getMastRealm())//
+//                .username(CommonString.getInstance().getMasterAdminUsrname()) //
+//                .password(CommonString.getInstance().getMasterAdminPassword()) //
+//                .clientId(CommonString.getInstance().getAdminClientId())
+//                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
+//                .build();
+//    }
     
     
     
@@ -535,7 +556,7 @@ public class UserManagement implements Serializable {
         logger.info("preDestroy");
 
         if (keycloakClient != null) {
-            keycloakClient.close();
+            keycloakClient.close(); 
             logger.info("keycloakClient is closed");
         }
     }

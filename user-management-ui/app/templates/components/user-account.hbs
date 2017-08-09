@@ -30,20 +30,51 @@
     	            <div class="col-xs-8">
     	    	       {{account.status}}
                     </div>
-        	   </div> 
+                </div> 
 
-        	   {{#if account.is_pending_user }} 
+        	    {{#if account.is_pending_user }} 
         	        <div class="row">
     		            <div class="col-xs-4">
-    		    	 	    <span>{{t 'fields.labels.user.email-verified'}}:</span>
+    		    	 	    <span><h3>{{t 'fields.labels.user.email-verified'}}:</h3></span>
     		            </div>
     		            <div class="col-xs-8">
     		              {{account.is_email_verified}}
     		            </div>
-    	            </div> 
+    	            </div>   
         	    {{/if}} 
 
-               
+                {{#if isAdmin}}   
+                    <hr>  
+                    <span>{{t 'fields.labels.role.realm-role'}}</span>
+                    {{#each account.roles as |role|}}  
+                        {{#unless role.is_client}} 
+                            <div class="row"> 
+                                <div class="col-xs-4">
+                                    <span>{{role.role_belong_to}}</span>
+                                </div>
+                                <div class="col-xs-8">
+                                    {{role.role_name}}
+                                </div>
+                            </div>  
+                        {{/unless}} 
+                    {{/each}} 
+                    <hr>
+                    <span>{{t 'fields.labels.role.client-roles'}}:</span>       
+                    {{#each account.roles as |role|}}   
+                        {{#if role.is_client}} 
+                            <div class="row"> 
+                                <div class="col-xs-4">
+                                    <span>{{role.role_belong_to}}</span>
+                                </div>
+                                <div class="col-xs-8">
+                                  {{role.role_name}}
+                                </div>
+                            </div>   
+                        {{/if}}  
+                    {{/each}} 
+                {{/if}}
+
+       
 
                 {{#if account.changePassword}}
                     <hr>

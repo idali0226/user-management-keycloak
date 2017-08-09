@@ -137,6 +137,7 @@
                     </jvmArguments>
                     <environment>
                         <KEYCLOAK_URI>${KEYCLOAK_URI}</KEYCLOAK_URI>
+                        <REALM_NAME>${REALM_NAME}</REALM_NAME>
                         <MAIL_HOST>${MAIL_HOST}</MAIL_HOST>
                         <MAIL_PORT>${MAIL_PORT}</MAIL_PORT>
                         <MAIL_USERNAME>${MAIL_USERNAME}</MAIL_USERNAME>

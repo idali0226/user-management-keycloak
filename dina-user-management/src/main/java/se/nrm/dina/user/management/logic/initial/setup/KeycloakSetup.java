@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map; 
-import javax.annotation.PostConstruct; 
+import javax.annotation.PostConstruct;  
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.ws.rs.core.Response; 
@@ -47,14 +47,13 @@ public class KeycloakSetup implements Serializable {
     private static final String REGEX = ".*/(.*)$";
     private static final String PURPOSE = "Super admin";
  
-//    private String superUsername;
-//    private String superPassword;
-    
     private String keycloakAuthURL; 
     private String dinaRealm;
     private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
  
-    private final String KEYCLOAK_URI = "KEYCLOAK_URI";
+//    private final String ENV_KEYCLOAK_URI = "KEYCLOAK_URI";
+//    private final String ENV_REALM_NAME = "REALM_NAME";
+    
     private final String MAIL_HOST = "MAIL_HOST";
     private final String MAIL_PORT = "MAIL_PORT";
     private final String MAIL_USERNAME = "MAIL_USERNAME";
@@ -73,16 +72,15 @@ public class KeycloakSetup implements Serializable {
     @PostConstruct
     public void init() {
         logger.info("init");
-                                         
-        keycloakAuthURL =       System.getenv(KEYCLOAK_URI);  
-        logger.info("keycloakAuthURL : {}", keycloakAuthURL);
-          
-        if(StringUtils.isEmpty(keycloakAuthURL)) {
+
+        keycloakAuthURL = System.getenv(CommonString.getInstance().getEnvKeycloakURI()); 
+        logger.info("keycloakAuthURL : {}", keycloakAuthURL); 
+        if (StringUtils.isEmpty(keycloakAuthURL)) {
             keycloakAuthURL = "http://localhost:8080/auth";
         } 
-        dinaRealm = CommonString.getInstance().getDinaRealm();
-        
-        buildRealm();
+        dinaRealm = System.getenv(CommonString.getInstance().getEnvRealmName()); 
+        logger.info("dinaRealm : {}", dinaRealm);
+        buildKeycloakClient();
         initRealmResources(); 
         if(!isRealmExist()) {   
             createRealm(); 
@@ -103,10 +101,11 @@ public class KeycloakSetup implements Serializable {
                                     createClientRole(CommonString.getInstance().getDinaRestClientId(), r.getKey(), r.getValue());
                                     createClientRole(CommonString.getInstance().getUserManagementClientId(), r.getKey(), r.getValue());
                                 }); 
-            createInitialUser(); 
-        }  
-        if(keycloakClient != null) {
+            createInitialUser();
+        }
+        if (keycloakClient != null) {
             keycloakClient.close();
+            logger.info("keycloakClient is closed");
         }
     }
 
@@ -158,8 +157,7 @@ public class KeycloakSetup implements Serializable {
             setReamlRole(userResource);
             setClientRole(CommonString.getInstance().getDinaRestClientId(), userResource);
             setClientRole(CommonString.getInstance().getUserManagementClientId(), userResource);
-        }
-//        keycloakClient.close();
+        } 
     }
      
     private void setClientRole(String clientId, UserResource userResource) {
@@ -301,70 +299,7 @@ public class KeycloakSetup implements Serializable {
                             CommonString.getInstance().getProtocolMapperPropertyMapper(), 
                             Util.getInstance().buildProtocolMap(CommonString.getInstance().getTokenFirstName(), 
                                                                 CommonString.getInstance().getTokenGivenName()));
-        clientRepresentation.setProtocolMappers(protocolMappers); 
-        
-//        protocolMapper.setName(CommonString.getInstance().getRealmRoleClaimName());
-//        protocolMapper.setConsentText(CommonString.getInstance().getProtocolMapperConsentTextRealmRole());
-//        protocolMapper.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
-//        protocolMapper.setConsentRequired(true); 
-//        protocolMapper.setProtocolMapper(CommonString.getInstance().getProtocolMapperRealmRoleMapper()); 
-//        protocolMapper.setConfig(Util.getInstance().buildProtocolMap(CommonString.getInstance().getRealmRoleClaimName(),
-//                                                                        CommonString.getInstance().getRealmRoleClaimName())); 
-//        protocolMappers.add(protocolMapper); 
-         
- 
-
-        
-//        protocolMapper = new ProtocolMapperRepresentation();
-//        protocolMapper.setName(CommonString.getInstance().getEmail());
-//        protocolMapper.setConsentText(CommonString.getInstance().getProtocolMapperConsentTextEmail());
-//        protocolMapper.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
-//        protocolMapper.setConsentRequired(true); 
-//        protocolMapper.setProtocolMapper(CommonString.getInstance().getProtocolMapperPropertyMapper()); 
-//        protocolMapper.setConfig(Util.getInstance().buildProtocolMap(CommonString.getInstance().getEmail(),
-//                                                                        CommonString.getInstance().getEmail())); 
-//        protocolMappers.add(protocolMapper); 
-
-//         
-//        protocolMapper = new ProtocolMapperRepresentation();
-//        protocolMapper.setName(CommonString.getInstance().getUsername());
-//        protocolMapper.setConsentText(CommonString.getInstance().getProtocolMapperConsentTextUsername());
-//        protocolMapper.setProtocol(CommonString.getInstance().getProtocolMapperConsentTextUsername());
-//        protocolMapper.setConsentRequired(true); 
-//        protocolMapper.setProtocolMapper(CommonString.getInstance().getProtocolMapperPropertyMapper()); 
-//        protocolMapper.setConfig(Util.getInstance().buildProtocolMap(CommonString.getInstance().getUsername(),
-//                                                                        CommonString.getInstance().getPreferredUsername())); 
-//        protocolMappers.add(protocolMapper); 
-//         
-
-
-                
-                
-                
-                
-//        protocolMapper = new ProtocolMapperRepresentation();
-//        protocolMapper.setName(CommonString.getInstance().getProtocolMapperNameFalimyName());
-//        protocolMapper.setConsentText(CommonString.getInstance().getProtocolMapperConsentTextFamilyName());
-//        protocolMapper.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
-//        protocolMapper.setConsentRequired(true);
-//  
-//        protocolMapper.setProtocolMapper(CommonString.getInstance().getProtocolMapperPropertyMapper()); 
-//        protocolMapper.setConfig(Util.getInstance().buildProtocolMap(CommonString.getInstance().getTokenLastName(), 
-//                                                                        CommonString.getInstance().getTokenFamilyName())); 
-//        protocolMappers.add(protocolMapper); 
-
- 
-//        protocolMapper = new ProtocolMapperRepresentation();
-//        protocolMapper.setName(CommonString.getInstance().getProtocolMapperNameGivenName());
-//        protocolMapper.setConsentText(CommonString.getInstance().getProtocolMapperConsentTextGivenName());
-//        protocolMapper.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
-//        protocolMapper.setConsentRequired(true);
-//  
-//        protocolMapper.setProtocolMapper(CommonString.getInstance().getProtocolMapperPropertyMapper()); 
-//        protocolMapper.setConfig(Util.getInstance().buildProtocolMap(CommonString.getInstance().getTokenFirstName(), 
-//                                                                        CommonString.getInstance().getTokenGivenName())); 
-//        protocolMappers.add(protocolMapper);  
-        
+        clientRepresentation.setProtocolMappers(protocolMappers);  
          
         List<String> redirectURIs = new ArrayList<>();
         redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURL());
@@ -411,18 +346,7 @@ public class KeycloakSetup implements Serializable {
         logger.info("mail config : {}", smtpServerMap);
         return smtpServerMap;
     }
-
-    private void buildRealm() {
-        keycloakClient = KeycloakBuilder.builder()
-                .serverUrl(keycloakAuthURL) 
-                .realm(CommonString.getInstance().getMastRealm())
-                .username(CommonString.getInstance().getMasterAdminUsrname()) 
-                .password(CommonString.getInstance().getMasterAdminPassword()) 
-                .clientId(CommonString.getInstance().getAdminClientId())
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
-                .build();
-    }
-     
+ 
     private void initRealmResources() {
         realmResources = keycloakClient.realms();
     }
@@ -433,8 +357,7 @@ public class KeycloakSetup implements Serializable {
     
     private boolean isRealmExist() {
         return realmResources.findAll().stream() 
-                            .anyMatch(realm -> realm.getDisplayName().equals(dinaRealm)); 
-//        return true;
+                            .anyMatch(realm -> realm.getDisplayName().equals(dinaRealm));  
     }
     
         
@@ -445,43 +368,16 @@ public class KeycloakSetup implements Serializable {
        
         realmResource.roles().create(roleRepresentation); 
     }
-    
-//    private void uploadProperties() {
-//        
-//        Properties prop = new Properties();
-//        InputStream input = null; 
-//        try {  
-//            input = new FileInputStream(CommonString.getInstance().getConfigProperties());
-//            prop.load(input);
-//            keycloakAuthURL = prop.getProperty(CommonString.getInstance().getKeycloakAuthURL());
-////            realmName = prop.getProperty(CommonString.getInstance().getRealmName());
-//            
-//            mailHost = prop.getProperty(CommonString.getInstance().getMailServerHost());
-//            mailPort = prop.getProperty(CommonString.getInstance().getMailServerPort());
-//            mailFrom = prop.getProperty(CommonString.getInstance().getFrom());
-//            emailUserName = prop.getProperty(CommonString.getInstance().getMailServerUsername());
-//            emailPassword = prop.getProperty(CommonString.getInstance().getMailServerPassword());
-//            
-//            superUsername = prop.getProperty(CommonString.getInstance().getSuperUsername());
-//            superPassword = prop.getProperty(CommonString.getInstance().getSuperPassword());
-//        } catch (IOException ex) { 
-//        } finally {
-//            if (input != null) {
-//                try {
-//                    input.close();
-//                } catch (IOException e) { 
-//                }
-//            }
-//        }
-//    }
-    
-//    @PreDestroy
-//    public void preDestroy() {
-//        logger.info("preDestroy");
-//        
-//        if(keycloakClient != null) {
-//            keycloakClient.close();
-//            logger.info("keycloakClient is closed");
-//        }
-//    }
+  
+    private void buildKeycloakClient() {
+        keycloakClient = KeycloakBuilder.builder()
+                .serverUrl(keycloakAuthURL) 
+                .realm(CommonString.getInstance().getMastRealm())
+                .username(CommonString.getInstance().getMasterAdminUsrname()) 
+                .password(CommonString.getInstance().getMasterAdminPassword()) 
+                .clientId(CommonString.getInstance().getAdminClientId())
+                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
+                .build();
+    } 
 }
+ 

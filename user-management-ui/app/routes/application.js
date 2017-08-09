@@ -13,8 +13,8 @@ export default Ember.Route.extend(ApplicationRouteMixin, {
     // Don't know if this will resolve refresh token.
      _networkBecomesAvailable() {
         if (this.get('session.isAuthenticated')) {
-          let authenticator = this.get('session.authenticator');
-         authenticator._refreshAccessToken(); 
+            let authenticator = this.get('session.authenticator');
+            authenticator._refreshAccessToken(); 
         }
       },
   

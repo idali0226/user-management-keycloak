@@ -66,6 +66,9 @@ export default {
                 duplicate: 'Duplicate',
             },
         }, 
+        edit: {
+            'resign-roles': 'Resign roles:',
+        },
         'user-account-filter': 'Filter by user account status: ',
     }, 
     'user-profile': 'User profile',
@@ -91,6 +94,10 @@ export default {
             client: { 
                 name: 'Client name', 
             }, 
+            role: {
+                'realm-role': 'Realm role:',
+                'client-roles': 'Client roles'
+            }
         },
     },   
     buttons: {

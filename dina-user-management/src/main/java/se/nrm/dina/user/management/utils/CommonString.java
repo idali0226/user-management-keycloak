@@ -15,7 +15,8 @@ public class CommonString {
     
     private static CommonString instance = null;
     
-    private final String KEYCLOAK_URI = "KEYCLOAK_URI";
+    private final String ENV_KEYCLOAK_URI = "KEYCLOAK_URI";
+    private final String ENV_REALM_NAME = "REALM_NAME";
     
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String INITIAL_SETUP = "initialSetup";
@@ -63,7 +64,7 @@ public class CommonString {
     // Client
     private static final String DINA_REST_CLIENT_ID = "dina-rest";
     private static final String DINA_REST_CLIENT_NAME = "dina rest endpoint";
-    private static final String USER_MANAGEMENT_CLIENT_ID = "user-management";
+    private static final String USER_MANAGEMENT_CLIENT_ID = "user-management"; 
     private static final String USER_MANAGEMENT_CLIENT_NAME = "User management";
     private static final String OPEN_ID_CONNECT_PROTOCOL = "openid-connect";
     // End of client
@@ -113,6 +114,9 @@ public class CommonString {
     
     private final static String TYPE_CLIENTS = "clients";
     private final static String MANAGEMENT_REALM = "ManagementRealm";
+    
+    private final static String TYPE_REALM = "realms";
+    private final static String TYPE_ROLE = "role";
     
     private final static String HOST = "host";
     private final static String PORT = "port";
@@ -165,6 +169,8 @@ public class CommonString {
     
     private final String TYPE_ROLES = "roles";
     
+    private final String RELATIONSHIPS = "relationships";
+    
     
     private final String REDIRECT_FRONT_END_URL = "http://localhost:4200";
     
@@ -177,8 +183,12 @@ public class CommonString {
         return instance;
     }
     
-    public String getKeycloakURI() {
-        return KEYCLOAK_URI;
+    public String getEnvKeycloakURI() {
+        return ENV_KEYCLOAK_URI;
+    }
+    
+    public String getEnvRealmName() {
+        return ENV_REALM_NAME;
     }
     
     public String getInitialSetup() {
@@ -485,6 +495,10 @@ public class CommonString {
         return CLIENT_NAME;
     }
     
+    public String getRealmType() {
+        return TYPE_REALM;
+    }
+    
     public String getEndPoint(String queryParam, String queryValue, String url) {
         StringBuilder sb = new StringBuilder();
         sb.append(url);
@@ -603,5 +617,13 @@ public class CommonString {
     
     public String getTypeRoles() {
         return TYPE_ROLES;
+    }
+     
+    public String getTypeRole() {
+        return TYPE_ROLE;
+    }
+    
+    public String getRelationships() {
+        return RELATIONSHIPS;
     }
 }

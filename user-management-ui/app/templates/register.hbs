@@ -11,7 +11,7 @@
             <p>{{t 'messages.account.email-verification-action'}}</p> 
         </div>
     {{else}}  
-        {{#user-account-form account=model title='sign-up' isNew = true}}   
+        {{#user-account-form account=model title='sign-up' isNew=true isAdmin=false}}   
             {{#link-to 'index' class="btn btn-warning btn-sm"  tagName='button'}}{{t 'buttons.labels.cancel'}}{{/link-to}}   
             <button
                 class="btn btn-success btn-sm"

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.json.JsonObject; 
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
@@ -19,15 +20,17 @@ import org.keycloak.representations.idm.UserRepresentation;
  */
 public interface JsonConverter {
      
-    JsonObject readInJson(String json);
+    JsonObject readInJson(String json); 
     
-    JsonObject converterUser(UserRepresentation userRepresentation);
+    JsonObject converterUser(UserRepresentation userRepresentation, List<RoleRepresentation> realmRoles, Map<String, List<RoleRepresentation>> clientRoles);
     
     JsonObject converterUsers(List<UserRepresentation> userList);
     
+    JsonObject converterRealm( RealmRepresentation realmRepresentation, List<RoleRepresentation> roleRepresentations);
+    
     JsonObject converterRoles(RolesResource realmRoles);
     
-    JsonObject converterRole(RoleRepresentation roleRepresentation);
+    JsonObject converterRole(RoleRepresentation roleRepresentation, String roleBelongTo);
     
     JsonObject converterClients(Map<ClientRepresentation, List<RoleRepresentation>> clientRepresentationRolesMap);
     

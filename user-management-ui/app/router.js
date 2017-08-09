@@ -8,18 +8,9 @@ const Router = Ember.Router.extend({
 
 Router.map(function() {
   this.route('login');
-  this.route('register');
- 
+  this.route('register'); 
   this.route('password-recover');
-
-
-//  this.route('users', function() {
-//    this.route('new');
-//    this.route('view', {path: '/:id'}); 
-//    this.route('edit', {path: ':id/edit'});
- //   this.route('status', {path: '/status'});
-//  });
-
+ 
   this.route('admin', function() {
     this.route('users', function() {
       this.route('new');

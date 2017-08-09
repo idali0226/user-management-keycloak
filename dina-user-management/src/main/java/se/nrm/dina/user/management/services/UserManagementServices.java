@@ -149,11 +149,22 @@ public class UserManagementServices implements Serializable {
     @Path("/realms")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
+    public Response getRealmByName(@Context HttpServletRequest req, @QueryParam("realm") String realm) {
+        logger.info("getRealmsByName: {}", realm); 
+         
+        return Response.ok(realmManagement.getRealmByRealmName(realm)).build();
+    }
+    
+    @GET    
+    @Path("/realms/search")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
     public Response getRealmsByName(@Context HttpServletRequest req, @QueryParam("filter[realm]") String realm) {
         logger.info("getRealmsByName: {}", realm); 
-        
-        return Response.ok("ok").build();
+         
+        return Response.ok(realmManagement.getRealmByRealmName(realm)).build();
     }
+    
     
     private boolean isAdminRole(HttpServletRequest req) { 
         Principal userPrincipal = req.getUserPrincipal();        

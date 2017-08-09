@@ -65,6 +65,9 @@ export default {
                 duplicate: 'Duplicera',
             },
         }, 
+        edit: {
+            'resign-roles': 'Resign roles:',
+        },
         'user-account-filter': 'Filter by user account status: ',
     },
     'user-profile': 'Användarprofil',
@@ -89,6 +92,10 @@ export default {
             client: {
                 name: 'Klientnamn',
             }, 
+            role: {
+                'realm-role': 'Realm role:',
+                'client-roles': 'Client roles'
+            }
         },
     },
     buttons: {

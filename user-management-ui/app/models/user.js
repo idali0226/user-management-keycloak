@@ -77,7 +77,7 @@ export default DS.Model.extend(Validations, {
  	is_email_verified: DS.attr('boolean'),
  	status: DS.attr('string'),
 
- 	realms: DS.hasMany('realm', {async: true}),
+    roles: DS.hasMany('role', {async: true}),
  
  	formatted_date: Ember.computed('timestamp_created', function () {
      	return moment(this.get('timestamp_created')).format('Do MMMM YYYY');
@@ -95,8 +95,7 @@ export default DS.Model.extend(Validations, {
   
     view_color: Ember.computed('status', function() {
 
-        let disabled = Ember.computed.equal('status', 'Disabled');
-        console.log("color : " + disabled);
+     //   let disabled = Ember.computed.equal('status', 'Disabled'); 
         if(this.get('status') === 'Disabled') {
             return 'user-view-disabled';
         } else if (this.get('status') === 'Pending') {
@@ -107,6 +106,7 @@ export default DS.Model.extend(Validations, {
     }),
 
     validationRequired: Ember.computed('username', function() {  
+        console.log("usrname ? " + this.get('username'))
         return this.get('username') ;
     }),
 

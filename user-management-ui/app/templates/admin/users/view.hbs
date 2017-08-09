@@ -1,7 +1,7 @@
 <div class="container users-view  ">
  
-    {{#if model.isEditing }} 
-        {{#user-account-form account=model title='edit-user'}} 
+    {{#if model.user.isEditing }} 
+        {{#user-account-form account=model title='edit-user' isAdmin=true}} 
             <button class="btn btn-sm btn-warning" {{action 'cancelEdit' model}}>{{t 'buttons.labels.cancel'}}</button> 
             <button class="btn btn-sm btn-success" {{action 'updateUser' model}}>Update</button>
         {{/user-account-form}}   
@@ -14,26 +14,26 @@
                 <p>{{t 'messages.account.email-verification-action'}}</p> 
             </div>
         {{/if}}
-        {{#user-account account=model}}  
+        {{#user-account account=model.user realm=realm isAdmin=true}}  
             {{#link-to 'admin.users' class="btn btn-warning btn-sm"  tagName='button'}}{{t 'buttons.labels.cancel'}}{{/link-to}}   
 
-            {{#if model.is_disabled_user}}
+            {{#if model.user.is_disabled_user}}
                 <button class="btn btn-success btn-sm" {{action "userAction" model 'enableUser'}}>
                     {{t 'buttons.labels.enable-user'}}
                 </button>
             {{/if}}
 
-            {{#if model.is_enabled_user}}
+            {{#if model.user.is_enabled_user}}
                 <button class="btn btn-danger btn-sm" {{action 'userAction' model 'disableUser'}}>
                     {{t 'buttons.labels.disable-user'}}
                 </button> 
             {{/if}}
 
-            {{#if model.is_pending_user}}
+            {{#if model.user.is_pending_user}}
                 <button class="btn btn-danger btn-sm" {{action 'rejectUser' model }}>
                     {{t 'buttons.labels.reject-user'}}
                 </button> 
-                {{#if model.is_email_verified}}
+                {{#if model.user.is_email_verified}}
                     <button class="btn btn-success btn-sm" {{action "userAction" model 'enableUser'}}>
                         {{t 'buttons.labels.enable-user'}}
                     </button>
@@ -43,7 +43,7 @@
                     </button> 
                 {{/if}}
             {{/if}}  
-            <button class="btn btn-default btn-sm" {{action 'edit' model}}>{{t 'buttons.labels.edit-user'}}</button>
+            <button class="btn btn-default btn-sm" {{action 'edit' model.user}}>{{t 'buttons.labels.edit-user'}}</button>
         {{/user-account}}
     {{/if}}
 </div>
