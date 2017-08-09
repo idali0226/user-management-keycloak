@@ -92,6 +92,9 @@ export default DS.Model.extend(Validations, {
     is_enabled_user: Ember.computed.equal('status', 'Enabled'),
     is_pending_user: Ember.computed.equal('status', 'Pending'), 
     is_super_admin:  Ember.computed.equal('purpose', 'Super admin'),
+
+    realmRole: Ember.computed.filterBy('roles', 'is_client', false),
+    clientRole: Ember.computed.filterBy('roles', 'is_client', true),
   
     view_color: Ember.computed('status', function() {
 

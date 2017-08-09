@@ -46,8 +46,7 @@
                 {{#if isAdmin}}   
                     <hr>  
                     <span>{{t 'fields.labels.role.realm-role'}}</span>
-                    {{#each account.roles as |role|}}  
-                        {{#unless role.is_client}} 
+                     {{#each account.realmRole as |role|}}    
                             <div class="row"> 
                                 <div class="col-xs-4">
                                     <span>{{role.role_belong_to}}</span>
@@ -55,12 +54,11 @@
                                 <div class="col-xs-8">
                                     {{role.role_name}}
                                 </div>
-                            </div>  
-                        {{/unless}} 
-                    {{/each}} 
+                            </div>   
+                    {{/each}}  
                     <hr>
                     <span>{{t 'fields.labels.role.client-roles'}}:</span>       
-                    {{#each account.roles as |role|}}   
+                    {{#each account.clientRole as |role|}}   
                         {{#if role.is_client}} 
                             <div class="row"> 
                                 <div class="col-xs-4">
@@ -73,9 +71,7 @@
                         {{/if}}  
                     {{/each}} 
                 {{/if}}
-
-       
-
+ 
                 {{#if account.changePassword}}
                     <hr>
                     Change password
