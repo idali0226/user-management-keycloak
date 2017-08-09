@@ -11,7 +11,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
     ajax: Ember.inject.service(), 
     i18n: Ember.inject.service(),
     session: Ember.inject.service(),  
-    
+
     model(params) {
         return Ember.RSVP.hash({
             user: this.store.findRecord('user', params.id ), 
@@ -139,7 +139,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
 
         cancelEdit(user) {
             user.set('isEditing', false);
-            this.controller.get('model').rollbackAttributes();
+            this.controller.get('model.user').rollbackAttributes();
         },
 
         updateUser(user) {  
@@ -156,7 +156,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
                             }).catch((msg) => {
                                  console.log("error : " + msg.toString());
                                  if(msg.toString() === 'Error: The adapter operation was aborted') { 
-                                    this.controller.get('model').rollbackAttributes();
+                                    this.controller.get('model.user').rollbackAttributes();
                                  }
                             }).finally((response) => {  
                                 console.log("finally response : " + response);
