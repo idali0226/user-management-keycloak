@@ -5,8 +5,7 @@
  */
 package se.nrm.dina.user.management.logic.helpers;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashMap; 
 import java.util.Map;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.admin.client.Keycloak;

@@ -67,9 +67,13 @@
                 <br>
                 {{#each realm.roles as |role|}}
                   {{role.role_name}} -- Desicption: {{role.description}} <br>
-                 {{/each}}
-                {{/if}}
-              {{/unless}}
+                {{/each}}
+                <br> 
+                {{#each realm.clients as |client|}}
+                  {{client.client_name}} -- Desicption: {{client.description}} <br>
+                {{/each}}
+              {{/if}}
+            {{/unless}}
           {{/fg.content}}  
     		{{/field-group}} 
 

@@ -84,7 +84,7 @@ public class UserManagement implements Serializable {
         user.singleAttribute(CommonString.getInstance().getStatus(), status);
         user.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
 
-        Response response = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).users().create(user);
+        Response response = keycloakClient.realm(realmName).users().create(user);
         String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());
         response.close();
 
@@ -293,26 +293,23 @@ public class UserManagement implements Serializable {
     public JsonObject getUserById(String id) {
         logger.info("getUserById");
          
+         
         UserResource userResource = getUserResourceById(id); 
+        
         List<RoleRepresentation> effictiveRealmRepresentation = userResource.roles().realmLevel().listEffective();
    
-        List<RoleRepresentation> userManagementClient = userResource.roles()
-                                                    .clientLevel(getClientIdByClientName(CommonString.getInstance()
-                                                            .getUserManagementClientId()))
-                                                    .listEffective();
-        List<RoleRepresentation> restServiceClient = userResource.roles()
-                                                    .clientLevel(getClientIdByClientName( CommonString.getInstance()
-                                                            .getDinaRestClientId()))
-                                                    .listEffective();
-     
-        userManagementClient.stream()
-                            .forEach(r -> {
-                                logger.info("roles : {}", r.getName());
-                            }); 
-        
+        List<RoleRepresentation> userManagementClientRoles = userResource.roles()
+                                                                .clientLevel(getClientIdByClientName(CommonString.getInstance()
+                                                                .getUserManagementClientId()))
+                                                                .listEffective();
+        List<RoleRepresentation> restServiceClientRoles = userResource.roles()
+                                                                .clientLevel(getClientIdByClientName( CommonString.getInstance()
+                                                                        .getDinaRestClientId()))
+                                                                .listEffective();
+ 
         Map<String, List<RoleRepresentation>> clientRoles = new HashMap<>();
-        clientRoles.put(CommonString.getInstance().getUserManagementClientId(), userManagementClient);
-        clientRoles.put(CommonString.getInstance().getDinaRestClientId(), restServiceClient);
+        clientRoles.put(CommonString.getInstance().getUserManagementClientId(), userManagementClientRoles);
+        clientRoles.put(CommonString.getInstance().getDinaRestClientId(), restServiceClientRoles);
         return json.converterUser(userResource.toRepresentation(), effictiveRealmRepresentation, clientRoles);
     }
 
@@ -445,7 +442,7 @@ public class UserManagement implements Serializable {
     }
 
     private RealmResource getDinaRealmResource() {
-        return keycloakClient.realm(CommonString.getInstance().getDinaRealm());
+        return keycloakClient.realm(realmName);
     }
 
     private static Predicate<RoleRepresentation> isRealmRole(String roleName) {

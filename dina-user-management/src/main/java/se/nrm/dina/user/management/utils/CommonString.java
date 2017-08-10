@@ -24,9 +24,9 @@ public class CommonString {
     // keycloak constant  
     private static final String MASTER_REALM = "master";
 //    private static final String DINA_REALM = "dina";
-    private static final String DINA_REALM = "myrealm";
+//    private static final String DINA_REALM = "myrealm";
     private static final String ADMIN_CLIENT_ID = "admin-cli";
-    private static final String KEYCLOAK_URL = "http://localhost:8080/auth";
+//    private static final String KEYCLOAK_URL = "http://localhost:8080/auth";
     
     private static final String KEYCLOAK_AUTH_URL = "keycloakAuthURL";
 
@@ -395,17 +395,17 @@ public class CommonString {
         return MASTER_REALM;
     }
     
-    public String getDinaRealm() {
-        return DINA_REALM;
-    }
-    
+//    public String getDinaRealm() {
+//        return DINA_REALM;
+//    }
+//    
     public String getAdminClientId() {
         return ADMIN_CLIENT_ID;
     }
-    
-    public String getKeyCloakLUrl() {
-        return KEYCLOAK_URL;
-    }
+//    
+//    public String getKeyCloakLUrl() {
+//        return KEYCLOAK_URL;
+//    }
     
     public String getMasterAdminUsrname() {
         return MASTER_ADMIN_USERNAME;
@@ -487,7 +487,7 @@ public class CommonString {
         return CALL_DATE;
     }
     
-    public String getClientsType() {
+    public String getTypeClients() {
         return TYPE_CLIENTS;
     }
     

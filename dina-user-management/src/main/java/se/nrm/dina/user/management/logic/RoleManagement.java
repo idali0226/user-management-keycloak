@@ -12,8 +12,7 @@ import javax.inject.Inject;
 import javax.json.JsonObject; 
 import org.keycloak.admin.client.Keycloak; 
 import org.keycloak.admin.client.resource.ClientsResource;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.RolesResource;   
+import org.keycloak.admin.client.resource.RealmResource; 
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation; 
 import org.slf4j.Logger;
@@ -74,28 +73,28 @@ public class RoleManagement implements Serializable {
         return clientsResource.get(clientId).roles().list().stream().anyMatch(r -> r.getId().equals(roleId)); 
     }
     
-    public JsonObject getAllRealmRoles(String realm) {
-   
-        
-        RolesResource rolesResource = keycloakClient.realm(realm).roles();
-         
-        keycloakClient.close(); 
-        return json.converterRoles(rolesResource);
-    }
+//    public JsonObject getAllRealmRoles(String realm) {
+//   
+//        
+//        RolesResource rolesResource = keycloakClient.realm(realm).roles();
+//         
+//        keycloakClient.close(); 
+//        return json.converterRoles(rolesResource);
+//    }
     
     
     
-    public JsonObject getClientRolesByClientId(String realm, String clientId) {
-        
-        logger.info("getClientRolesByClientId : {} -- {}", realm, clientId);
-         
-        RolesResource rolesResoruce = keycloakClient.realm(realm).clients().get(clientId).roles(); 
-        return json.converterRoles(rolesResoruce);
-    }
+//    public JsonObject getClientRolesByClientId(String realm, String clientId) {
+//        
+//        logger.info("getClientRolesByClientId : {} -- {}", realm, clientId);
+//         
+//        RolesResource rolesResoruce = keycloakClient.realm(realm).clients().get(clientId).roles(); 
+//        return json.converterRoles(rolesResoruce);
+//    }
     
-    public Keycloak getKeycloak() {
-        return keycloakClient;
-    }
+//    public Keycloak getKeycloak() {
+//        return keycloakClient;
+//    }
     
 //    public void buildKeycloakClient() {
 //

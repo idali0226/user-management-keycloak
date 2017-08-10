@@ -128,6 +128,15 @@ public class UserManagementServices implements Serializable {
     }   
     
     @GET    
+    @Path("/clients/{id}")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
+    public Response getClientsById(@Context HttpServletRequest req, @PathParam("id") String id) {
+        logger.info("getClientsById: {}", id);  
+        return Response.ok(clientManagement.getClientById(id)).build();
+    }
+    
+    @GET    
     @Path("/clients")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     

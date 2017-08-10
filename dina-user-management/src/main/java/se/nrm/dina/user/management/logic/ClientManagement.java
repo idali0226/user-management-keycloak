@@ -14,6 +14,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject; 
 import javax.json.JsonObject;
 import org.keycloak.admin.client.Keycloak; 
+import org.keycloak.admin.client.resource.ClientResource;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -31,6 +33,8 @@ public class ClientManagement implements Serializable {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());  
     private Keycloak keycloakClient;
+    private String realmName;
+    private RealmResource realmResource;
     
     @Inject
     public JsonConverter json;
@@ -44,18 +48,40 @@ public class ClientManagement implements Serializable {
         logger.info("init"); 
         
         keycloakClient = KeycloakClientHelper.getInstance().buildKeycloakClient(); 
+        realmName = System.getenv(CommonString.getInstance().getEnvRealmName()); 
+        realmResource = keycloakClient.realm(realmName);
+    }
+    
+    public JsonObject getClientById(String id) {
+        logger.info("getClientById");
+        
+        ClientResource clientResource = realmResource.clients().get(id);
+        
+        Map<String, Integer> applicationSessionCount = clientResource.getApplicationSessionCount();
+        applicationSessionCount.entrySet().stream()
+                                            .forEach(a -> {
+                                                logger.info("application session count : {} -- {}", a.getKey(), a.getValue());
+                                            });
+        
+        clientResource.getUserSessions(0, 20).stream()
+                                .forEach(c ->  {
+                                    logger.info("user session : {} -- {}", c.getUsername(), c.getClients());
+                                });
+        ClientRepresentation clientRepresentation = clientResource.toRepresentation();
+        List<RoleRepresentation> roleRepresentations = clientResource.roles().list();
+        
+        return json.converterClient(clientRepresentation, roleRepresentations);
     }
     
     public JsonObject getAllTheClients() {
  
-        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(CommonString.getInstance().getDinaRealm()).clients().findAll();
+        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(realmName).clients().findAll();
         
         Map<ClientRepresentation, List<RoleRepresentation>> map = new HashMap();
         clientsRepresetation.stream() 
                 .filter(c -> !c.getName().contains("client")) 
                 .forEach(c -> {
-                    RolesResource rolesResource = keycloakClient.realm(CommonString.getInstance()
-                                                                .getDinaRealm())
+                    RolesResource rolesResource = keycloakClient.realm(realmName)
                                                                 .clients().get(c.getId()).roles(); 
                     map.put(c, rolesResource.list());
                 });

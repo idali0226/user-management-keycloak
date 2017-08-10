@@ -50,10 +50,7 @@ public class KeycloakSetup implements Serializable {
     private String keycloakAuthURL; 
     private String dinaRealm;
     private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
- 
-//    private final String ENV_KEYCLOAK_URI = "KEYCLOAK_URI";
-//    private final String ENV_REALM_NAME = "REALM_NAME";
-    
+   
     private final String MAIL_HOST = "MAIL_HOST";
     private final String MAIL_PORT = "MAIL_PORT";
     private final String MAIL_USERNAME = "MAIL_USERNAME";
@@ -69,6 +66,9 @@ public class KeycloakSetup implements Serializable {
     public KeycloakSetup() {
     }
 
+    /**
+     * 
+     */
     @PostConstruct
     public void init() {
         logger.info("init");
@@ -79,7 +79,7 @@ public class KeycloakSetup implements Serializable {
             keycloakAuthURL = "http://localhost:8080/auth";
         } 
         dinaRealm = System.getenv(CommonString.getInstance().getEnvRealmName()); 
-        logger.info("dinaRealm : {}", dinaRealm);
+  
         buildKeycloakClient();
         initRealmResources(); 
         if(!isRealmExist()) {   
