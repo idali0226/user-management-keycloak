@@ -43,14 +43,15 @@ const Validations = buildValidations({
         }),
 		validator('format', { type: 'email' }),
  	    validator('username-available', {  
-            disabled: Ember.computed.not('model.validationRequired'),
+            disabled: Ember.computed.not('model.emailValidationRequired'),
             debounce: 300 
         })
 	],
 
   	password: [ 
         validator('format', { 
-            disabled: Ember.computed.not('model.validationRequired'),
+        //    disabled: true,
+            disabled: Ember.computed.not('model.passwordValidationRequired'),
             regex: /^(?=.*?[#?!@$%^&*-]).{8,}$/,
             message: 'Password must has minimum 8 charaters and include at least one Special Characters',
   
@@ -108,11 +109,17 @@ export default DS.Model.extend(Validations, {
         }
     }),
 
-    validationRequired: Ember.computed('username', function() {  
-        console.log("usrname ? " + this.get('username'))
-        return this.get('username') ;
+    emailValidationRequired: Ember.computed('username', function() {  
+        console.log("usrname ? " + this.get('username'));
+     //   return this.get('username') ;
+        return Ember.isEmpty( this.get('username'));
     }),
-
+    
+    passwordValidationRequired: Ember.computed('username', function() {  
+        console.log("usrname ? " + this.get('username'));
+     //   return this.get('username') ;
+        return !Ember.isEmpty( this.get('username'));
+    }),
 //    show_disable_button: Ember.computed('status', 'email', function() { 
 //        return this.get('status') !== 'disabled'  & this.get('email') !== 'admin@nrm.se';
 //    }),

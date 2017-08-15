@@ -3,7 +3,7 @@
     {{#if model.isEditing }} 
         {{#user-account-form account=model title='edit-user'}} 
             <button class="btn btn-success btn-sm" {{action 'cancelEditUser' model}}>Cancel</button>
-            <button class="btn btn-success btn-sm"   {{action 'updateUser' model}}>Update</button>
+            <button class="btn btn-success btn-sm"   {{action 'updateUser' model}} >Update</button>
         {{/user-account-form}}   
     {{else}} 
         {{#user-account account=model}} 

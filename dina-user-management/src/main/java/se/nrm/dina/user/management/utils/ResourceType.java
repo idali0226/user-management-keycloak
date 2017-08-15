@@ -3,12 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package se.nrm.dina.user.management.logic;
+package se.nrm.dina.user.management.utils;
 
 /**
  *
  * @author idali
  */
-public class Main {
+public enum ResourceType {
     
+    User,
+    Realm,
+    Client,
+    Role;
+    
+    public String getText() {
+        return this.name().toLowerCase();
+    } 
 }

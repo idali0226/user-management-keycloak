@@ -83,6 +83,8 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
                                 this.controller.set('responseMessage', true);
 
                                 user.set('changePassword', false);
+                                user.set('password', null);
+                                user.set('passwordConfirmation', null);
                                 this.refresh();
                             }).finally(()=>{
                                 controller.set('isSaving', false);

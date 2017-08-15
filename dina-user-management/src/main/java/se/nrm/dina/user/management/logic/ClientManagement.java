@@ -8,65 +8,44 @@ package se.nrm.dina.user.management.logic;
 import java.io.Serializable;   
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import java.util.Map; 
 import javax.inject.Inject; 
 import javax.json.JsonObject;
-import org.keycloak.admin.client.Keycloak; 
-import org.keycloak.admin.client.resource.ClientResource;
-import org.keycloak.admin.client.resource.RealmResource;
+import lombok.extern.slf4j.Slf4j; 
+import org.keycloak.admin.client.Keycloak;  
+import org.keycloak.admin.client.resource.ClientResource; 
 import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.nrm.dina.user.management.json.JsonConverter;
-import se.nrm.dina.user.management.logic.helpers.KeycloakClientHelper;  
-import se.nrm.dina.user.management.utils.CommonString;
+import org.keycloak.representations.idm.RoleRepresentation;  
+import se.nrm.dina.user.management.json.JsonConverter; 
+import se.nrm.dina.user.management.keycloak.KeycloakClient; 
 
 /**
  *
  * @author idali
  */ 
-public class ClientManagement implements Serializable {
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());  
-    private Keycloak keycloakClient;
-    private String realmName;
-    private RealmResource realmResource;
-    
+@Slf4j
+public class ClientManagement implements Serializable { 
+ 
     @Inject
     public JsonConverter json;
+
+    @Inject
+    @KeycloakClient
+    private Keycloak keycloakClient;
     
-    public ClientManagement() {
-        
+    @Inject
+    @KeycloakClient
+    private String dinaRealm;
+    
+    public ClientManagement() { 
     }
-    
-    @PostConstruct
-    public void init() {
-        logger.info("init"); 
-        
-        keycloakClient = KeycloakClientHelper.getInstance().buildKeycloakClient(); 
-        realmName = System.getenv(CommonString.getInstance().getEnvRealmName()); 
-        realmResource = keycloakClient.realm(realmName);
-    }
-    
+      
     public JsonObject getClientById(String id) {
-        logger.info("getClientById");
+        log.info("getClientById");
         
-        ClientResource clientResource = realmResource.clients().get(id);
-        
-        Map<String, Integer> applicationSessionCount = clientResource.getApplicationSessionCount();
-        applicationSessionCount.entrySet().stream()
-                                            .forEach(a -> {
-                                                logger.info("application session count : {} -- {}", a.getKey(), a.getValue());
-                                            });
-        
-        clientResource.getUserSessions(0, 20).stream()
-                                .forEach(c ->  {
-                                    logger.info("user session : {} -- {}", c.getUsername(), c.getClients());
-                                });
+        ClientResource clientResource = keycloakClient.realm(dinaRealm).clients().get(id);
+         
         ClientRepresentation clientRepresentation = clientResource.toRepresentation();
         List<RoleRepresentation> roleRepresentations = clientResource.roles().list();
         
@@ -75,116 +54,17 @@ public class ClientManagement implements Serializable {
     
     public JsonObject getAllTheClients() {
  
-        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(realmName).clients().findAll();
+        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(dinaRealm).clients().findAll();
         
         Map<ClientRepresentation, List<RoleRepresentation>> map = new HashMap();
         clientsRepresetation.stream() 
                 .filter(c -> !c.getName().contains("client")) 
                 .forEach(c -> {
-                    RolesResource rolesResource = keycloakClient.realm(realmName)
+                    RolesResource rolesResource = keycloakClient.realm(dinaRealm)
                                                                 .clients().get(c.getId()).roles(); 
                     map.put(c, rolesResource.list());
                 });
           
         return json.converterClients(map); 
-    }
-    
-    
-//    public ClientRepresentation createEndpointClient() {
-//        ClientRepresentation clientRepresentation = new ClientRepresentation();
-//        clientRepresentation.setClientId(CommonString.getInstance().getDinaRestClientId());
-//        clientRepresentation.setName(CommonString.getInstance().getDinaRestClientName());
-//        clientRepresentation.setDescription("dina rest endpoint to retrieve token");
-//        clientRepresentation.setEnabled(Boolean.TRUE);
-//        clientRepresentation.setProtocol(CommonString.getInstance().getOpenIdConnectionProtocol());
-//        clientRepresentation.setDirectAccessGrantsEnabled(Boolean.TRUE);
-//
-//        List<ProtocolMapperRepresentation> protocolMappers = new ArrayList();
-//        setupProtocolMapper(protocolMappers,
-//                CommonString.getInstance().getRealmRoleClaimName(),
-//                CommonString.getInstance().getProtocolMapperConsentTextRealmRole(),
-//                CommonString.getInstance().getOpenIdConnectionProtocol(),
-//                CommonString.getInstance().getProtocolMapperRealmRoleMapper(),
-//                Util.getInstance().buildProtocolMap(
-//                        CommonString.getInstance().getRealmRoleClaimName(),
-//                        CommonString.getInstance().getRealmRoleClaimName()));
-//
-//        setupProtocolMapper(protocolMappers,
-//                CommonString.getInstance().getEmail(),
-//                CommonString.getInstance().getProtocolMapperConsentTextEmail(),
-//                CommonString.getInstance().getOpenIdConnectionProtocol(),
-//                CommonString.getInstance().getProtocolMapperPropertyMapper(),
-//                Util.getInstance().buildProtocolMap(CommonString.getInstance().getEmail(),
-//                        CommonString.getInstance().getEmail()));
-//
-//        setupProtocolMapper(protocolMappers,
-//                CommonString.getInstance().getUsername(),
-//                CommonString.getInstance().getProtocolMapperConsentTextUsername(),
-//                CommonString.getInstance().getOpenIdConnectionProtocol(),
-//                CommonString.getInstance().getProtocolMapperPropertyMapper(),
-//                Util.getInstance().buildProtocolMap(CommonString.getInstance().getUsername(),
-//                        CommonString.getInstance().getPreferredUsername()));
-//
-//        setupProtocolMapper(protocolMappers,
-//                CommonString.getInstance().getProtocolMapperNameFalimyName(),
-//                CommonString.getInstance().getProtocolMapperConsentTextFamilyName(),
-//                CommonString.getInstance().getOpenIdConnectionProtocol(),
-//                CommonString.getInstance().getProtocolMapperPropertyMapper(),
-//                Util.getInstance().buildProtocolMap(CommonString.getInstance().getTokenLastName(),
-//                        CommonString.getInstance().getTokenFamilyName()));
-//
-//        setupProtocolMapper(protocolMappers,
-//                CommonString.getInstance().getProtocolMapperNameGivenName(),
-//                CommonString.getInstance().getProtocolMapperConsentTextGivenName(),
-//                CommonString.getInstance().getOpenIdConnectionProtocol(),
-//                CommonString.getInstance().getProtocolMapperPropertyMapper(),
-//                Util.getInstance().buildProtocolMap(CommonString.getInstance().getTokenFirstName(),
-//                        CommonString.getInstance().getTokenGivenName()));
-//        
-//        clientRepresentation.setProtocolMappers(protocolMappers);
-//
-//        List<String> redirectURIs = new ArrayList<>();
-//        redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURL());
-//        clientRepresentation.setRedirectUris(redirectURIs);
-//
-//        return clientRepresentation;
-////        realmResource.clients().create(clientRepresentation);
-//    }
-//    
-//    private void setupProtocolMapper(List<ProtocolMapperRepresentation> protocolMappers,   
-//                                     String name, String consentText, String protocol, 
-//                                     String protocolMapper, Map<String, String> configMap) { 
-//        
-//        ProtocolMapperRepresentation protocolMapperRepresentation = new ProtocolMapperRepresentation();
-//        protocolMapperRepresentation.setName(name);
-//        protocolMapperRepresentation.setConsentText(consentText);
-//        protocolMapperRepresentation.setProtocol(protocol);
-//        protocolMapperRepresentation.setConsentRequired(true); 
-//        protocolMapperRepresentation.setProtocolMapper(protocolMapper); 
-//        protocolMapperRepresentation.setConfig(configMap); 
-//        protocolMappers.add(protocolMapperRepresentation);
-//    }
-// 
-//    
-
-         
-//    private void buildRealm() {   
-//        keycloakClient = KeycloakBuilder.builder()
-//                                        .serverUrl(CommonString.getInstance().getKeyCloakLUrl()) //
-//                                        .realm(CommonString.getInstance().getMastRealm())//
-//                                        .username(CommonString.getInstance().getMasterAdminUsrname()) //
-//                                        .password(CommonString.getInstance().getMasterAdminPassword()) //
-//                                        .clientId(CommonString.getInstance().getAdminClientId())
-//                                        .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()) //
-//                                        .build(); 
-//    }
-    
-    @PreDestroy
-    public void preDestroy() {
-        logger.info("preDestroy"); 
-        if (keycloakClient != null) {
-            keycloakClient.close();
-            logger.info("keycloakClient is closed");
-        }
-    }
+    }   
 }

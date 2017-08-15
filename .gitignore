@@ -9,3 +9,4 @@ api
 dina-user-management/Dockerfile
 dina-user-management/docker-compose.yaml
 dina-user-management/docker/
+/dina-user-management/nbproject/

@@ -12,12 +12,11 @@ import java.util.List;
 import java.util.Map; 
 import javax.annotation.PostConstruct;  
 import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.ws.rs.core.Response; 
-import org.apache.commons.lang.StringUtils;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder; 
+import javax.ejb.Startup; 
+import javax.inject.Inject;
+import javax.ws.rs.core.Response;   
+import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.Keycloak; 
 import org.keycloak.admin.client.resource.ClientsResource; 
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RealmsResource;
@@ -28,8 +27,10 @@ import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory; 
+import org.wildfly.swarm.spi.runtime.annotations.ConfigurationValue;
+import se.nrm.dina.user.management.keycloak.KeycloakClient; 
 import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString; 
 import se.nrm.dina.user.management.utils.Util;
@@ -40,47 +41,68 @@ import se.nrm.dina.user.management.utils.Util;
  */
 @Startup                            // initialize ejb at deployment time
 @Singleton
-public class KeycloakSetup implements Serializable {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
- 
+@Slf4j
+public class KeycloakSetup implements Serializable { 
+    
     private static final String REGEX = ".*/(.*)$";
     private static final String PURPOSE = "Super admin";
- 
-    private String keycloakAuthURL; 
-    private String dinaRealm;
-    private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
    
-    private final String MAIL_HOST = "MAIL_HOST";
-    private final String MAIL_PORT = "MAIL_PORT";
-    private final String MAIL_USERNAME = "MAIL_USERNAME";
-    private final String MAIL_PASSWORD = "MAIL_PASSWORD";
-    private final String MAIL_FROM = "MAIL_FROM"; 
-    private final String SUPER_ADMIN_USERNAME = "SUPER_USERNAME";
-    private final String SUPER_ADMIN_PASSWORD = "SUPER_PASSWORD";
-    
-    private Keycloak keycloakClient; 
+    private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
+     
     private RealmsResource realmResources;
     private RealmResource realmResource;
+  
+//    @Inject
+//    @ConfigurationValue("swarm.realm.name")
+//    private String dinaRealm;
+    
+    @Inject
+    @ConfigurationValue("swarm.email.host")
+    private String emailHost;
+        
+    @Inject
+    @ConfigurationValue("swarm.email.port")
+    private String emailPort;
+            
+    @Inject
+    @ConfigurationValue("swarm.email.username")
+    private String emailUsername;
+                
+    @Inject
+    @ConfigurationValue("swarm.email.password")
+    private String emailPassword;
+    
+    @Inject
+    @ConfigurationValue("swarm.email.from")
+    private String emailFrom;
+    
+    @Inject
+    @ConfigurationValue("swarm.user.username")
+    private String superUsername;
+    
+    @Inject
+    @ConfigurationValue("swarm.user.password")
+    private String superUserPassword;    
+     
+    @Inject
+    @KeycloakClient
+    private Keycloak keycloakClient;
+    
+    @Inject
+    @KeycloakClient
+    private String dinaRealm;
 
     public KeycloakSetup() {
     }
 
     /**
      * 
+     * 
      */
     @PostConstruct
     public void init() {
-        logger.info("init");
-
-        keycloakAuthURL = System.getenv(CommonString.getInstance().getEnvKeycloakURI()); 
-        logger.info("keycloakAuthURL : {}", keycloakAuthURL); 
-        if (StringUtils.isEmpty(keycloakAuthURL)) {
-            keycloakAuthURL = "http://localhost:8080/auth";
-        } 
-        dinaRealm = System.getenv(CommonString.getInstance().getEnvRealmName()); 
-  
-        buildKeycloakClient();
+        log.info("init"); 
+        
         initRealmResources(); 
         if(!isRealmExist()) {   
             createRealm(); 
@@ -102,11 +124,7 @@ public class KeycloakSetup implements Serializable {
                                     createClientRole(CommonString.getInstance().getUserManagementClientId(), r.getKey(), r.getValue());
                                 }); 
             createInitialUser();
-        }
-        if (keycloakClient != null) {
-            keycloakClient.close();
-            logger.info("keycloakClient is closed");
-        }
+        } 
     }
 
     private Map<String, String> setupBasicRoleMap() {
@@ -123,10 +141,8 @@ public class KeycloakSetup implements Serializable {
     }
      
     private void createInitialUser() {
-        logger.info("createInitialUser");
-        String superUsername = System.getenv(SUPER_ADMIN_USERNAME);
+        log.info("createInitialUser"); 
         
-        logger.info("username : {}", superUsername);
         UserRepresentation user = new UserRepresentation();
         user.setUsername(superUsername);
         user.setEmail(superUsername);
@@ -147,7 +163,7 @@ public class KeycloakSetup implements Serializable {
          
         Response response = realmResource.users().create(user); 
         
-        logger.info("crate user response : {}", response);
+        log.info("crate user response : {}", response);
         String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());
         response.close();
 
@@ -199,13 +215,10 @@ public class KeycloakSetup implements Serializable {
     }
     
     
-    private void resetPassword(UserResource userResource) {
-        String superPassword = System.getenv(SUPER_ADMIN_PASSWORD);
-        
-        logger.info("password : {}", superPassword);
+    private void resetPassword(UserResource userResource) { 
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setType(CredentialRepresentation.PASSWORD);
-        cred.setValue(superPassword);
+        cred.setValue(superUserPassword);
         cred.setTemporary(false);
 
         userResource.resetPassword(cred);
@@ -309,7 +322,7 @@ public class KeycloakSetup implements Serializable {
     } 
  
     private void createRealm() { 
-        logger.info("createRealm"); 
+        log.info("createRealm"); 
          
         RealmRepresentation realmRepresenttion = new RealmRepresentation();
         realmRepresenttion.setRealm(dinaRealm);
@@ -332,18 +345,17 @@ public class KeycloakSetup implements Serializable {
     }
     
     private Map<String, String> setupMailServer() {
-        logger.info("setupMailServer");
+        log.info("setupMailServer");
           
         Map<String, String> smtpServerMap = new HashMap<>();
-        smtpServerMap.put(CommonString.getInstance().getHost(), System.getenv(MAIL_HOST));
-        smtpServerMap.put(CommonString.getInstance().getPort(), System.getenv(MAIL_PORT));
-        smtpServerMap.put(CommonString.getInstance().getFrom(), System.getenv(MAIL_FROM));
+        smtpServerMap.put(CommonString.getInstance().getHost(), emailHost);
+        smtpServerMap.put(CommonString.getInstance().getPort(), emailPort);
+        smtpServerMap.put(CommonString.getInstance().getFrom(), emailFrom);
         smtpServerMap.put(CommonString.getInstance().getSSL(), Boolean.FALSE.toString());
         smtpServerMap.put(CommonString.getInstance().getStrtTTLS(), Boolean.TRUE.toString());
         smtpServerMap.put(CommonString.getInstance().getAuth(), Boolean.TRUE.toString());
-        smtpServerMap.put(CommonString.getInstance().getUser(), System.getenv(MAIL_USERNAME));
-        smtpServerMap.put(CommonString.getInstance().getPassword(), System.getenv(MAIL_PASSWORD));
-        logger.info("mail config : {}", smtpServerMap);
+        smtpServerMap.put(CommonString.getInstance().getUser(), emailUsername);
+        smtpServerMap.put(CommonString.getInstance().getPassword(), emailPassword); 
         return smtpServerMap;
     }
  
@@ -367,17 +379,6 @@ public class KeycloakSetup implements Serializable {
         roleRepresentation.setDescription(roleDescription);
        
         realmResource.roles().create(roleRepresentation); 
-    }
-  
-    private void buildKeycloakClient() {
-        keycloakClient = KeycloakBuilder.builder()
-                .serverUrl(keycloakAuthURL) 
-                .realm(CommonString.getInstance().getMastRealm())
-                .username(CommonString.getInstance().getMasterAdminUsrname()) 
-                .password(CommonString.getInstance().getMasterAdminPassword()) 
-                .clientId(CommonString.getInstance().getAdminClientId())
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
-                .build();
     } 
 }
  

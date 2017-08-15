@@ -1,0 +1,5 @@
+## YAML Template.
+--- 
+swarm:
+  keycloak:
+    url: localhost:8080/auth

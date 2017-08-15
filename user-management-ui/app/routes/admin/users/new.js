@@ -5,6 +5,7 @@ import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-rout
 export default Ember.Route.extend(AuthenticatedRouteMixin, {
 
     i18n: Ember.inject.service(),
+    ajax: Ember.inject.service(), 
     notifications: Ember.inject.service('notification-messages'), 
 
     model () { 
@@ -26,7 +27,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, {
         this.controllerFor('admin.users').set('isList', true); 
     },
   
-    ajax: Ember.inject.service(), 
+    
     sendEmail(user) {
         console.log("sendInvitation: " + user.id);
     

@@ -3,7 +3,7 @@
     {{#if model.user.isEditing }} 
         {{#user-account-form account=model.user realm=model.realm title='edit-user' isAdmin=true}} 
             <button class="btn btn-sm btn-warning" {{action 'cancelEdit' model.user}}>{{t 'buttons.labels.cancel'}}</button> 
-            <button class="btn btn-sm btn-success" {{action 'updateUser' model.user}}>Update</button>
+            <button class="btn btn-sm btn-success" {{action 'updateUser' model.user}}  disabled={{v-get model.user 'isInvalid'}}>Update</button>
         {{/user-account-form}}   
     {{else}}
         {{#if responseMessage}}
