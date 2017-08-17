@@ -14,4 +14,9 @@ swarm:
     user:
         username=admin@nrm.se
         password=admin#001
+    http:
+        port: 8181
+    management:
+        http:
+            port: 9191
         

@@ -33,6 +33,14 @@ public class UserManagementUnsecureService implements Serializable {
 
     @Inject
     private UserManagement userManagement;
+    
+    @GET
+    @Produces("text/plain")
+    public Response doGet() {
+        logger.info("doGet");
+        return Response.ok("Hello from WildFly Swarm!").build();
+    }
+     
 
     @GET
     @Path("/users/search")

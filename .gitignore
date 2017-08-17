@@ -1,4 +1,5 @@
 /dina-user-management/target/ 
+/dina-user-management/keystore.jks
 /mysql-datadir
 /dina-keycloak-management/target/
 nohup.out

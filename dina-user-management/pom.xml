@@ -157,7 +157,7 @@
                     <jvmArguments>
                         <jvmArgument>-Xmx2048m</jvmArgument>
                     </jvmArguments>
-                    <environment>
+<!--                    <environment>
                         <KEYCLOAK_URI>${KEYCLOAK_URI}</KEYCLOAK_URI>
                         <REALM_NAME>${REALM_NAME}</REALM_NAME>
                         <MAIL_HOST>${MAIL_HOST}</MAIL_HOST>
@@ -167,8 +167,8 @@
                         <MAIL_FROM>${MAIL_FROM}</MAIL_FROM> 
                         <SUPER_USERNAME>${SUPER_USERNAME}</SUPER_USERNAME>
                         <SUPER_PASSWORD>${SUPER_PASSWORD}</SUPER_PASSWORD> 
-                    </environment>
-                    <mainClass>se.nrm.dina.user.management.Main</mainClass>
+                    </environment>-->
+                    <!--<mainClass>se.nrm.dina.user.management.Main</mainClass>-->
                     <properties>
                         <swarm.bind.address>127.0.0.1</swarm.bind.address>
                         <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack> 
