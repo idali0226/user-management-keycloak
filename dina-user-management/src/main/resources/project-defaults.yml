@@ -2,7 +2,8 @@
 ---
 swarm:
     keycloak:
-        url: http://localhost:8080/auth 
+        url: http://sso:8080/auth 
+    #    url: http://localhost:8080/auth 
     realm:
         name: myrealm
     email:
@@ -12,8 +13,8 @@ swarm:
         password: D-I-N-A
         from: dina@mail.dina-web.net
     user:
-        username=admin@nrm.se
-        password=admin#001
+        username: admin@nrm.se
+        password: admin#001
     http:
         port: 8181
     management:

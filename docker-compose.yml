@@ -1,34 +1,57 @@
-fs:
-  image: tianon/true
-  volumes:
-    - ./mysql-datadir:/var/lib/mysql
-    - ./mysql-shr:/shr
-    - ./mysql-autoload:/docker-entrypoint-initdb.d:ro
+version: '3'
 
-db:
-  image: mysql
-  environment:
-    - TZ=Europe/Stockholm
-    - MYSQL_ROOT_PASSWORD=password12
-    - MYSQL_DATABASE=keycloak
-    - MYSQL_USER=keycloak
-    - MYSQL_PASSWORD=keycloak 
-  volumes_from:
-    - fs
+services:
  
-sso:
-  build: sso
-  environment:
-    - TZ=Europe/Stockholm
-    - MYSQL_DATABASE=keycloak
-    - MYSQL_USERNAME=keycloak
-    - MYSQL_PASSWORD=keycloak 
-  ports:
-    - "8080:8080"
-  links:
-    - db:mysql  
-  volumes_from:
-    - fs
+  db:
+    image: mysql 
+    environment:
+      - TZ=Europe/Stockholm
+      - MYSQL_ROOT_PASSWORD=password12
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_USER=keycloak
+      - MYSQL_PASSWORD=keycloak 
+ #   volumes_from:
+    volumes:
+      - db_accounts:/var/lib/mysql
  
+  sso:
+    build: sso 
+    environment:
+      - TZ=Europe/Stockholm
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_USERNAME=keycloak
+      - MYSQL_PASSWORD=keycloak 
+      - MYSQL_PORT_3306_TCP_ADDR=mysql
+      - MYSQL_PORT_3306_TCP_PORT=3306
+    ports:
+      - "8080:8080"
+    links:
+      - db:mysql
+    volumes:
+      - db_accounts:/var/lib/mysql
 
- 
+   
+
+  api:
+    build: ./api
+    depends_on: 
+      - sso
+    ports:
+      - "8181:8181"
+    links:
+      - sso
+    environment:
+      - VIRTUAL_HOST=api
+      - VIRTUAL_PORT=8181
+  
+
+volumes:
+  db_accounts:
+
+
+ # fs:
+ #   image: tianon/true
+ #   volumes:
+ #     - ./mysql-datadir:/var/lib/mysql
+ #     - ./mysql-shr:/shr
+ #     - ./mysql-autoload:/docker-entrypoint-initdb.d:ro

@@ -51,6 +51,9 @@ public class KeycloakClientProducer {
                                         .clientId(CommonString.getInstance().getAdminClientId())
                                         .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build())
                                         .build(); 
+        
+        log.info("keycloak client : {} -- {}", keycloakClient, dinaRealm);
+        log.info("relm : {}", keycloakClient.realm(dinaRealm)); 
     }
     
     @Produces

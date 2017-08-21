@@ -101,9 +101,14 @@ public class KeycloakSetup implements Serializable {
      */
     @PostConstruct
     public void init() {
-        log.info("init"); 
+        log.info("init : {} -- {}", keycloakClient, dinaRealm); 
+        
+//        String clientName = keycloakClient.realm(dinaRealm).clients().findAll().get(0).getName();
+//        log.info("client name : {}", clientName);
         
         initRealmResources(); 
+        
+        log.info("keycloak connection works : {}", isRealmExist());
         if(!isRealmExist()) {   
             createRealm(); 
             initRealmResource();
@@ -141,7 +146,7 @@ public class KeycloakSetup implements Serializable {
     }
      
     private void createInitialUser() {
-        log.info("createInitialUser"); 
+        log.info("createInitialUser" ); 
         
         UserRepresentation user = new UserRepresentation();
         user.setUsername(superUsername);
@@ -368,6 +373,7 @@ public class KeycloakSetup implements Serializable {
     }
     
     private boolean isRealmExist() {
+      
         return realmResources.findAll().stream() 
                             .anyMatch(realm -> realm.getDisplayName().equals(dinaRealm));  
     }

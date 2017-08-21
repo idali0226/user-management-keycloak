@@ -157,7 +157,7 @@
                     <jvmArguments>
                         <jvmArgument>-Xmx2048m</jvmArgument>
                     </jvmArguments>
-<!--                    <environment>
+                    <!--                    <environment>
                         <KEYCLOAK_URI>${KEYCLOAK_URI}</KEYCLOAK_URI>
                         <REALM_NAME>${REALM_NAME}</REALM_NAME>
                         <MAIL_HOST>${MAIL_HOST}</MAIL_HOST>
@@ -170,12 +170,28 @@
                     </environment>-->
                     <!--<mainClass>se.nrm.dina.user.management.Main</mainClass>-->
                     <properties>
-                        <swarm.bind.address>127.0.0.1</swarm.bind.address>
+                        <!--<swarm.bind.address>127.0.0.1</swarm.bind.address>-->
                         <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack> 
                     </properties> 
                 </configuration>  
             </plugin> 
-<!--            <plugin> 
+<!--            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <imageName>${project.build.finalName}</imageName>
+                    <dockerDirectory>docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}-swarm.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>-->
+            <!--            <plugin> 
                 <groupId>org.jolokia</groupId> 
                 <artifactId>docker-maven-plugin</artifactId> 
                 <version>0.13.9</version>
@@ -198,7 +214,80 @@
                 </configuration>
             </plugin>-->
         </plugins>
-        <finalName>user-management-api</finalName> 
+        <!--<finalName>user-management-api</finalName>--> 
+        <finalName>user-management-api</finalName>
     </build>
+    
+    
+    
+    <!--    <profiles>
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.21.0</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>${project.build.finalName}</name>
+                                    <run>
+                                        <ports>
+                                            <port>8181:8181</port>
+                                        </ports>
+                                    </run>
+                                    <build>
+                                        <from>java:openjdk-8-jdk</from>
+                                        <ports>
+                                            <port>8181</port>
+                                        </ports>
+                                        <assembly>
+                                            <basedir>/</basedir>
+                                            <inline>
+                                                <files>
+                                                    <file>
+                                                        <source>${project.build.directory}/${project.artifactId}-swarm.jar</source>
+                                                        <outputDirectory>/opt</outputDirectory>
+                                                    </file>
+                                                </files>
+                                            </inline>
+                                        </assembly>
+                                        <entryPoint>
+                                            <shell>java -jar /opt/${project.artifactId}-swarm.jar</shell>
+                                        </entryPoint>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>-->
+
 
 </project>
