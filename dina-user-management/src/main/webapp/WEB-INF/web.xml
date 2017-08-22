@@ -38,7 +38,7 @@
     
     
     
-    <!--- to enable keycloak -->
+    <!--- to enable keycloak --> 
     <security-constraint>
         <web-resource-collection>
             <url-pattern>/user/api/v01/secure/*</url-pattern>
@@ -51,10 +51,7 @@
 
         <auth-constraint>
             <role-name>admin</role-name>
-        </auth-constraint>
-<!--        <auth-constraint>
-            <role-name>user</role-name>
-        </auth-constraint>-->
+        </auth-constraint> 
     </security-constraint>
     
     <security-constraint>
@@ -75,9 +72,9 @@
  
     <login-config>
         <auth-method>KEYCLOAK</auth-method>
-        <realm-name>myrealm</realm-name>
+        <realm-name>dina</realm-name>
     </login-config>
- 
+      
     <security-role>
         <role-name>admin</role-name>
     </security-role>

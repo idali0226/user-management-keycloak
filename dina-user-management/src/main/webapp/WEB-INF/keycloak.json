@@ -1,7 +1,10 @@
+ 
+
+
 {
-  "realm": "myrealm",
+  "realm": "dina",
   "bearer-only": true,
-  "auth-server-url": "http://localhost:8080/auth",
+  "auth-server-url": "http://sso:8080/auth",
   "ssl-required": "none",
   "resource": "user-management",
   "use-resource-role-mappings": true

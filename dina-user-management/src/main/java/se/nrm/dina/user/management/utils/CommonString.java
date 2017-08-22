@@ -22,11 +22,8 @@ public class CommonString {
     private static final String INITIAL_SETUP = "initialSetup";
     
     // keycloak constant  
-    private static final String MASTER_REALM = "master";
-//    private static final String DINA_REALM = "dina";
-//    private static final String DINA_REALM = "myrealm";
-    private static final String ADMIN_CLIENT_ID = "admin-cli";
-//    private static final String KEYCLOAK_URL = "http://localhost:8080/auth";
+    private static final String MASTER_REALM = "master"; 
+    private static final String ADMIN_CLIENT_ID = "admin-cli"; 
     
     private static final String KEYCLOAK_AUTH_URL = "keycloakAuthURL";
 
@@ -36,7 +33,7 @@ public class CommonString {
     private static final String REGEX = ".*/(.*)$";
     private static final String REGEX_1 = "$1";
 
-    
+    private static final String SUPER_ADMIN_ROLE = "super admin";
     private static final String ADMIN_ROLE = "admin";
     private static final String USER_ROLE = "user";
     private static final String DATA_ENTRY_ROLE = "data entry";
@@ -44,7 +41,7 @@ public class CommonString {
     
     private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can management user accounts, clients in User management application. ";
     private static final String USER_ROLE_DESCRIPTION = "A user has user role can only view and edit his/her own account.";
-    private static final String DISABLE_ROLE_DESCRIPTION = "A user has disabled role can not access any resource in DINA";
+    private static final String DISABLED_ROLE_DESCRIPTION = "A user has disabled role can not access any resource in DINA";
     
     private static final String REALM_ROLE = "realm_role";
     
@@ -174,6 +171,8 @@ public class CommonString {
     
     private final String REDIRECT_FRONT_END_URL = "http://localhost:4200";
     
+    private final String REDIRECT_FRONT_END_URL_VIRTUALHOST = "http://beta-accounts.dina-web.net";
+    
     private final String NONE = "none";
     
     public static synchronized CommonString getInstance() {
@@ -237,6 +236,10 @@ public class CommonString {
     
     public String getRedirectFrontEndURL() {
         return REDIRECT_FRONT_END_URL;
+    }
+    
+    public String getRedirectFrontEndURLVirturalHost() {
+        return REDIRECT_FRONT_END_URL_VIRTUALHOST;
     }
     
     public String getTokenFirstName() {
@@ -394,19 +397,11 @@ public class CommonString {
     public String getMastRealm() {
         return MASTER_REALM;
     }
-    
-//    public String getDinaRealm() {
-//        return DINA_REALM;
-//    }
-//    
+ 
     public String getAdminClientId() {
         return ADMIN_CLIENT_ID;
     }
-//    
-//    public String getKeyCloakLUrl() {
-//        return KEYCLOAK_URL;
-//    }
-    
+ 
     public String getMasterAdminUsrname() {
         return MASTER_ADMIN_USERNAME;
     }
@@ -451,6 +446,10 @@ public class CommonString {
         return LOCATION;
     }
     
+    public String getSuperAdminRole() {
+        return SUPER_ADMIN_ROLE;
+    }
+    
     public String getAdminRole() {
         return ADMIN_ROLE;
     }
@@ -476,7 +475,7 @@ public class CommonString {
     }
     
     public String getDisabledRoleDescription() {
-        return DISABLED_USER_ROLE;
+        return DISABLED_ROLE_DESCRIPTION;
     }
     
     public String getCallEndPoint() {

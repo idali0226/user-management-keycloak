@@ -32,26 +32,39 @@ services:
 
    
 
-  api:
-    build: ./api
+  api:      
+    image: dina/accounts-api:v0.1
+#    build: ./api
     depends_on: 
       - sso
     ports:
       - "8181:8181"
     links:
       - sso
+#    environment:
+#      - VIRTUAL_HOST=api
+#      - VIRTUAL_PORT=8181
+
+  ui:
+    image: dina/accounts-ui:v0.1
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.template
     environment:
-      - VIRTUAL_HOST=api
-      - VIRTUAL_PORT=8181
+      - VIRTUAL_HOST=beta-accounts.dina-web.net
+      - VIRTUAL_PROTO=http
+      - NGINX_HOST=beta-accounts.dina-web.net
+      - NGINX_PORT=80
+    command: /bin/bash -c "envsubst '$$NGINX_HOST $$NGINX_PORT $$NGINX_ROOT $$NGINX_INDEX' < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
   
 
 volumes:
-  db_accounts:
-
-
- # fs:
- #   image: tianon/true
- #   volumes:
- #     - ./mysql-datadir:/var/lib/mysql
- #     - ./mysql-shr:/shr
- #     - ./mysql-autoload:/docker-entrypoint-initdb.d:ro
+  db_accounts: 
+ 

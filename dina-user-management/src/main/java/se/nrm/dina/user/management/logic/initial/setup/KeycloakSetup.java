@@ -26,9 +26,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory; 
+import org.keycloak.representations.idm.UserRepresentation; 
 import org.wildfly.swarm.spi.runtime.annotations.ConfigurationValue;
 import se.nrm.dina.user.management.keycloak.KeycloakClient; 
 import se.nrm.dina.user.management.utils.AccountStatus;
@@ -45,17 +43,14 @@ import se.nrm.dina.user.management.utils.Util;
 public class KeycloakSetup implements Serializable { 
     
     private static final String REGEX = ".*/(.*)$";
-    private static final String PURPOSE = "Super admin";
+    private static final String PURPOSE_SUPER_ADMIN = "Super admin";
+    private static final String PURPOSE = "Testing"; 
    
     private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
      
     private RealmsResource realmResources;
     private RealmResource realmResource;
-  
-//    @Inject
-//    @ConfigurationValue("swarm.realm.name")
-//    private String dinaRealm;
-    
+   
     @Inject
     @ConfigurationValue("swarm.email.host")
     private String emailHost;
@@ -71,18 +66,58 @@ public class KeycloakSetup implements Serializable {
     @Inject
     @ConfigurationValue("swarm.email.password")
     private String emailPassword;
-    
+
     @Inject
     @ConfigurationValue("swarm.email.from")
     private String emailFrom;
-    
+
     @Inject
-    @ConfigurationValue("swarm.user.username")
+    @ConfigurationValue("swarm.user.superadmin.username")
     private String superUsername;
+
+    @Inject
+    @ConfigurationValue("swarm.user.superadmin.password")
+    private String superUserPassword;
+
+    @Inject
+    @ConfigurationValue("swarm.user.superadmin.firstname")
+    private String superUserFirstname;
+
+    @Inject
+    @ConfigurationValue("swarm.user.superadmin.lastname")
+    private String superUserLastname;
+
+    @Inject
+    @ConfigurationValue("swarm.user.admin.username")
+    private String adminUsername;
+
+    @Inject
+    @ConfigurationValue("swarm.user.admin.password")
+    private String adminPassword;  
     
     @Inject
-    @ConfigurationValue("swarm.user.password")
-    private String superUserPassword;    
+    @ConfigurationValue("swarm.user.admin.firstname")
+    private String adminFirstname;
+
+    @Inject
+    @ConfigurationValue("swarm.user.admin.lastname")
+    private String adminLastname;
+    
+    @Inject
+    @ConfigurationValue("swarm.user.user.username")
+    private String userUsername;
+    
+    @Inject
+    @ConfigurationValue("swarm.user.user.password")
+    private String userPassword;  
+    
+    @Inject
+    @ConfigurationValue("swarm.user.user.firstname")
+    private String userFirstname;
+
+    @Inject
+    @ConfigurationValue("swarm.user.user.lastname")
+    private String userLastname;
      
     @Inject
     @KeycloakClient
@@ -101,14 +136,9 @@ public class KeycloakSetup implements Serializable {
      */
     @PostConstruct
     public void init() {
-        log.info("init : {} -- {}", keycloakClient, dinaRealm); 
+        log.info("init : {} -- {}", keycloakClient, dinaRealm);  
         
-//        String clientName = keycloakClient.realm(dinaRealm).clients().findAll().get(0).getName();
-//        log.info("client name : {}", clientName);
-        
-        initRealmResources(); 
-        
-        log.info("keycloak connection works : {}", isRealmExist());
+        initRealmResources();   
         if(!isRealmExist()) {   
             createRealm(); 
             initRealmResource();
@@ -128,7 +158,18 @@ public class KeycloakSetup implements Serializable {
                                     createClientRole(CommonString.getInstance().getDinaRestClientId(), r.getKey(), r.getValue());
                                     createClientRole(CommonString.getInstance().getUserManagementClientId(), r.getKey(), r.getValue());
                                 }); 
-            createInitialUser();
+            
+            // Create super admin
+            createInitialUser(superUsername, superUserPassword, superUserFirstname, superUserLastname, PURPOSE_SUPER_ADMIN, 
+                                CommonString.getInstance().getSuperAdminRole(), CommonString.getInstance().getAdminRole());
+            
+            // Create admin
+            createInitialUser(adminUsername, adminPassword, adminFirstname, adminLastname, PURPOSE, 
+                                CommonString.getInstance().getAdminRole(), CommonString.getInstance().getAdminRole());
+            
+            // Create user
+            createInitialUser(userUsername, userPassword, userFirstname, userLastname, PURPOSE,
+                                CommonString.getInstance().getUserRole(), CommonString.getInstance().getAdminRole());
         } 
     }
 
@@ -141,31 +182,26 @@ public class KeycloakSetup implements Serializable {
     
     private Map<String, String> setupRealmRoleMap() {  
         Map<String, String> realmRoleMap = setupBasicRoleMap();
+        realmRoleMap.put(CommonString.getInstance().getSuperAdminRole(), CommonString.getInstance().getSuperAdminRole());
         realmRoleMap.put(CommonString.getInstance().getDisabledUserRole(), CommonString.getInstance().getDisabledRoleDescription());
         return realmRoleMap;
     }
      
-    private void createInitialUser() {
+    private void createInitialUser(String username, String password, String firstname, 
+                                   String lastname, String purpose, String realmRole, String clientRole) {
         log.info("createInitialUser" ); 
         
         UserRepresentation user = new UserRepresentation();
-        user.setUsername(superUsername);
-        user.setEmail(superUsername);
-        user.setFirstName(CommonString.getInstance().getSuperUserFirstName());
-        user.setLastName(CommonString.getInstance().getSuperUserLastName()); 
+        user.setUsername(username);
+        user.setEmail(username);
+        user.setFirstName(firstname);
+        user.setLastName(lastname); 
         user.setEnabled(Boolean.TRUE);
         user.setEmailVerified(Boolean.TRUE);
-         
-        Map<String, List<String>> attributes = new HashMap<>();
-        List<String> purposeList = new ArrayList<>();
-        purposeList.add(PURPOSE);
-        attributes.put(CommonString.getInstance().getPurpose(), purposeList);
         
-        List<String> statusList = new ArrayList<>();
-        statusList.add(AccountStatus.Enabled.name());
-        attributes.put(CommonString.getInstance().getStatus(), statusList);  
-        user.setAttributes(attributes);    
-         
+        user.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Enabled.name());
+        user.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
+          
         Response response = realmResource.users().create(user); 
         
         log.info("crate user response : {}", response);
@@ -174,14 +210,14 @@ public class KeycloakSetup implements Serializable {
 
         if (locationHeader != null) {
             UserResource userResource = realmResource.users().get(locationHeader.replaceAll(REGEX, "$1"));   
-            resetPassword(userResource);
-            setReamlRole(userResource);
-            setClientRole(CommonString.getInstance().getDinaRestClientId(), userResource);
-            setClientRole(CommonString.getInstance().getUserManagementClientId(), userResource);
+            resetPassword(userResource, password);
+            setReamlRole(userResource, realmRole);
+            setClientRole(CommonString.getInstance().getDinaRestClientId(), userResource, clientRole);
+            setClientRole(CommonString.getInstance().getUserManagementClientId(), userResource, clientRole); 
         } 
     }
      
-    private void setClientRole(String clientId, UserResource userResource) {
+    private void setClientRole(String clientId, UserResource userResource, String role) {
  
         ClientsResource clientsResource = realmResource.clients();
         List<ClientRepresentation> crs = clientsResource.findAll();
@@ -194,14 +230,14 @@ public class KeycloakSetup implements Serializable {
         List<RoleRepresentation> clrs = clientsResource.get(cId).roles().list();
         clrs.stream()
                 .forEach(rr -> {
-                    if (rr.getName().equals(CommonString.getInstance().getAdminRole())) {
+                    if (rr.getName().equals(role)) {
                         newRole.add(rr); 
                     }
                 });
         userResource.roles().clientLevel(cId).add(newRole);
     } 
     
-    private void setReamlRole(UserResource userResource) {
+    private void setReamlRole(UserResource userResource, String role) {
         List<RoleRepresentation> rrs = userResource.roles().realmLevel().listAll();
         userResource.roles().realmLevel().remove(rrs);
    
@@ -212,7 +248,7 @@ public class KeycloakSetup implements Serializable {
                 .filter(drr -> !drr.getName().equals(CommonString.getInstance().getOfflineAccessRole()))
                 .filter(drr -> !drr.getName().equals(CommonString.getInstance().getUmaAuthorizationRole()))
                         .forEach(drr -> { 
-                            if(drr.getName().equals(CommonString.getInstance().getAdminRole())) {
+                            if(drr.getName().equals(role)) {
                                 newRole.add(drr);
                             } 
                         });  
@@ -220,10 +256,10 @@ public class KeycloakSetup implements Serializable {
     }
     
     
-    private void resetPassword(UserResource userResource) { 
+    private void resetPassword(UserResource userResource, String password) { 
         CredentialRepresentation cred = new CredentialRepresentation();
         cred.setType(CredentialRepresentation.PASSWORD);
-        cred.setValue(superUserPassword);
+        cred.setValue(password);
         cred.setTemporary(false);
 
         userResource.resetPassword(cred);

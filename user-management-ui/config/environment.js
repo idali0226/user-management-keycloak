@@ -43,8 +43,9 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     ENV.APP.LOG_VIEW_LOOKUPS = true;
 
-    ENV.HOST = 'http://localhost:8181';
-    ENV.AUTHENTICATION_HOST = 'http://localhost:8080/auth/realms/myrealm/protocol/openid-connect';
+    ENV.HOST = 'http://api:8181';
+    ENV.AUTHENTICATION_HOST = 'http://sso:8080/auth/realms/dina/protocol/openid-connect';
+   // ENV.AUTHENTICATION_HOST = 'http://localhost:8080/auth/realms/dina/protocol/openid-connect';
   }
 
   if (environment === 'test') {

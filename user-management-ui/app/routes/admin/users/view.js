@@ -38,7 +38,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
  //   },
     afterModel () {   
         console.log("afterModel");
-        return  this.store.queryRecord('realm',  { realm: 'myrealm'} );
+        return  this.store.queryRecord('realm',  { realm: 'dina'} );
     },  
 
 

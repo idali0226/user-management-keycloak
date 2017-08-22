@@ -442,4 +442,4 @@ public class UserManagement implements Serializable {
     private static Predicate<UserRepresentation> isLoggedIn(UsersResource usersResource) {
         return u -> !usersResource.get(u.getId()).getUserSessions().isEmpty();
     } 
-}
+} 

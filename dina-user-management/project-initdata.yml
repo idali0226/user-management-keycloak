@@ -1,0 +1,36 @@
+## YAML Template.
+---
+swarm:
+    keycloak:
+        url: http://sso:8080/auth  
+    realm:
+        name: dina
+    email:
+        host: mail.dina-web.net
+        port: 587
+        username: dina@mail.dina-web.net
+        password: D-I-N-A
+        from: dina@mail.dina-web.net
+    user:
+        superadmin:
+            username: admin@nrm.se
+            password: admin#001
+            firstname: admin
+            lastname: admin
+        admin:
+            username: admin.dina@nrm.se
+            password: dina#admin
+            firstname: admin
+            lastname: dina
+        user:
+            username: user.dina@nrm.se
+            password: dina#user
+            firstname: user
+            lastname: dina
+    http:
+        port: 8181
+    management:
+        http:
+            port: 9191
+        
+        

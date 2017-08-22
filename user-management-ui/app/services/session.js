@@ -22,7 +22,8 @@ export default SessionService.extend({
                         full_name: response_data.preferred_username, 
                         email: response_data.email,
                         realm_role: response_data.realm_role, 
-                        isAdmin: 'admin' === response_data.realm_role.toString(),
+                  //      isAdmin: 'super admin' === response_data.realm_role.toString(),
+                        isAdmin: response_data.realm_role.toString().indexOf('admin') !== -1,
                         isLoggedIn: true
                     });  
                 },
