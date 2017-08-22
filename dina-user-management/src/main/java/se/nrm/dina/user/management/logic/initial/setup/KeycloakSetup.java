@@ -356,7 +356,9 @@ public class KeycloakSetup implements Serializable {
         clientRepresentation.setProtocolMappers(protocolMappers);  
          
         List<String> redirectURIs = new ArrayList<>();
-        redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURL());
+//        redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURL());
+        redirectURIs.add(CommonString.getInstance().getRedirectFrontEndURLVirturalHost());
+    
         clientRepresentation.setRedirectUris(redirectURIs);
          
         realmResource.clients().create(clientRepresentation);  
