@@ -14,10 +14,13 @@ import javax.json.JsonObject;
 import lombok.extern.slf4j.Slf4j; 
 import org.keycloak.admin.client.Keycloak;  
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.RealmsResource;
 import org.keycloak.representations.idm.ClientRepresentation;  
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;   
 import se.nrm.dina.user.management.json.JsonConverter; 
 import se.nrm.dina.user.management.keycloak.KeycloakClient;
+import se.nrm.dina.user.management.keycloak.properties.ConfigurationProperties;
 
 /**
  *
@@ -31,16 +34,31 @@ public class RealmManagement implements Serializable {
     private Keycloak keycloakClient;
     
     @Inject
-    @KeycloakClient
-    private String dinaRealm;
-        
+    public ConfigurationProperties config;
+  
     @Inject
     public JsonConverter json;
- 
-    
+  
     public RealmManagement() {  
     }   
+    
+    public RealmsResource getRealmResources() {
+        return keycloakClient.realms();
+    }
   
+    public boolean isRealmExist() { 
+        return getRealmResources().findAll().stream().anyMatch(realmExist());  
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public JsonObject getRealmByRealmName(String realmName) { 
         RealmResource realmResource = keycloakClient.realm(realmName);
         List<ClientRepresentation> clientRepresentations = realmResource.clients().findAll().stream()
@@ -53,12 +71,16 @@ public class RealmManagement implements Serializable {
          
         return json.converterRealm(realmResource.toRepresentation(), roleRepresentations, clientRepresentations);  
     }
+         
+    private Predicate<RealmRepresentation> realmExist() {
+        return r -> r.getDisplayName().equals(config.getRealm());
+    }
      
-    private static Predicate<ClientRepresentation> filterDefaultRealmClients() {
+    private Predicate<ClientRepresentation> filterDefaultRealmClients() {
         return c -> c.getName().startsWith("dina") || c.getName().startsWith("user");
     }
         
-    private static Predicate<RoleRepresentation> filterDefaultRealmRoles() { 
+    private Predicate<RoleRepresentation> filterDefaultRealmRoles() { 
         return r -> !(r.getName().equals("uma_authorization") || r.getName().equals("offline_access") || r.getName().equals("disabled_user"));
     } 
 }

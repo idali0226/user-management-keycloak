@@ -5,6 +5,7 @@ swarm:
         url: http://sso:8080/auth  
     realm:
         name: dina
+        passwordpolicies: hashIterations and specialChars and length
     email:
         host: mail.dina-web.net
         port: 587

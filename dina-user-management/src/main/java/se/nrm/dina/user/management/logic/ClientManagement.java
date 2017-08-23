@@ -19,6 +19,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;  
 import se.nrm.dina.user.management.json.JsonConverter; 
 import se.nrm.dina.user.management.keycloak.KeycloakClient; 
+import se.nrm.dina.user.management.keycloak.properties.ConfigurationProperties;
 
 /**
  *
@@ -34,9 +35,12 @@ public class ClientManagement implements Serializable {
     @KeycloakClient
     private Keycloak keycloakClient;
     
+//    @Inject
+//    @KeycloakClient
+//    private String dinaRealm;
+    
     @Inject
-    @KeycloakClient
-    private String dinaRealm;
+    public ConfigurationProperties config;
     
     public ClientManagement() { 
     }
@@ -44,7 +48,7 @@ public class ClientManagement implements Serializable {
     public JsonObject getClientById(String id) {
         log.info("getClientById");
         
-        ClientResource clientResource = keycloakClient.realm(dinaRealm).clients().get(id);
+        ClientResource clientResource = keycloakClient.realm(config.getRealm()).clients().get(id);
          
         ClientRepresentation clientRepresentation = clientResource.toRepresentation();
         List<RoleRepresentation> roleRepresentations = clientResource.roles().list();
@@ -54,13 +58,13 @@ public class ClientManagement implements Serializable {
     
     public JsonObject getAllTheClients() {
  
-        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(dinaRealm).clients().findAll();
+        List<ClientRepresentation> clientsRepresetation = keycloakClient.realm(config.getRealm()).clients().findAll();
         
         Map<ClientRepresentation, List<RoleRepresentation>> map = new HashMap();
         clientsRepresetation.stream() 
                 .filter(c -> !c.getName().contains("client")) 
                 .forEach(c -> {
-                    RolesResource rolesResource = keycloakClient.realm(dinaRealm)
+                    RolesResource rolesResource = keycloakClient.realm(config.getRealm())
                                                                 .clients().get(c.getId()).roles(); 
                     map.put(c, rolesResource.list());
                 });

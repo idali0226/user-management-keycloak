@@ -26,9 +26,10 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation; 
-import org.wildfly.swarm.spi.runtime.annotations.ConfigurationValue;
+import org.keycloak.representations.idm.UserRepresentation;  
 import se.nrm.dina.user.management.keycloak.KeycloakClient; 
+import se.nrm.dina.user.management.keycloak.properties.ConfigurationProperties;
+import se.nrm.dina.user.management.logic.RealmManagement;
 import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString; 
 import se.nrm.dina.user.management.utils.Util;
@@ -36,6 +37,25 @@ import se.nrm.dina.user.management.utils.Util;
 /**
  *
  * @author idali
+ * 
+ * KeycloakSetup setup initial data for keycloak to run.
+ * 
+ * The following data are set during the setup process:
+ * 
+ * <ul>
+ *  <li>Create realm</li>
+ *  <li>Set password policies</li>
+ *  <li>Set mail server</li>
+ *  <li>Create realm roles</li>
+ *  <li>Create rest endpoint client</li>
+ *  <li>Create roles for rest endpoint client</li>
+ *  <li>Create user-management client</li>
+ *  <li>Create roles for user-management client</li>
+ *  <li>Create an initial user (Super admin)</li>
+ *  <li>Create an initial user (Admin)</li>
+ *  <li>Create an initial user (User)</li>
+ * </ul> 
+ * 
  */
 @Startup                            // initialize ejb at deployment time
 @Singleton
@@ -45,100 +65,32 @@ public class KeycloakSetup implements Serializable {
     private static final String REGEX = ".*/(.*)$";
     private static final String PURPOSE_SUPER_ADMIN = "Super admin";
     private static final String PURPOSE = "Testing"; 
-   
-    private final String PASSWORD_POLICIES = "hashIterations and specialChars and length";
-     
+ 
     private RealmsResource realmResources;
     private RealmResource realmResource;
-   
-    @Inject
-    @ConfigurationValue("swarm.email.host")
-    private String emailHost;
-        
-    @Inject
-    @ConfigurationValue("swarm.email.port")
-    private String emailPort;
-            
-    @Inject
-    @ConfigurationValue("swarm.email.username")
-    private String emailUsername;
-                
-    @Inject
-    @ConfigurationValue("swarm.email.password")
-    private String emailPassword;
-
-    @Inject
-    @ConfigurationValue("swarm.email.from")
-    private String emailFrom;
-
-    @Inject
-    @ConfigurationValue("swarm.user.superadmin.username")
-    private String superUsername;
-
-    @Inject
-    @ConfigurationValue("swarm.user.superadmin.password")
-    private String superUserPassword;
-
-    @Inject
-    @ConfigurationValue("swarm.user.superadmin.firstname")
-    private String superUserFirstname;
-
-    @Inject
-    @ConfigurationValue("swarm.user.superadmin.lastname")
-    private String superUserLastname;
-
-    @Inject
-    @ConfigurationValue("swarm.user.admin.username")
-    private String adminUsername;
-
-    @Inject
-    @ConfigurationValue("swarm.user.admin.password")
-    private String adminPassword;  
     
-    @Inject
-    @ConfigurationValue("swarm.user.admin.firstname")
-    private String adminFirstname;
-
-    @Inject
-    @ConfigurationValue("swarm.user.admin.lastname")
-    private String adminLastname;
-    
-    @Inject
-    @ConfigurationValue("swarm.user.user.username")
-    private String userUsername;
-    
-    @Inject
-    @ConfigurationValue("swarm.user.user.password")
-    private String userPassword;  
-    
-    @Inject
-    @ConfigurationValue("swarm.user.user.firstname")
-    private String userFirstname;
-
-    @Inject
-    @ConfigurationValue("swarm.user.user.lastname")
-    private String userLastname;
-     
     @Inject
     @KeycloakClient
     private Keycloak keycloakClient;
     
     @Inject
-    @KeycloakClient
-    private String dinaRealm;
-
+    private RealmManagement realmManagement;
+    
+    @Inject
+    private ConfigurationProperties config;
+  
     public KeycloakSetup() {
     }
 
     /**
-     * 
+     * init method runs when application server starts up and user-management start to deploy
      * 
      */
     @PostConstruct
     public void init() {
-        log.info("init : {} -- {}", keycloakClient, dinaRealm);  
+        log.info("init");  
         
-        initRealmResources();   
+        realmResources = realmManagement.getRealmResources();
         if(!isRealmExist()) {   
             createRealm(); 
             initRealmResource();
@@ -160,16 +112,17 @@ public class KeycloakSetup implements Serializable {
                                 }); 
             
             // Create super admin
-            createInitialUser(superUsername, superUserPassword, superUserFirstname, superUserLastname, PURPOSE_SUPER_ADMIN, 
-                                CommonString.getInstance().getSuperAdminRole(), CommonString.getInstance().getAdminRole());
+            createInitialUser(config.getSuperAdminUsername(), config.getSuperAdminPassword(), config.getSuperAdminFirstname(), 
+                              config.getSuperAdminLastname(), PURPOSE_SUPER_ADMIN, CommonString.getInstance().getSuperAdminRole(), 
+                              CommonString.getInstance().getAdminRole());
             
             // Create admin
-            createInitialUser(adminUsername, adminPassword, adminFirstname, adminLastname, PURPOSE, 
-                                CommonString.getInstance().getAdminRole(), CommonString.getInstance().getAdminRole());
+            createInitialUser(config.getAdminUsername(), config.getAdminPassword(), config.getAdminFirstname(), config.getAdminLastname(), 
+                              PURPOSE, CommonString.getInstance().getAdminRole(), CommonString.getInstance().getAdminRole());
             
             // Create user
-            createInitialUser(userUsername, userPassword, userFirstname, userLastname, PURPOSE,
-                                CommonString.getInstance().getUserRole(), CommonString.getInstance().getAdminRole());
+            createInitialUser(config.getUserUsername(), config.getUserPassword(), config.getUserFirstname(), config.getUserLastname(), 
+                              PURPOSE, CommonString.getInstance().getUserRole(), CommonString.getInstance().getAdminRole());
         } 
     }
 
@@ -202,9 +155,7 @@ public class KeycloakSetup implements Serializable {
         user.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Enabled.name());
         user.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
           
-        Response response = realmResource.users().create(user); 
-        
-        log.info("crate user response : {}", response);
+        Response response = realmResource.users().create(user);  
         String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());
         response.close();
 
@@ -368,8 +319,8 @@ public class KeycloakSetup implements Serializable {
         log.info("createRealm"); 
          
         RealmRepresentation realmRepresenttion = new RealmRepresentation();
-        realmRepresenttion.setRealm(dinaRealm);
-        realmRepresenttion.setDisplayName(dinaRealm);
+        realmRepresenttion.setRealm(config.getRealm());
+        realmRepresenttion.setDisplayName(config.getRealm());
         realmRepresenttion.setSslRequired(CommonString.getInstance().getNone()); 
         realmRepresenttion.setDuplicateEmailsAllowed(false);
         
@@ -381,7 +332,7 @@ public class KeycloakSetup implements Serializable {
         realmRepresenttion.setAccessCodeLifespanUserAction(90000); 
         
         realmRepresenttion.setSmtpServer(setupMailServer()); 
-        realmRepresenttion.setPasswordPolicy(PASSWORD_POLICIES);
+        realmRepresenttion.setPasswordPolicy(config.getPasswordPolicies());
         realmRepresenttion.setEnabled(true);
          
         realmResources.create(realmRepresenttion); 
@@ -391,14 +342,14 @@ public class KeycloakSetup implements Serializable {
         log.info("setupMailServer");
           
         Map<String, String> smtpServerMap = new HashMap<>();
-        smtpServerMap.put(CommonString.getInstance().getHost(), emailHost);
-        smtpServerMap.put(CommonString.getInstance().getPort(), emailPort);
-        smtpServerMap.put(CommonString.getInstance().getFrom(), emailFrom);
+        smtpServerMap.put(CommonString.getInstance().getHost(), config.getEmailHost());
+        smtpServerMap.put(CommonString.getInstance().getPort(), config.getEmilPort());
+        smtpServerMap.put(CommonString.getInstance().getFrom(), config.getEmailFrom());
         smtpServerMap.put(CommonString.getInstance().getSSL(), Boolean.FALSE.toString());
         smtpServerMap.put(CommonString.getInstance().getStrtTTLS(), Boolean.TRUE.toString());
         smtpServerMap.put(CommonString.getInstance().getAuth(), Boolean.TRUE.toString());
-        smtpServerMap.put(CommonString.getInstance().getUser(), emailUsername);
-        smtpServerMap.put(CommonString.getInstance().getPassword(), emailPassword); 
+        smtpServerMap.put(CommonString.getInstance().getUser(), config.getEmailUsername());
+        smtpServerMap.put(CommonString.getInstance().getPassword(), config.getEmailPassword()); 
         return smtpServerMap;
     }
  
@@ -407,13 +358,13 @@ public class KeycloakSetup implements Serializable {
     }
     
     private void initRealmResource() {
-        realmResource = keycloakClient.realm(dinaRealm);
+        realmResource = keycloakClient.realm(config.getRealm());
     }
     
     private boolean isRealmExist() {
       
         return realmResources.findAll().stream() 
-                            .anyMatch(realm -> realm.getDisplayName().equals(dinaRealm));  
+                            .anyMatch(realm -> realm.getDisplayName().equals(config.getRealm()));  
     }
     
         

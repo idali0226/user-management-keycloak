@@ -27,6 +27,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;  
 import se.nrm.dina.user.management.json.JsonConverter;
 import se.nrm.dina.user.management.keycloak.KeycloakClient; 
+import se.nrm.dina.user.management.keycloak.properties.ConfigurationProperties;
 import se.nrm.dina.user.management.utils.AccountStatus;
 import se.nrm.dina.user.management.utils.CommonString; 
 
@@ -39,14 +40,17 @@ public class UserManagement implements Serializable {
   
     @Inject
     public JsonConverter json;
+    
+    @Inject
+    public ConfigurationProperties config;
      
     @Inject
     @KeycloakClient
     private Keycloak keycloakClient;
     
-    @Inject
-    @KeycloakClient
-    private String dinaRealm;
+//    @Inject
+//    @KeycloakClient
+//    private String dinaRealm;
 
     public UserManagement() {
     }
@@ -428,7 +432,7 @@ public class UserManagement implements Serializable {
     }
 
     private RealmResource getDinaRealmResource() {
-        return keycloakClient.realm(dinaRealm);
+        return keycloakClient.realm(config.getRealm());
     }
 
     private static Predicate<RoleRepresentation> isRealmRole(String roleName) {

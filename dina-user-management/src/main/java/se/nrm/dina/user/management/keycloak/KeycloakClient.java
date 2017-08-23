@@ -17,10 +17,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  *
  * @author idali
+ * 
+ * Keycloak client CDI Annotation 
  */
 @Qualifier
 @Retention(RUNTIME)
 @Target({FIELD, TYPE, METHOD, PARAMETER})
-public @interface KeycloakClient {
-    
+public @interface KeycloakClient { 
 }

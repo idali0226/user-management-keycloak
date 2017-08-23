@@ -15,6 +15,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;   
 import se.nrm.dina.user.management.json.JsonConverter;
 import se.nrm.dina.user.management.keycloak.KeycloakClient; 
+import se.nrm.dina.user.management.keycloak.properties.ConfigurationProperties;
 import se.nrm.dina.user.management.utils.CommonString;
 
 /**
@@ -31,9 +32,12 @@ public class RoleManagement implements Serializable {
     @KeycloakClient
     private Keycloak keycloakClient;
     
+//    @Inject
+//    @KeycloakClient
+//    private String dinaRealm;
+    
     @Inject
-    @KeycloakClient
-    private String dinaRealm;
+    public ConfigurationProperties config;
         
     public RoleManagement() {
         
@@ -42,18 +46,20 @@ public class RoleManagement implements Serializable {
     public JsonObject getRoleById(String id) {   
         log.info("getRoleById");
         
-        RoleRepresentation roleRepresentation = keycloakClient.realm(dinaRealm).rolesById().getRole(id);
+        String realm = config.getRealm();
         
-        String roleBelongTo = dinaRealm;
+        RoleRepresentation roleRepresentation = keycloakClient.realm(realm).rolesById().getRole(id);
+        
+        String roleBelongTo = realm;
         if (roleRepresentation.getClientRole()) {
             
-            ClientsResource clientsResource = keycloakClient.realm(dinaRealm).clients(); 
-            ClientRepresentation clientRepresentation = keycloakClient.realm(dinaRealm).clients().findByClientId(CommonString.getInstance().getDinaRestClientId()).get(0);
+            ClientsResource clientsResource = keycloakClient.realm(realm).clients(); 
+            ClientRepresentation clientRepresentation = keycloakClient.realm(realm).clients().findByClientId(CommonString.getInstance().getDinaRestClientId()).get(0);
 
             if(isClientByRole(clientsResource, clientRepresentation.getId(), id)) {
                 roleBelongTo = clientRepresentation.getName();
             } else {
-                clientRepresentation = keycloakClient.realm(dinaRealm).clients().findByClientId(CommonString.getInstance().getUserManagementClientId()).get(0);
+                clientRepresentation = keycloakClient.realm(realm).clients().findByClientId(CommonString.getInstance().getUserManagementClientId()).get(0);
                 if(isClientByRole(clientsResource, clientRepresentation.getId(), id)) {
                     roleBelongTo = clientRepresentation.getName();
                 }
