@@ -31,11 +31,7 @@ public class RoleManagement implements Serializable {
     @Inject
     @KeycloakClient
     private Keycloak keycloakClient;
-    
-//    @Inject
-//    @KeycloakClient
-//    private String dinaRealm;
-    
+     
     @Inject
     public ConfigurationProperties config;
         

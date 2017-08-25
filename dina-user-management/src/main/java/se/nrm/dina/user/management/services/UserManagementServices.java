@@ -103,28 +103,7 @@ public class UserManagementServices implements Serializable {
             return Response.ok(userManagement.getUserByAccountStatus(status)).build();
         } else {
             return Response.ok(userManagement.getUsers()).build();
-        }
-
-//        if(isAdminRole(req)) {
-//            MultivaluedMap<String, String> map = info.getQueryParameters();
-//            String status = map.getFirst("filter[status]");
-//            String username = map.getFirst("filter[email]");
-//
-//            logger.info("status : {}", status);
-//            if(username != null) {
-//                return Response.ok(userManagement.getUserByUserName(username)).build();
-//            } else if(status != null && !status.isEmpty()) {
-//                StringBuilder sb=new StringBuilder(status);
-//                sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
-//                status = sb.toString();
-//
-//                return Response.ok(userManagement.getUserByAccountStatus(status)).build();
-//            } else {
-//                return Response.ok(userManagement.getUsers()).build();
-//            } 
-//        }
-//        
-//        return Response.status(Response.Status.UNAUTHORIZED).build();
+        } 
     }   
     
     @GET    
@@ -265,92 +244,5 @@ public class UserManagementServices implements Serializable {
             return Response.noContent().build();
         } 
         return Response.status(Response.Status.UNAUTHORIZED).build();  
-    }
-    
-    
-    
-    
-    
-    //    @GET    
-//    @Path("/users")
-//    @Consumes({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-//    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})     
-//    public Response getUsers(   @Context HttpServletRequest req, 
-//                                @QueryParam("filter[email]") String email, 
-//                                @QueryParam("filter[status]") String status, 
-//                                @QueryParam("filter[login]") boolean isLogin,
-//                                @Context UriInfo info) {
-//        logger.info("getUsers : email :  {} -- {}", email, isLogin + " " + status);  
-//        
-//        MultivaluedMap<String, String> map = info.getQueryParameters();
-//        
-//        logger.info("Map : {}", map);
-//        map.entrySet().stream()
-//                .forEach(m -> {
-//                    logger.info("key : {}", m.getKey());
-//                    logger.info("value: {}", m.getValue());
-//                });
-//        
-// 
-//        if(isLogin) {
-//            return Response.ok(userManagement.getLoggedInUser()).build();                   // Returns a list of logged in users
-//        } else {
-//            if(email == null) { 
-//                return Response.ok(userManagement.getUsers()).build();
-//            } else { 
-//                return Response.ok(userManagement.getUserByUserName(email)).build();
-//            } 
-//        }
-//    }
-    
-    
-    //    private void getInfoFromToken(HttpServletRequest req) {        
-//        logger.info("getInfoFromToken");
-//        
-//        Principal userPrincipal = req.getUserPrincipal();        
-//        if (userPrincipal instanceof KeycloakPrincipal) {            
-//            KeycloakPrincipal<KeycloakSecurityContext> kp = (KeycloakPrincipal<KeycloakSecurityContext>) userPrincipal;
-//            
-//            AccessToken token = kp.getKeycloakSecurityContext().getToken();
-//            logger.info("name and id: {} -- {}", token.getName(), token.getId());            
-//            Map<String, Access> accessMap = token.getResourceAccess();
-//            accessMap.entrySet().stream()
-//                    .forEach(a -> {
-//                        logger.info("access : {} --- {}", a.getKey(), a.getValue().getRoles().toString());
-//                    });
-//            
-//            Map<String, Object> map = kp.getKeycloakSecurityContext().getToken().getOtherClaims();
-//            logger.info("map : {}", map);
-//            
-//            map.entrySet().stream()
-//                    .forEach(e -> {
-//                        logger.info("value : {} -- {}", e.getKey(), e.getValue());
-//                    });            
-//        } else {
-//            logger.info("nothing found");
-//        } 
-//    }
-    
-    
-    
-    
-    
-        
-    
-//    @PUT
-//    @Path("/enableUser")    
-//    public Response enableUser(@QueryParam("id") String id) {
-//        
-//        logger.info("enableUser : {}", id ); 
-//        return Response.ok(userManagement.enableUser(id)).build();
-//    }
-//    
-//        
-//    @PUT
-//    @Path("/disableUser")    
-//    public Response disableUser(@QueryParam("id") String id) { 
-//        logger.info("disableUser : {}", id); 
-//        return Response.ok(userManagement.disableUser(id)).build();
-//    }
-    
+    } 
 }

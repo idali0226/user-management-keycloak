@@ -232,18 +232,7 @@ public class RealmManagement implements Serializable {
     public void createRealmInitialUser( String username, String password, String firstname, 
                                         String lastname, String purpose, String realmRole, String clientRole) {
         log.info("createInitialUser" ); 
-        
-//        UserRepresentation user = new UserRepresentation();
-//        user.setUsername(username);
-//        user.setEmail(username);
-//        user.setFirstName(firstname);
-//        user.setLastName(lastname); 
-//        user.setEnabled(Boolean.TRUE);
-//        user.setEmailVerified(Boolean.TRUE);
-//        
-//        user.singleAttribute(CommonString.getInstance().getStatus(), AccountStatus.Enabled.name());
-//        user.singleAttribute(CommonString.getInstance().getPurpose(), purpose);
-        
+ 
         helper = new KeycloakHelper(); 
         Response response = getDinaRealmResource().users().create(helper.buildUserRepresentation(username, firstname, lastname, purpose, true, AccountStatus.Enabled));  
         String locationHeader = response.getHeaderString(CommonString.getInstance().getLocation());

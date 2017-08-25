@@ -20,8 +20,8 @@ import org.jboss.resteasy.plugins.interceptors.CorsFilter;
 @ApplicationPath("/")
 public class RestApplication extends Application {
 
-    private Set<Object> singletons = new HashSet<>();
-    private HashSet<Class<?>> classes = new HashSet<>();
+    private final Set<Object> singletons = new HashSet<>();
+    private final HashSet<Class<?>> classes = new HashSet<>();
 
     public RestApplication() {
         CorsFilter corsFilter = new CorsFilter();
@@ -41,13 +41,5 @@ public class RestApplication extends Application {
     @Override
     public HashSet<Class<?>> getClasses() {
         return classes;
-    }
-
-//    @Override
-//    public Set<Class<?>> getClasses() {
-//        Set<Class<?>> classes = new HashSet<>();
-//        classes.add(UserManagementServices.class);
-//        classes.add(UserManagementUnsecureService.class);
-//        return classes;
-//    }
+    } 
 }

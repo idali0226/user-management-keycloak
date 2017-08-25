@@ -50,11 +50,7 @@ public class UserManagement implements Serializable {
     
     @Inject
     private RealmManagement realm;
-    
-//    @Inject
-//    @KeycloakClient
-//    private String dinaRealm;
-
+     
     public UserManagement() {
     }
      
