@@ -15,7 +15,7 @@ export default Ember.Route.extend(AuthenticatedRouteMixin, SweetAlertMixin,  {
     model(params) {
         return Ember.RSVP.hash({
             user: this.store.findRecord('user', params.id ), 
-            realm: this.store.queryRecord('realm',  { realm: 'myrealm'} )
+            realm: this.store.queryRecord('realm',  { realm: 'dina'} )
         });
     },
  

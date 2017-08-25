@@ -29,7 +29,7 @@ public class CommonString {
 
     private static final String MASTER_ADMIN_USERNAME = "admin";
     private static final String MASTER_ADMIN_PASSWORD = "dina";
-    
+     
     private static final String REGEX = ".*/(.*)$";
     private static final String REGEX_1 = "$1";
 
@@ -39,7 +39,7 @@ public class CommonString {
     private static final String DATA_ENTRY_ROLE = "data entry";
     private static final String DISABLED_USER_ROLE = "disabled_user";
     
-    private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can management user accounts, clients in User management application. ";
+    private static final String ADMIN_ROLE_DESCRIPTION = "A user has admin role can manage user accounts, clients in User management application. ";
     private static final String USER_ROLE_DESCRIPTION = "A user has user role can only view and edit his/her own account.";
     private static final String DISABLED_ROLE_DESCRIPTION = "A user has disabled role can not access any resource in DINA";
     
@@ -61,8 +61,10 @@ public class CommonString {
     // Client
     private static final String DINA_REST_CLIENT_ID = "dina-rest";
     private static final String DINA_REST_CLIENT_NAME = "dina rest endpoint";
+    private static final String DINA_REST_CLIENT_DESCRIPTION = "Provides an entry point to authenticate user into DINA system.";
     private static final String USER_MANAGEMENT_CLIENT_ID = "user-management"; 
     private static final String USER_MANAGEMENT_CLIENT_NAME = "User management";
+    private static final String USER_MANAGEMENT_CLIENT_DESCRIPTION = "Management user accounts in keycloak";
     private static final String OPEN_ID_CONNECT_PROTOCOL = "openid-connect";
     // End of client
     
@@ -171,7 +173,7 @@ public class CommonString {
     
     private final String REDIRECT_FRONT_END_URL = "http://localhost:4200";
     
-    private final String REDIRECT_FRONT_END_URL_VIRTUALHOST = "http://beta-accounts.dina-web.net";
+//    private final String REDIRECT_FRONT_END_URL_VIRTUALHOST = "http://beta-accounts.dina-web.net";
     
     private final String NONE = "none";
     
@@ -238,9 +240,9 @@ public class CommonString {
         return REDIRECT_FRONT_END_URL;
     }
     
-    public String getRedirectFrontEndURLVirturalHost() {
-        return REDIRECT_FRONT_END_URL_VIRTUALHOST;
-    }
+//    public String getRedirectFrontEndURLVirturalHost() {
+//        return REDIRECT_FRONT_END_URL_VIRTUALHOST;
+//    }
     
     public String getTokenFirstName() {
         return TOKEN_FIRST_NAME;
@@ -426,12 +428,20 @@ public class CommonString {
         return DINA_REST_CLIENT_NAME;
     }
     
+    public String getDinaRestClientDescription() {
+        return DINA_REST_CLIENT_DESCRIPTION;
+    }
+    
     public String getUserManagementClientName() {
         return USER_MANAGEMENT_CLIENT_NAME;
     }
     
     public String getUserManagementClientId() {
         return USER_MANAGEMENT_CLIENT_ID;
+    }
+    
+    public String getUserManagementClientDescription() {
+        return USER_MANAGEMENT_CLIENT_DESCRIPTION;
     }
     
     public String isUserEnabled() {

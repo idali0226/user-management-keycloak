@@ -45,6 +45,7 @@ public class ConfigurationProperties {
     private String userFirstname;
     private String userLastname;
     
+    private String uiUrl;
     private String passwordPolicies;
     
     public ConfigurationProperties() {
@@ -71,6 +72,7 @@ public class ConfigurationProperties {
                                    @ConfigurationValue("swarm.user.user.password") String userPassword,
                                    @ConfigurationValue("swarm.user.user.firstname") String userFirstname,
                                    @ConfigurationValue("swarm.user.user.lastname") String userLastname,
+                                   @ConfigurationValue("swarm.ui.url") String uiUrl,
                                    @ConfigurationValue("swarm.realm.passwordpolicies") String passwordPolicies) {
         this.keycloakAuthURL = keycloakAuthURL; 
         this.dinaRealm = dinaRealm;
@@ -91,6 +93,7 @@ public class ConfigurationProperties {
         this.userPassword = userPassword;
         this.userFirstname = userFirstname;
         this.userLastname = userLastname;
+        this.uiUrl = uiUrl;
         this.passwordPolicies = passwordPolicies;
         
         log.info("test injection : {}", keycloakAuthURL);
@@ -298,6 +301,18 @@ public class ConfigurationProperties {
             throw new RuntimeException(CONFIG_INITIALLISING_ERROR);
         }
         return userLastname;
+    }
+    
+    /**
+     * This method returns user's lastname property
+     * 
+     * @return String
+     */
+    public String getUiURL() {
+        if(userLastname == null) {
+            throw new RuntimeException(CONFIG_INITIALLISING_ERROR);
+        }
+        return uiUrl;
     }
     
     /**

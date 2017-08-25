@@ -38,6 +38,7 @@ public class ConfigurationPropertiesTest {
     private String userFirstname;
     private String userLastname;
     
+    private String uiUrl;
     private String passwordPolicies;
     
     private ConfigurationProperties testInstanceWithInjection;
@@ -76,16 +77,17 @@ public class ConfigurationPropertiesTest {
         userPassword = "user";        
         userFirstname = "User";
         userLastname = "Dina";
+        uiUrl = "http://dina-account.se";
         passwordPolicies = "password policies";
         
         testInstanceWithInjection = new ConfigurationProperties( keycloakAuthURL, realm, emailHost, emailPort, emailUsername, 
                                                                 emailPassword, emailFrom, superAdminUsername, superAdminPassword, 
                                                                 superAdminFirstname, superAdminLastname, adminUsername, 
                                                                 adminPassword, adminFirstname, adminLastname, userUsername, 
-                                                                userPassword, userFirstname, userLastname, passwordPolicies);
+                                                                userPassword, userFirstname, userLastname, uiUrl, passwordPolicies);
         
         testInstanceWithEmptyInjection = new ConfigurationProperties(null, null, null, null, null, null, null, null, null, null, 
-                                                                     null, null, null, null, null, null, null, null, null, null);
+                                                                     null, null, null, null, null, null, null, null, null, null, null);
     }
     
     @After
@@ -297,6 +299,18 @@ public class ConfigurationPropertiesTest {
         String result = testInstanceWithInjection.getUserLastname();
         assertEquals(expResult, result); 
     }
+    
+    /**
+     * Test of getPasswordPolicies method, of class ConfigurationProperties.
+     */
+    @Test
+    public void testGetUiUrl() {
+        System.out.println("testGetUiUrl");
+      
+        String expResult = "http://dina-account.se";
+        String result = testInstanceWithInjection.getUiURL();
+        assertEquals(expResult, result); 
+    }
 
     /**
      * Test of getPasswordPolicies method, of class ConfigurationProperties.
@@ -384,6 +398,13 @@ public class ConfigurationPropertiesTest {
     }
     
     @Test (expected = RuntimeException.class)
+    public void testGetUiUrlFailure() {
+        System.out.println("testGetUiUrlFailure");
+         
+        testInstanceWithEmptyInjection.getUiURL();
+    }
+    
+    @Test (expected = RuntimeException.class)
     public void testGetPasswordPoliciesFailure() {
         System.out.println("testGetPasswordPoliciesFailure");
          
@@ -459,7 +480,7 @@ public class ConfigurationPropertiesTest {
          
         testInstanceWithEmptyInjection.getUserPassword();
     }
-    
+     
     @Test (expected = RuntimeException.class)
     public void testGetUserFirstnameFailure() {
         System.out.println("testGetUserFirstnameFailure");

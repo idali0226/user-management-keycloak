@@ -47,19 +47,6 @@ public class Util {
         return instance;
     }
 
-    public Map<String, String> buildProtocolMap(String attribute, String claimName) {
-        Map<String, String> protocolMap = new HashMap<>();
-        protocolMap.put(CommonString.getInstance().getMultiValued(), Boolean.TRUE.toString());
-        protocolMap.put(CommonString.getInstance().getUserInfoTokenClaim(), Boolean.TRUE.toString());
-        protocolMap.put(CommonString.getInstance().getUserAttribute(), attribute);
-        protocolMap.put(CommonString.getInstance().getIdTokenClaim(), Boolean.TRUE.toString());
-        protocolMap.put(CommonString.getInstance().getAccessTokenClaim(), Boolean.TRUE.toString());
-        protocolMap.put(CommonString.getInstance().getClientName(), claimName);
-        protocolMap.put(CommonString.getInstance().getJsonTypeLabel(), CommonString.getInstance().getStringDataFormat());  
-        
-        return protocolMap;
-    }
-    
     public String dateToString(Date date) {
         if (date != null) { 
             return SIMPLE_DATE_FORMAT.format(date);

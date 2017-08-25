@@ -48,13 +48,16 @@ public class UserManagement implements Serializable {
     @KeycloakClient
     private Keycloak keycloakClient;
     
+    @Inject
+    private RealmManagement realm;
+    
 //    @Inject
 //    @KeycloakClient
 //    private String dinaRealm;
 
     public UserManagement() {
     }
- 
+     
     public JsonObject createUser(String jsonString, boolean createdByAdmin) {
         log.info("createuser : {}", createdByAdmin);
 

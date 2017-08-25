@@ -6,6 +6,8 @@ swarm:
     realm:
         name: dina
         passwordpolicies: hashIterations and specialChars and length
+    ui:
+        url: http://beta-accounts.dina-web.net
     email:
         host: mail.dina-web.net
         port: 587
